@@ -70,10 +70,9 @@
 
     <!-- ==================== DASHBOARD TAB ==================== -->
     <div id="tab-dashboard" class="space-y-6 tab-content">
-      
       <div id="sortableDashboardGrid" class="space-y-6">
         
-        <!-- Draggable Section 1: Top 4 KPI Cards -->
+        <!-- Top 4 KPI Cards -->
         <div class="dash-draggable-card space-y-6" draggable="true" data-id="kpis">
           <div class="flex items-center justify-between px-1 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
             <span>⠷ Dashboard Kennzahlen</span>
@@ -81,7 +80,6 @@
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
-            <!-- 1. Gesamtvermögen -->
             <div class="bg-gradient-to-br from-slate-900/95 via-[#0c1322]/95 to-slate-900/95 border border-slate-800/90 rounded-2xl p-5 shadow-xl relative overflow-hidden backdrop-blur-xl group hover:border-emerald-500/40 transition">
               <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/15 transition"></div>
               <div class="flex items-center justify-between mb-2">
@@ -94,7 +92,6 @@
               <div class="text-[11px] text-slate-400 mt-1 truncate">Invest + Notgroschen</div>
             </div>
 
-            <!-- 2. Reguläres Netto -->
             <div class="bg-gradient-to-br from-slate-900/95 via-[#0c1322]/95 to-slate-900/95 border border-slate-800/90 rounded-2xl p-5 shadow-xl relative overflow-hidden backdrop-blur-xl group hover:border-indigo-500/40 transition">
               <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-indigo-500/15 transition"></div>
               <div class="flex items-center justify-between mb-2">
@@ -107,7 +104,6 @@
               <div class="text-[11px] text-slate-400 mt-1 truncate" id="dashNetIncomeSub">Ohne 13./14. Gehalt</div>
             </div>
 
-            <!-- 3. Fixkosten -->
             <div class="bg-gradient-to-br from-slate-900/95 via-[#0c1322]/95 to-slate-900/95 border border-slate-800/90 rounded-2xl p-5 shadow-xl relative overflow-hidden backdrop-blur-xl group hover:border-rose-500/40 transition">
               <div class="absolute top-0 right-0 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-rose-500/15 transition"></div>
               <div class="flex items-center justify-between mb-2">
@@ -120,7 +116,6 @@
               <div class="text-[11px] text-slate-400 mt-1 truncate" id="dashFixedPercentage">41% vom Netto</div>
             </div>
 
-            <!-- 4. Freier Puffer -->
             <div class="bg-gradient-to-br from-slate-900/95 via-[#0c1322]/95 to-slate-900/95 border border-slate-800/90 rounded-2xl p-5 shadow-xl relative overflow-hidden backdrop-blur-xl group hover:border-amber-500/40 transition">
               <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/15 transition"></div>
               <div class="flex items-center justify-between mb-2">
@@ -136,7 +131,7 @@
           </div>
         </div>
 
-        <!-- Draggable Section 2: Einkommens- & Budget-Verteilung (Netto) Bar Card -->
+        <!-- Distribution -->
         <div class="dash-draggable-card space-y-2" draggable="true" data-id="distribution">
           <div class="flex items-center justify-between px-1 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
             <span>⠷ Einkommens- & Budget-Verteilung</span>
@@ -151,7 +146,6 @@
               <span class="text-xs font-semibold text-slate-300" id="distNetHeaderLabel">Netto: 2.704,14 € (inkl. Sonderzahlung!)</span>
             </div>
 
-            <!-- Multi-color Segmented Progress Bar -->
             <div class="w-full bg-slate-950 rounded-full h-3.5 p-0.5 border border-slate-800/80 relative overflow-hidden flex">
               <div id="distBarFix" class="bg-rose-500 h-full rounded-l-full transition-all duration-500" style="width: 41%;"></div>
               <div id="distBarSpar" class="bg-indigo-500 h-full transition-all duration-500" style="width: 15%;"></div>
@@ -159,10 +153,7 @@
               <div id="distBarBuffer" class="bg-emerald-500 h-full rounded-r-full transition-all duration-500" style="width: 24%;"></div>
             </div>
 
-            <!-- 4 Cards Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
-              
-              <!-- Fixkosten -->
               <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-1">
                 <div class="flex items-center justify-between text-xs text-slate-400">
                   <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-500 inline-block"></span> Fixkosten</span>
@@ -171,7 +162,6 @@
                 <div class="text-lg font-extrabold text-rose-400" id="distFixVal">1.113,40 €</div>
               </div>
 
-              <!-- Sparrate -->
               <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-1">
                 <div class="flex items-center justify-between text-xs text-slate-400">
                   <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-indigo-500 inline-block"></span> Sparrate</span>
@@ -180,7 +170,6 @@
                 <div class="text-lg font-extrabold text-indigo-400" id="distSparVal">400,00 €</div>
               </div>
 
-              <!-- Konsum -->
               <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-1">
                 <div class="flex items-center justify-between text-xs text-slate-400">
                   <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400 inline-block"></span> Konsum</span>
@@ -189,7 +178,6 @@
                 <div class="text-lg font-extrabold text-amber-400" id="distKonsumVal">549,77 €</div>
               </div>
 
-              <!-- Freier Puffer -->
               <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-1">
                 <div class="flex items-center justify-between text-xs text-slate-400">
                   <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Freier Puffer</span>
@@ -197,10 +185,8 @@
                 </div>
                 <div class="text-lg font-extrabold text-emerald-400" id="distBufferVal">640,97 €</div>
               </div>
-
             </div>
 
-            <!-- Bottom Row: 50/30/20 Rule & Notgroschen Reserve -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-800/80 text-xs">
               <div class="flex items-center justify-between bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3">
                 <span class="text-slate-300" id="rule50Text">50/30/20-Regel: Fixkosten bei starken 41% (Optimal unter 50%).</span>
@@ -218,7 +204,7 @@
           </div>
         </div>
 
-        <!-- Draggable Section 3: Jahresend-Ziel Card -->
+        <!-- Goal -->
         <div class="dash-draggable-card space-y-2" draggable="true" data-id="goal">
           <div class="flex items-center justify-between px-1 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
             <span>⠷ Jahresend-Ziel</span>
@@ -246,7 +232,6 @@
               </div>
             </div>
 
-            <!-- Progress Bar Line & Percentage -->
             <div class="space-y-1.5 pt-1">
               <div class="w-full bg-slate-950 rounded-full h-3 p-0.5 border border-slate-800/80 relative overflow-hidden flex">
                 <div id="yearEndGoalProgressBar" class="bg-gradient-to-r from-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: 74%;"></div>
@@ -259,7 +244,7 @@
           </div>
         </div>
 
-        <!-- Draggable Section 4: Monatsabschluss Card -->
+        <!-- Closing -->
         <div class="dash-draggable-card space-y-2" draggable="true" data-id="closing">
           <div class="flex items-center justify-between px-1 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
             <span>⠷ Monatsabschluss & Historie</span>
@@ -272,7 +257,7 @@
                   <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                   Monatsabschluss
                 </h3>
-                <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30" id="currentMonthBadge">Monat 2026-11</span>
+                <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30" id="currentMonthBadge">November 2026</span>
               </div>
               <p class="text-xs text-slate-400 leading-relaxed max-w-2xl">
                 Schließe den aktuellen Monat ab, um die Performance in der Historie zu sichern. Ein verbleibender Puffer fließt automatisch in den Notgroschen.
@@ -291,15 +276,13 @@
           </div>
         </div>
 
-        <!-- Draggable Section 5: Charts Section -->
+        <!-- Charts -->
         <div class="dash-draggable-card space-y-2" draggable="true" data-id="charts">
           <div class="flex items-center justify-between px-1 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
             <span>⠷ Charts & Verlauf</span>
             <span>Zum Verschieben greifen</span>
           </div>
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- Asset Distribution Donut (Only Savings Plans) -->
             <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl flex flex-col">
               <h3 class="font-bold text-sm text-white mb-4 flex items-center gap-2">
                 <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/></svg>
@@ -310,7 +293,6 @@
               </div>
             </div>
 
-            <!-- Tatsächlicher Vermögensverlauf (Historie Chart mit Gesamtvermögen & Sparplänen) -->
             <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl lg:col-span-2 flex flex-col">
               <h3 class="font-bold text-sm text-white mb-2 flex items-center gap-2">
                 <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
@@ -321,11 +303,10 @@
                 <canvas id="historicalAssetChart"></canvas>
               </div>
             </div>
-
           </div>
         </div>
 
-        <!-- Draggable Section 6: History Log -->
+        <!-- History -->
         <div class="dash-draggable-card space-y-2" draggable="true" data-id="history">
           <div class="flex items-center justify-between px-1 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
             <span>⠷ Abgeschlossene Monate (Historie Log)</span>
@@ -336,14 +317,11 @@
               <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
               Abgeschlossene Monate (Historie Log)
             </h3>
-            <div id="dashPerformanceHistoryContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <!-- Dynamically populated -->
-            </div>
+            <div id="dashPerformanceHistoryContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
           </div>
         </div>
 
       </div>
-
     </div>
 
     <!-- ==================== SPARPLÄNE TAB ==================== -->
@@ -361,10 +339,7 @@
             + Sparplan anlegen
           </button>
         </div>
-
-        <div id="plansListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Dynamically populated -->
-        </div>
+        <div id="plansListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </div>
     </div>
 
@@ -372,9 +347,7 @@
     <div id="tab-einnahmen" class="space-y-6 tab-content hidden">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        <!-- Linke Spalte: Einnahmen & 13./14. Gehalt -->
         <div class="space-y-6">
-          <!-- Einnahmen -->
           <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl">
             <h3 class="font-bold text-base text-white mb-4 flex items-center gap-2">
               <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -388,15 +361,12 @@
             </div>
           </div>
 
-          <!-- 13. & 14. Gehalt Einstellung & Dazuschalten -->
           <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl">
             <h3 class="font-bold text-base text-white mb-2 flex items-center gap-2">
               <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
               Sonderzahlungen (13. & 14. Gehalt)
             </h3>
-            <p class="text-xs text-slate-400 mb-4">
-              Lege hier die Höhe fest und schalte das 13. Gehalt (im Juli) bzw. das 14. Gehalt (im Dezember) zu deinen aktuellen Einnahmen dazu.
-            </p>
+            <p class="text-xs text-slate-400 mb-4">Lege hier die Höhe fest und schalte das 13. Gehalt (im Juli) bzw. das 14. Gehalt (im Dezember) zu deinen aktuellen Einnahmen dazu.</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl space-y-3">
                 <div>
@@ -423,7 +393,6 @@
           </div>
         </div>
 
-        <!-- Rechte Spalte: Fixkosten -->
         <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-4">
@@ -433,9 +402,7 @@
               </h3>
               <button onclick="addFixedExpense()" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-3 py-1.5 rounded-lg transition">+ Hinzufügen</button>
             </div>
-            <div id="fixedExpensesListContainer" class="space-y-2.5 max-h-[340px] overflow-y-auto pr-1">
-              <!-- Dynamically populated -->
-            </div>
+            <div id="fixedExpensesListContainer" class="space-y-2.5 max-h-[340px] overflow-y-auto pr-1"></div>
           </div>
           <div class="pt-4 mt-4 border-t border-slate-800 flex justify-between items-center text-sm">
             <span class="text-slate-400 font-semibold">Fixkosten Gesamt:</span>
@@ -445,7 +412,7 @@
 
       </div>
 
-      <!-- Untere Reihe: Variable Budgets & Tägliche Ausgaben -->
+      <!-- Variable Budgets & Ausgaben Tab -->
       <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -453,14 +420,13 @@
               <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
               Variable Budgets & Tägliche Ausgaben
             </h3>
-            <p class="text-xs text-slate-400 mt-1">Erfasse tägliche Einkäufe blitzschnell per Klick.</p>
+            <p class="text-xs text-slate-400 mt-1">Erfasse tägliche Einkäufe blitzschnell per Klick nach Kategorien.</p>
           </div>
           <button onclick="addVariableBudgetModal()" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center gap-2">
             + Variables Budget anlegen
           </button>
         </div>
 
-        <!-- Restgeld Card -->
         <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Restgeld für variablen Konsum</span>
@@ -473,13 +439,18 @@
           </div>
         </div>
 
-        <!-- Quick Add Expense Form -->
+        <!-- Quick Add Expense Form mit erweiterten Kategorien -->
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-          <input type="text" id="expenseTitle" placeholder="z. B. Supermarkt, Bäcker" class="sm:col-span-5 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
+          <input type="text" id="expenseTitle" placeholder="z. B. Supermarkt, Tankstelle" class="sm:col-span-5 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
           <input type="number" id="expenseAmount" placeholder="Betrag (€)" class="sm:col-span-3 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
           <select id="expenseCategory" class="sm:col-span-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
             <option value="Lebensmittel">Lebensmittel</option>
             <option value="Freizeit">Freizeit</option>
+            <option value="Wohnen">Wohnen</option>
+            <option value="Transport">Transport / Auto</option>
+            <option value="Kleidung">Kleidung</option>
+            <option value="Gesundheit">Gesundheit</option>
+            <option value="Technik">Technik</option>
             <option value="Sonstiges">Sonstiges</option>
           </select>
           <button onclick="addDailyExpense()" class="sm:col-span-2 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1">
@@ -487,18 +458,35 @@
           </button>
         </div>
 
-        <!-- Getätigte Einkäufe / Ausgaben-Verlauf -->
-        <div class="space-y-2 pt-2 border-t border-slate-800">
-          <div class="flex items-center justify-between text-xs text-slate-400 font-semibold mb-2">
-            <span>Getätigte Einkäufe / Ausgaben-Verlauf</span>
-            <span id="expenseCountLabel">0 Ausgaben</span>
+        <!-- Ausgaben Diagramm & Liste Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2 border-t border-slate-800">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs text-slate-400 font-semibold mb-2">
+              <span>Getätigte Einkäufe / Ausgaben-Verlauf</span>
+              <span id="expenseCountLabel">0 Ausgaben</span>
+            </div>
+            <div id="dailyExpensesListContainer" class="space-y-2 max-h-[260px] overflow-y-auto pr-1">
+              <p class="text-xs text-slate-500 italic py-1">Noch keine Einkäufe diesen Monat erfasst.</p>
+            </div>
           </div>
-          <div id="dailyExpensesListContainer" class="space-y-2 max-h-[180px] overflow-y-auto pr-1">
-            <p class="text-xs text-slate-500 italic py-1">Noch keine Einkäufe diesen Monat erfasst.</p>
+
+          <!-- Ausgaben Diagramm nach Kategorien (wird dynamisch eingeblendet) -->
+          <div id="expenseChartWrapper" class="bg-slate-950/70 border border-slate-800 rounded-2xl p-5 flex flex-col hidden">
+            <h4 class="font-bold text-xs text-white mb-2 flex items-center gap-2">
+              <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/></svg>
+              Ausgaben nach Kategorien
+            </h4>
+            <div class="relative flex-1 min-h-[220px] flex items-center justify-center">
+              <canvas id="expenseCategoryChart"></canvas>
+            </div>
+          </div>
+          <div id="expenseChartEmptyState" class="bg-slate-950/40 border border-slate-800/60 rounded-2xl p-5 flex flex-col items-center justify-center text-center min-h-[220px]">
+            <svg class="w-8 h-8 text-slate-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/></svg>
+            <p class="text-xs text-slate-400 font-medium">Noch keine Kategorien-Ausgaben vorhanden</p>
+            <p class="text-[11px] text-slate-500 mt-0.5">Sobald du eine Ausgabe buchst, erscheint hier das Diagramm.</p>
           </div>
         </div>
 
-        <!-- Summe Variable Budgets List -->
         <div class="pt-2 border-t border-slate-800">
           <div id="variableBudgetsListContainer" class="space-y-2 mb-3">
             <p class="text-xs text-slate-500 italic">Keine variablen Budgets erfasst.</p>
@@ -514,10 +502,7 @@
     <!-- ==================== PROGNOSE TAB ==================== -->
     <div id="tab-prognose" class="space-y-6 tab-content hidden">
       <div class="bg-[#0b101d] border border-slate-800/90 rounded-2xl p-6 shadow-2xl space-y-6">
-        
-        <!-- Top Box: 6 Sliders -->
         <div class="bg-[#0e1525] border border-slate-800/80 rounded-2xl p-6 grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6">
-          
           <div>
             <div class="flex justify-between items-center text-xs font-bold mb-2">
               <span class="text-slate-300">Startkapital (Verzinst / ETF)</span>
@@ -525,7 +510,6 @@
             </div>
             <input type="range" id="simStartInvest" min="0" max="200000" step="500" value="7000" oninput="updateSimFromUI()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
           </div>
-
           <div>
             <div class="flex justify-between items-center text-xs font-bold mb-2">
               <span class="text-slate-300">Sparrate (Verzinst / Monat)</span>
@@ -533,7 +517,6 @@
             </div>
             <input type="range" id="simMonthlyInvest" min="0" max="5000" step="25" value="400" oninput="updateSimFromUI()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
           </div>
-
           <div>
             <div class="flex justify-between items-center text-xs font-bold mb-2">
               <span class="text-slate-300">Rendite p.a. (%)</span>
@@ -541,7 +524,6 @@
             </div>
             <input type="range" id="simReturn" min="0" max="15" step="0.5" value="7.0" oninput="updateSimFromUI()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
           </div>
-
           <div>
             <div class="flex justify-between items-center text-xs font-bold mb-2">
               <span class="text-slate-300">Notgroschen & Cash (0 %)</span>
@@ -549,7 +531,6 @@
             </div>
             <input type="range" id="simStartCash" min="0" max="100000" step="500" value="2200" oninput="updateSimFromUI()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500">
           </div>
-
           <div>
             <div class="flex justify-between items-center text-xs font-bold mb-2">
               <span class="text-slate-300">Sparrate Notgroschen (0 %)</span>
@@ -557,7 +538,6 @@
             </div>
             <input type="range" id="simMonthlyCash" min="0" max="3000" step="25" value="0" oninput="updateSimFromUI()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500">
           </div>
-
           <div>
             <div class="flex justify-between items-center text-xs font-bold mb-2">
               <span class="text-slate-300">Zeithorizont</span>
@@ -565,10 +545,8 @@
             </div>
             <input type="range" id="simYears" min="1" max="40" step="1" value="20" oninput="updateSimFromUI()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
           </div>
-
         </div>
 
-        <!-- Toggle Box: Sonderzahlungen einbeziehen -->
         <div class="bg-[#0e1525] border border-slate-800/80 rounded-xl px-5 py-3.5 flex items-center justify-between">
           <span class="text-xs font-bold text-white">Sonderzahlungen (13. & 14. Gehalt) einbeziehen</span>
           <label class="inline-flex items-center cursor-pointer select-none">
@@ -578,36 +556,30 @@
           </label>
         </div>
 
-        <!-- 4 Summary KPI Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-[#0e1525] border border-slate-800/80 rounded-2xl p-5">
             <span class="text-xs font-medium text-slate-400 block mb-1.5">Eingezahltes Kapital</span>
             <div class="text-2xl font-extrabold text-white" id="simTotalContributed">0 €</div>
           </div>
-
           <div class="bg-[#0e1525] border border-slate-800/80 rounded-2xl p-5">
             <span class="text-xs font-medium text-slate-400 block mb-1.5">Zinsgewinn</span>
             <div class="text-2xl font-extrabold text-indigo-400" id="simTotalInterest">+0 €</div>
           </div>
-
           <div class="bg-[#0e1525] border border-slate-800/80 rounded-2xl p-5">
             <span class="text-xs font-medium text-amber-400/90 block mb-1.5">Notgroschen / Cash</span>
             <div class="text-2xl font-extrabold text-amber-400" id="simTotalCash">0 €</div>
           </div>
-
           <div class="bg-gradient-to-br from-[#06241f] to-[#0b1724] border border-emerald-500/30 rounded-2xl p-5">
             <span class="text-xs font-medium text-emerald-400 block mb-1.5">Gesamtvermögen</span>
             <div class="text-2xl font-extrabold text-emerald-400" id="simTotalWealth">0 €</div>
           </div>
         </div>
 
-        <!-- Forecast Chart Box -->
         <div class="bg-[#0e1525] border border-slate-800/80 rounded-2xl p-5">
           <div class="relative min-h-[380px]">
             <canvas id="forecastChart"></canvas>
           </div>
         </div>
-
       </div>
     </div>
 
@@ -634,7 +606,6 @@
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // Firebase Konfiguration
     const firebaseConfig = {
       apiKey: "AIzaSyDAa-LXGXwhMDEhyTZcvGaqLuI1HeK4UjI",
       authDomain: "finanzapp-dd2bc.firebaseapp.com",
@@ -677,32 +648,22 @@
       closedMonths: {
         '2026-09': { 
           dateLabel: 'September 2026', 
-          totalWealth: 4600, 
+          totalWealth: 6200, 
           savings: 800, 
-          plansHistory: { 'p1': 2000, 'p2': 2600 } 
+          plansHistory: { 'p1': 2000, 'p2': 2600, 'p3': 1600, 'p4': 0 } 
         },
         '2026-10': { 
           dateLabel: 'Oktober 2026', 
-          totalWealth: 5800, 
+          totalWealth: 7400, 
           savings: 800, 
-          plansHistory: { 'p1': 2200, 'p2': 3600 } 
+          plansHistory: { 'p1': 2200, 'p2': 3600, 'p3': 1600, 'p4': 0 } 
         }
       },
       dailyExpenses: [
         { title: 'Novarockkarten', amount: 300, category: 'Freizeit' },
-        { title: 'Kleidung', amount: 50, category: 'Sonstiges' },
+        { title: 'Kleidung', amount: 50, category: 'Kleidung' },
         { title: 'Tennisturnierbeitrag', amount: 28, category: 'Freizeit' },
-        { title: 'Tabak', amount: 19.59, category: 'Freizeit' },
-        { title: 'Mc Donalds', amount: 14.20, category: 'Freizeit' },
-        { title: 'Billa', amount: 3, category: 'Lebensmittel' },
-        { title: 'Schlosskauf', amount: 3.99, category: 'Sonstiges' },
-        { title: 'Wirtshaus', amount: 20, category: 'Sonstiges' },
-        { title: 'Vino', amount: 28, category: 'Sonstiges' },
-        { title: 'Mc Donalds', amount: 15.60, category: 'Sonstiges' },
-        { title: 'Trafik', amount: 6.40, category: 'Sonstiges' },
-        { title: 'Vino', amount: 28, category: 'Sonstiges' },
-        { title: 'Döner', amount: 13, category: 'Lebensmittel' },
-        { title: 'Game', amount: 19.99, category: 'Lebensmittel' }
+        { title: 'Supermarkt', amount: 65, category: 'Lebensmittel' }
       ]
     };
 
@@ -710,14 +671,14 @@
     let assetDonutInstance = null;
     let historicalChartInstance = null;
     let forecastChartInstance = null;
+    let expenseCategoryChartInstance = null;
 
     window.formatEUR = function(val) {
       return Number(val || 0).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
     }
 
     window.getCurrentYearMonth = function() {
-      const now = new Date();
-      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      return '2026-11';
     }
 
     window.formatYearMonthLabel = function(ymStr) {
@@ -737,6 +698,11 @@
           console.warn("Konnte lokalen Speicher nicht lesen:", e);
         }
       }
+      appData.currentMonthKey = '2026-11';
+      if (appData.closedMonths) {
+        delete appData.closedMonths['2026-11'];
+        delete appData.closedMonths['2026-12'];
+      }
       renderAll();
 
       try {
@@ -746,13 +712,17 @@
 
         await signInAnonymously(auth);
 
-        // Direkter, korrekter Firestore-Pfad passend zu deinen Regeln
         const docRef = doc(db, 'finanzapp_data', 'shared_main_vault');
         
         onSnapshot(docRef, (snap) => {
           if (snap.exists()) {
             isRemoteUpdate = true;
             appData = { ...appData, ...snap.data() };
+            appData.currentMonthKey = '2026-11';
+            if (appData.closedMonths) {
+              delete appData.closedMonths['2026-11'];
+              delete appData.closedMonths['2026-12'];
+            }
             localStorage.setItem('finanzplaner_pro_v3', JSON.stringify(appData));
             renderAll();
             isRemoteUpdate = false;
@@ -787,6 +757,7 @@
       renderPlansList();
       renderIncomeAndFixed();
       renderForecastChart();
+      renderExpenseCategoryChart();
     }
 
     window.openTab = function(tabId) {
@@ -808,6 +779,9 @@
       if (tabId === 'prognose') {
         initSimDefaultsFromPlans();
         renderForecastChart();
+      }
+      if (tabId === 'einnahmen' || tabId === 'dashboard') {
+        setTimeout(renderAll, 50);
       }
     }
 
@@ -858,8 +832,8 @@
       const elIncomeLabel = document.getElementById('dashNetIncomeLabel');
       if (elIncomeSub && elIncomeLabel) {
         if (totals.activeExtraLabelParts.length > 0) {
-          elIncomeLabel.textContent = 'Netto (inkl. Sonderzahlung)';
-          elIncomeSub.textContent = `Inkl. ${totals.activeExtraLabelParts.join(' & ')}`;
+          elIncomeLabel.textContent = 'Netto (inkl. Sonderz.)';
+          elIncomeSub.textContent = 'Inkl. ' + totals.activeExtraLabelParts.join(' & ');
         } else {
           elIncomeLabel.textContent = 'Reguläres Netto';
           elIncomeSub.textContent = 'Ohne 13./14. Gehalt';
@@ -869,214 +843,87 @@
       const elFixed = document.getElementById('dashFixedExpenses');
       if (elFixed) elFixed.textContent = formatEUR(totals.fixedSum) + '/M.';
 
-      const netInc = Number(appData.netIncome || 0);
-      const fixedPct = netInc > 0 ? Math.round((totals.fixedSum / netInc) * 100) : 0;
+      const fixedPct = totals.activeNetIncome > 0 ? Math.round((totals.fixedSum / totals.activeNetIncome) * 100) : 0;
       const elFixedPct = document.getElementById('dashFixedPercentage');
-      if (elFixedPct) elFixedPct.textContent = `${fixedPct}% vom Netto`;
+      if (elFixedPct) elFixedPct.textContent = fixedPct + '% vom Netto';
 
       const elBuffer = document.getElementById('dashBuffer');
-      if (elBuffer) {
-        elBuffer.textContent = formatEUR(totals.availableBuffer) + '/M.';
-        elBuffer.className = `text-xl lg:text-2xl font-extrabold tracking-tight mt-1 truncate ${totals.availableBuffer >= 0 ? 'text-amber-400' : 'text-rose-500'}`;
-      }
+      if (elBuffer) elBuffer.textContent = formatEUR(totals.availableBuffer) + '/M.';
 
-      let effectiveNet = Number(appData.netIncome || 0);
-      if (appData.extra13Claimed) effectiveNet += Number(appData.extra13 || 0);
-      if (appData.extra14Claimed) effectiveNet += Number(appData.extra14 || 0);
-
-      const distHeader = document.getElementById('distNetHeaderLabel');
-      if (distHeader) distHeader.textContent = `Netto: ${formatEUR(effectiveNet)} (inkl. Sonderzahlung!)`;
-
-      const fixVal = totals.fixedSum;
-      const sparVal = totals.savingsRate;
-      const konsumVal = totals.dailySpent;
-      const bufferVal = Math.max(0, totals.availableBuffer);
-
-      const baseDenom = effectiveNet > 0 ? effectiveNet : 1;
-      const fixPct = Math.round((fixVal / baseDenom) * 100);
-      const sparPct = Math.round((sparVal / baseDenom) * 100);
-      const konsumPct = Math.round((konsumVal / baseDenom) * 100);
+      const net = totals.activeNetIncome > 0 ? totals.activeNetIncome : 1;
+      const fixPct = Math.max(0, Math.min(100, Math.round((totals.fixedSum / net) * 100)));
+      const sparPct = Math.max(0, Math.min(100 - fixPct, Math.round((totals.savingsRate / net) * 100)));
+      const konsumPct = Math.max(0, Math.min(100 - fixPct - sparPct, Math.round((totals.dailySpent / net) * 100)));
       const bufferPct = Math.max(0, 100 - fixPct - sparPct - konsumPct);
 
-      const barFix = document.getElementById('distBarFix');
-      const barSpar = document.getElementById('distBarSpar');
-      const barKonsum = document.getElementById('distBarKonsum');
-      const barBuffer = document.getElementById('distBarBuffer');
-
-      if (barFix) barFix.style.width = fixPct + '%';
-      if (barSpar) barSpar.style.width = sparPct + '%';
-      if (barKonsum) barKonsum.style.width = konsumPct + '%';
-      if (barBuffer) barBuffer.style.width = bufferPct + '%';
+      document.getElementById('distBarFix').style.width = fixPct + '%';
+      document.getElementById('distBarSpar').style.width = sparPct + '%';
+      document.getElementById('distBarKonsum').style.width = konsumPct + '%';
+      document.getElementById('distBarBuffer').style.width = bufferPct + '%';
 
       document.getElementById('distFixPct').textContent = fixPct + '%';
-      document.getElementById('distFixVal').textContent = formatEUR(fixVal);
+      document.getElementById('distFixVal').textContent = formatEUR(totals.fixedSum);
       document.getElementById('distSparPct').textContent = sparPct + '%';
-      document.getElementById('distSparVal').textContent = formatEUR(sparVal);
+      document.getElementById('distSparVal').textContent = formatEUR(totals.savingsRate);
       document.getElementById('distKonsumPct').textContent = konsumPct + '%';
-      document.getElementById('distKonsumVal').textContent = formatEUR(konsumVal);
+      document.getElementById('distKonsumVal').textContent = formatEUR(totals.dailySpent);
       document.getElementById('distBufferPct').textContent = bufferPct + '%';
       document.getElementById('distBufferVal').textContent = formatEUR(totals.availableBuffer);
 
-      const ruleText = document.getElementById('rule50Text');
-      if (ruleText) {
-        if (fixPct <= 50) {
-          ruleText.textContent = `50/30/20-Regel: Fixkosten bei starken ${fixPct}% (Optimal unter 50%).`;
-        } else {
-          ruleText.textContent = `50/30/20-Regel: Fixkosten bei ${fixPct}% (Über 50%-Empfehlung).`;
-        }
+      document.getElementById('distNetHeaderLabel').textContent = `Netto: ${formatEUR(totals.activeNetIncome)} ${totals.activeExtraLabelParts.length > 0 ? '(inkl. Sonderzahlung!)' : ''}`;
+      document.getElementById('rule50Text').textContent = `50/30/20-Regel: Fixkosten bei ${fixPct}% (Optimal unter 50%).`;
+
+      const notgroschenPlan = (appData.plans || []).find(p => p.category === 'Notgroschen' || p.name.toLowerCase().includes('notgroschen'));
+      const notgroschenVal = notgroschenPlan ? Number(notgroschenPlan.current || 0) : 2200;
+      const monthsCovered = totals.fixedSum > 0 ? (notgroschenVal / totals.fixedSum).toFixed(1) : '0';
+      document.getElementById('notgroschenMonthsCount').textContent = `${monthsCovered} Monate`;
+
+      const target = Number(appData.yearEndGoal || 10000);
+      const diff = target - totals.totalWealth;
+      const pct = Math.min(100, Math.max(0, Math.round((totals.totalWealth / target) * 100)));
+      document.getElementById('yearEndGoalProgressBar').style.width = pct + '%';
+      document.getElementById('yearEndGoalIstLabel').textContent = `Ist: ${formatEUR(totals.totalWealth)} / Ziel: ${formatEUR(target)}`;
+      document.getElementById('yearEndGoalPctLabel').textContent = pct + '%';
+
+      if (diff > 0) {
+        document.getElementById('yearEndGoalSubtext').textContent = `Dir fehlen noch ${formatEUR(diff)} bis zum Jahresendziel.`;
+        document.getElementById('yearEndGoalMonthsVal').textContent = `${formatEUR(Math.ceil(diff / 2))} / Monat (2 M.)`;
+      } else {
+        document.getElementById('yearEndGoalSubtext').textContent = `Glückwunsch! Jahresendziel von ${formatEUR(target)} erreicht!`;
+        document.getElementById('yearEndGoalMonthsVal').textContent = `Ziel erreicht 🎉`;
       }
 
-      const cashPlan = (appData.plans || []).find(p => p.category.toLowerCase().includes('notgroschen') || p.name.toLowerCase().includes('notgroschen'));
-      const cashVal = cashPlan ? Number(cashPlan.current || 0) : 0;
-      const monthsReserve = totals.fixedSum > 0 ? (cashVal / totals.fixedSum).toFixed(1) : '0';
-      const notgroschenEl = document.getElementById('notgroschenMonthsCount');
-      if (notgroschenEl) notgroschenEl.textContent = `${monthsReserve} Monate`;
+      document.getElementById('currentMonthBadge').textContent = formatYearMonthLabel(appData.currentMonthKey || '2026-11');
 
-      if (!appData.yearEndGoal || appData.yearEndGoal < totals.totalWealth) {
-        appData.yearEndGoal = Math.max(10000, totals.totalWealth);
-      }
-      const targetGoal = appData.yearEndGoal;
-      const missingAmount = Math.max(0, targetGoal - totals.totalWealth);
-      
-      const now = new Date();
-      const currentMonth = now.getMonth();
-      const remainingMonths = Math.max(1, 12 - currentMonth);
-      
-      const requiredMonthlySavings = totals.totalWealth >= targetGoal ? 0 : (missingAmount / remainingMonths);
-      const progressPct = targetGoal > 0 ? Math.min(100, Math.round((totals.totalWealth / targetGoal) * 100)) : 0;
-
-      const subtext = document.getElementById('yearEndGoalSubtext');
-      if (subtext) {
-        if (totals.totalWealth >= targetGoal) {
-          subtext.textContent = `Ziel von ${formatEUR(targetGoal)} bereits erreicht! 🎉`;
-        } else {
-          subtext.textContent = `Dir fehlen noch ${formatEUR(missingAmount)} bis zum Jahresendziel.`;
-        }
-      }
-
-      const goalMonthsVal = document.getElementById('yearEndGoalMonthsVal');
-      if (goalMonthsVal) {
-        if (totals.totalWealth >= targetGoal) {
-          goalMonthsVal.textContent = 'Ziel erreicht! 🎉';
-        } else {
-          goalMonthsVal.textContent = `${formatEUR(requiredMonthlySavings)} / Monat (${remainingMonths} M.)`;
-        }
-      }
-
-      const progressBar = document.getElementById('yearEndGoalProgressBar');
-      if (progressBar) progressBar.style.width = progressPct + '%';
-
-      const istLabel = document.getElementById('yearEndGoalIstLabel');
-      if (istLabel) istLabel.textContent = `Ist: ${formatEUR(totals.totalWealth)} / Ziel: ${formatEUR(targetGoal)}`;
-
-      const pctLabel = document.getElementById('yearEndGoalPctLabel');
-      if (pctLabel) pctLabel.textContent = progressPct + '%';
-
-      const monthKey = appData.currentMonthKey || getCurrentYearMonth();
-      const badge = document.getElementById('currentMonthBadge');
-      if (badge) badge.textContent = formatYearMonthLabel(monthKey);
-
-      renderAssetDistributionChart();
+      renderAssetDistributionChart(totals.totalWealth);
       renderHistoricalAssetChart();
-      renderHistoryLog();
+      renderDashboardHistory();
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      const sortableGrid = document.getElementById('sortableDashboardGrid');
-      if (!sortableGrid) return;
-
-      let draggedCard = null;
-
-      sortableGrid.addEventListener('dragstart', (e) => {
-        const card = e.target.closest('.dash-draggable-card');
-        if (!card) return;
-        draggedCard = card;
-        e.dataTransfer.effectAllowed = 'move';
-        setTimeout(() => card.classList.add('opacity-40'), 0);
-      });
-
-      sortableGrid.addEventListener('dragend', (e) => {
-        const card = e.target.closest('.dash-draggable-card');
-        if (card) card.classList.remove('opacity-40');
-        draggedCard = null;
-        saveDashboardOrder();
-      });
-
-      sortableGrid.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        const overCard = e.target.closest('.dash-draggable-card');
-        if (!overCard || overCard === draggedCard) return;
-
-        const rect = overCard.getBoundingClientRect();
-        const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
-        sortableGrid.insertBefore(draggedCard, next ? overCard.nextSibling : overCard);
-      });
-
-      loadDashboardOrder();
-    });
-
-    function saveDashboardOrder() {
-      const sortableGrid = document.getElementById('sortableDashboardGrid');
-      if (!sortableGrid) return;
-      const ids = Array.from(sortableGrid.querySelectorAll('.dash-draggable-card')).map(el => el.getAttribute('data-id'));
-      localStorage.setItem('finanzplaner_dash_order', JSON.stringify(ids));
-    }
-
-    function loadDashboardOrder() {
-      const saved = localStorage.getItem('finanzplaner_dash_order');
-      if (!saved) return;
-      try {
-        const ids = JSON.parse(saved);
-        const sortableGrid = document.getElementById('sortableDashboardGrid');
-        if (!sortableGrid) return;
-        const cardMap = {};
-        sortableGrid.querySelectorAll('.dash-draggable-card').forEach(el => {
-          cardMap[el.getAttribute('data-id')] = el;
-        });
-        ids.forEach(id => {
-          if (cardMap[id]) {
-            sortableGrid.appendChild(cardMap[id]);
-          }
-        });
-      } catch (e) {
-        console.warn("Konnte Dashboard-Reihenfolge nicht laden:", e);
-      }
-    }
-
-    function renderAssetDistributionChart() {
+    function renderAssetDistributionChart(totalWealth) {
       const ctx = document.getElementById('assetDistributionChart');
       if (!ctx) return;
-
       const labels = (appData.plans || []).map(p => p.name);
-      const dataVals = (appData.plans || []).map(p => Number(p.current || 0));
-      const colors = ['#6366f1', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#3b82f6'];
+      const data = (appData.plans || []).map(p => Number(p.current || 0));
+      const colors = ['#10b981', '#6366f1', '#f59e0b', '#ec4899', '#3b82f6', '#8b5cf6', '#14b8a6'];
 
-      if (assetDonutInstance) {
-        assetDonutInstance.data.labels = labels;
-        assetDonutInstance.data.datasets[0].data = dataVals;
-        assetDonutInstance.update();
-        return;
-      }
-
+      if (assetDonutInstance) assetDonutInstance.destroy();
       assetDonutInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
-          labels: labels.length > 0 ? labels : ['Keine Sparpläne'],
+          labels: labels,
           datasets: [{
-            data: dataVals.length > 0 ? dataVals : [1],
-            backgroundColor: dataVals.length > 0 ? colors.slice(0, dataVals.length) : ['#1e293b'],
-            borderWidth: 0
+            data: data.length ? data : [1],
+            backgroundColor: colors.slice(0, labels.length),
+            borderWidth: 0,
+            hoverOffset: 4
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              position: 'bottom',
-              labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 } }
-            }
+            legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 } } }
           },
           cutout: '70%'
         }
@@ -1088,479 +935,124 @@
       if (!ctx) return;
 
       const closedKeys = Object.keys(appData.closedMonths || {}).sort();
-      const labels = closedKeys.map(k => appData.closedMonths[k].dateLabel);
+      let labels = closedKeys.map(k => appData.closedMonths[k].dateLabel);
       labels.push('Aktuell (Live)');
 
-      const totalsData = closedKeys.map(k => Number(appData.closedMonths[k].totalWealth || 0));
-      const totalsCurrent = calculateCurrentTotals().totalWealth;
-      totalsData.push(totalsCurrent);
+      let totalWealthSeries = closedKeys.map(k => Number(appData.closedMonths[k].totalWealth || 0));
+      const currentTotals = calculateCurrentTotals();
+      totalWealthSeries.push(currentTotals.totalWealth);
 
-      const datasets = [{
-        label: 'Gesamtvermögen',
-        data: totalsData,
-        borderColor: '#10b981',
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-        borderWidth: 3,
-        fill: true,
-        tension: 0.3
-      }];
-
-      const planColors = ['#6366f1', '#f59e0b', '#ec4899', '#8b5cf6', '#3b82f6'];
-      (appData.plans || []).forEach((plan, idx) => {
-        const planVals = closedKeys.map(k => {
-          const mObj = appData.closedMonths[k];
-          return mObj.plansHistory && mObj.plansHistory[plan.id] !== undefined ? Number(mObj.plansHistory[plan.id]) : Number(plan.current || 0);
+      const planDatasets = (appData.plans || []).map((p, idx) => {
+        const palette = ['#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#10b981', '#06b6d4'];
+        const color = palette[idx % palette.length];
+        const series = closedKeys.map(k => {
+          const hist = appData.closedMonths[k].plansHistory || {};
+          return Number(hist[p.id] !== undefined ? hist[p.id] : p.current || 0);
         });
-        planVals.push(Number(plan.current || 0));
-
-        datasets.push({
-          label: plan.name,
-          data: planVals,
-          borderColor: planColors[idx % planColors.length],
-          borderWidth: 2,
+        series.push(Number(p.current || 0));
+        return {
+          label: p.name,
+          data: series,
+          borderColor: color,
+          backgroundColor: color,
           borderDash: [4, 4],
-          fill: false,
-          tension: 0.3
-        });
+          borderWidth: 2,
+          tension: 0.2,
+          hidden: false
+        };
       });
 
-      if (historicalChartInstance) {
-        historicalChartInstance.data.labels = labels;
-        historicalChartInstance.data.datasets = datasets;
-        historicalChartInstance.update();
-        return;
-      }
+      const datasets = [
+        {
+          label: 'Gesamtvermögen',
+          data: totalWealthSeries,
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.2
+        },
+        ...planDatasets
+      ];
 
+      if (historicalChartInstance) historicalChartInstance.destroy();
       historicalChartInstance = new Chart(ctx, {
         type: 'line',
-        data: { labels, datasets },
+        data: { labels: labels, datasets: datasets },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              position: 'bottom',
-              labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 } }
-            }
+            legend: { labels: { color: '#94a3b8', font: { size: 11 } } }
           },
           scales: {
-            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+            x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } }
           }
         }
       });
     }
 
-    function renderHistoryLog() {
+    function renderDashboardHistory() {
       const container = document.getElementById('dashPerformanceHistoryContainer');
       if (!container) return;
+      container.innerHTML = '';
 
       const keys = Object.keys(appData.closedMonths || {}).sort().reverse();
       if (keys.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-500 italic">Noch keine Monate abgeschlossen.</p>`;
+        container.innerHTML = '<p class="text-xs text-slate-500 italic">Noch keine Monate abgeschlossen.</p>';
         return;
       }
 
-      let html = '';
       keys.forEach(k => {
-        const item = appData.closedMonths[k];
-        html += `
-          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 space-y-3 relative group">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-white">${item.dateLabel}</span>
-              <div class="flex items-center gap-1.5">
-                <button onclick="editClosedMonthModal('${k}')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition">Bearbeiten</button>
-                <button onclick="deleteClosedMonth('${k}')" class="text-[10px] bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-2 py-1 rounded transition">Löschen</button>
-              </div>
+        const m = appData.closedMonths[k];
+        const card = document.createElement('div');
+        card.className = 'bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-3';
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-white">${m.dateLabel}</span>
+            <div class="flex items-center gap-1">
+              <button onclick="editClosedMonth('${k}')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg transition">Bearbeiten</button>
+              <button onclick="deleteClosedMonth('${k}')" class="text-[10px] bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-2.5 py-1 rounded-lg transition">Löschen</button>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-slate-800/80">
-              <div>
-                <span class="text-[10px] text-slate-400 block">Gesamtvermögen</span>
-                <span class="font-extrabold text-emerald-400">${formatEUR(item.totalWealth)}</span>
-              </div>
-              <div>
-                <span class="text-[10px] text-slate-400 block">Sparbetrag</span>
-                <span class="font-extrabold text-indigo-400">+${formatEUR(item.savings)}</span>
-              </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-slate-900">
+            <div>
+              <span class="text-slate-500 block">Gesamtvermögen</span>
+              <span class="font-extrabold text-emerald-400">${formatEUR(m.totalWealth)}</span>
+            </div>
+            <div>
+              <span class="text-slate-500 block">Sparbetrag</span>
+              <span class="font-extrabold text-indigo-400">+${formatEUR(m.savings)}</span>
             </div>
           </div>
         `;
+        container.appendChild(card);
       });
-      container.innerHTML = html;
-    }
-
-    function renderPlansList() {
-      const container = document.getElementById('plansListContainer');
-      if (!container) return;
-
-      const plans = appData.plans || [];
-      if (plans.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-500 italic">Keine Sparpläne vorhanden.</p>`;
-        return;
-      }
-
-      let html = '';
-      plans.forEach(p => {
-        html += `
-          <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <span class="text-[10px] font-semibold bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full">${p.category}</span>
-                <h4 class="font-bold text-sm text-white mt-1">${p.name}</h4>
-              </div>
-              <div class="flex gap-1">
-                <button onclick="editPlanModal('${p.id}')" class="p-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-lg text-xs">✏️</button>
-                <button onclick="deletePlan('${p.id}')" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg text-xs">🗑️</button>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-slate-800">
-              <div>
-                <span class="text-[10px] text-slate-400 block">Aktueller Wert</span>
-                <span class="font-extrabold text-emerald-400 text-sm">${formatEUR(p.current)}</span>
-              </div>
-              <div>
-                <span class="text-[10px] text-slate-400 block">Sparrate mtl.</span>
-                <span class="font-extrabold text-indigo-400 text-sm">+${formatEUR(p.monthly)}</span>
-              </div>
-            </div>
-          </div>
-        `;
-      });
-      container.innerHTML = html;
-    }
-
-    function renderIncomeAndFixed() {
-      const netInput = document.getElementById('inputNetIncome');
-      if (netInput) netInput.value = appData.netIncome || 0;
-
-      const ex13 = document.getElementById('inputExtra13');
-      if (ex13) ex13.value = appData.extra13 || 0;
-
-      const ex14 = document.getElementById('inputExtra14');
-      if (ex14) ex14.value = appData.extra14 || 0;
-
-      const t13 = document.getElementById('einnahmenExtra13Toggle');
-      if (t13) {
-        t13.innerHTML = `
-          <button onclick="toggleExtra13()" class="px-3 py-1 rounded-lg text-xs font-bold transition ${appData.extra13Claimed ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'}">
-            ${appData.extra13Claimed ? 'Aktiviert (Juli)' : 'Ausgeschaltet'}
-          </button>
-        `;
-      }
-
-      const t14 = document.getElementById('einnahmenExtra14Toggle');
-      if (t14) {
-        t14.innerHTML = `
-          <button onclick="toggleExtra14()" class="px-3 py-1 rounded-lg text-xs font-bold transition ${appData.extra14Claimed ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'}">
-            ${appData.extra14Claimed ? 'Aktiviert (Dezember)' : 'Ausgeschaltet'}
-          </button>
-        `;
-      }
-
-      const fixedContainer = document.getElementById('fixedExpensesListContainer');
-      const fixedList = appData.fixedExpenses || [];
-      let fixedHtml = '';
-      let fixedSum = 0;
-
-      if (fixedList.length === 0) {
-        fixedHtml = `<p class="text-xs text-slate-500 italic">Keine Fixkosten erfasst.</p>`;
-      } else {
-        fixedList.forEach(f => {
-          fixedSum += Number(f.amount || 0);
-          fixedHtml += `
-            <div class="flex items-center justify-between bg-slate-950/70 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs">
-              <span class="font-medium text-white">${f.name}</span>
-              <div class="flex items-center gap-3">
-                <span class="font-extrabold text-rose-400">${formatEUR(f.amount)}</span>
-                <button onclick="deleteFixedExpense('${f.id}')" class="text-rose-400 hover:text-rose-300">✕</button>
-              </div>
-            </div>
-          `;
-        });
-      }
-      if (fixedContainer) fixedContainer.innerHTML = fixedHtml;
-      const totalFixedDisp = document.getElementById('totalFixedDisplay');
-      if (totalFixedDisp) totalFixedDisp.textContent = formatEUR(fixedSum);
-
-      const varContainer = document.getElementById('variableBudgetsListContainer');
-      const varList = appData.variableBudgets || [];
-      let varHtml = '';
-      let varSum = 0;
-      if (varList.length === 0) {
-        varHtml = `<p class="text-xs text-slate-500 italic">Keine variablen Budgets erfasst.</p>`;
-      } else {
-        varList.forEach(b => {
-          varSum += Number(b.amount || 0);
-          varHtml += `
-            <div class="flex items-center justify-between bg-slate-950/70 border border-slate-800 rounded-xl px-3.5 py-2 text-xs">
-              <span class="font-medium text-white">${b.name}</span>
-              <div class="flex items-center gap-3">
-                <span class="font-extrabold text-amber-400">${formatEUR(b.amount)}</span>
-                <button onclick="deleteVariableBudget('${b.id}')" class="text-rose-400 hover:text-rose-300">✕</button>
-              </div>
-            </div>
-          `;
-        });
-      }
-      if (varContainer) varContainer.innerHTML = varHtml;
-      const totVarDisp = document.getElementById('totalVariableBudgetsDisplay');
-      if (totVarDisp) totVarDisp.textContent = formatEUR(varSum);
-
-      const dailyList = appData.dailyExpenses || [];
-      const dailyContainer = document.getElementById('dailyExpensesListContainer');
-      const dailyCountLabel = document.getElementById('expenseCountLabel');
-      const spentDisp = document.getElementById('variableSpentDisplay');
-      const restgeldDisp = document.getElementById('variableRestgeldDisplay');
-
-      let dailySum = 0;
-      let dailyHtml = '';
-      if (dailyList.length === 0) {
-        dailyHtml = `<p class="text-xs text-slate-500 italic py-1">Noch keine Einkäufe diesen Monat erfasst.</p>`;
-      } else {
-        dailyList.forEach((e, idx) => {
-          dailySum += Number(e.amount || 0);
-          dailyHtml += `
-            <div class="flex items-center justify-between bg-slate-950 border border-slate-800/80 rounded-xl px-3 py-2 text-xs">
-              <div>
-                <span class="font-bold text-white">${e.title}</span>
-                <span class="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded ml-2">${e.category}</span>
-              </div>
-              <div class="flex items-center gap-3">
-                <span class="font-extrabold text-amber-400">-${formatEUR(e.amount)}</span>
-                <button onclick="deleteDailyExpense(${idx})" class="text-rose-400 hover:text-rose-300">✕</button>
-              </div>
-            </div>
-          `;
-        });
-      }
-      if (dailyContainer) dailyContainer.innerHTML = dailyHtml;
-      if (dailyCountLabel) dailyCountLabel.textContent = `${dailyList.length} Ausgaben`;
-      if (spentDisp) spentDisp.textContent = formatEUR(dailySum);
-
-      const totals = calculateCurrentTotals();
-      if (restgeldDisp) {
-        restgeldDisp.textContent = formatEUR(totals.restgeldVariable);
-        restgeldDisp.className = `text-2xl lg:text-3xl font-extrabold ${totals.restgeldVariable >= 0 ? 'text-amber-400' : 'text-rose-500'}`;
-      }
-    }
-
-    window.updateIncomeValues = function() {
-      appData.netIncome = Number(document.getElementById('inputNetIncome')?.value || 0);
-      appData.extra13 = Number(document.getElementById('inputExtra13')?.value || 0);
-      appData.extra14 = Number(document.getElementById('inputExtra14')?.value || 0);
-      saveState();
-    }
-
-    window.toggleExtra13 = function() {
-      appData.extra13Claimed = !appData.extra13Claimed;
-      saveState();
-    }
-
-    window.toggleExtra14 = function() {
-      appData.extra14Claimed = !appData.extra14Claimed;
-      saveState();
-    }
-
-    function initSimDefaultsFromPlans() {
-      const investPlans = (appData.plans || []).filter(p => !p.category.toLowerCase().includes('notgroschen'));
-      const cashPlans = (appData.plans || []).filter(p => p.category.toLowerCase().includes('notgroschen') || p.name.toLowerCase().includes('notgroschen'));
-
-      const startInvest = investPlans.reduce((acc, p) => acc + Number(p.current || 0), 0);
-      const monthlyInvest = investPlans.reduce((acc, p) => acc + Number(p.monthly || 0), 0);
-
-      const startCash = cashPlans.reduce((acc, p) => acc + Number(p.current || 0), 0);
-      const monthlyCash = cashPlans.reduce((acc, p) => acc + Number(p.monthly || 0), 0);
-
-      if (document.getElementById('simStartInvest')) document.getElementById('simStartInvest').value = startInvest;
-      if (document.getElementById('simMonthlyInvest')) document.getElementById('simMonthlyInvest').value = monthlyInvest;
-      if (document.getElementById('simStartCash')) document.getElementById('simStartCash').value = startCash;
-      if (document.getElementById('simMonthlyCash')) document.getElementById('simMonthlyCash').value = monthlyCash;
-
-      updateSimLabels();
-    }
-
-    window.updateSimFromUI = function() {
-      updateSimLabels();
-      renderForecastChart();
-    }
-
-    function updateSimLabels() {
-      const sInvest = Number(document.getElementById('simStartInvest')?.value || 0);
-      const mInvest = Number(document.getElementById('simMonthlyInvest')?.value || 0);
-      const ret = Number(document.getElementById('simReturn')?.value || 7);
-      const sCash = Number(document.getElementById('simStartCash')?.value || 0);
-      const mCash = Number(document.getElementById('simMonthlyCash')?.value || 0);
-      const years = Number(document.getElementById('simYears')?.value || 20);
-      const incSpecial = document.getElementById('simIncludeSpecial')?.checked || false;
-
-      if (document.getElementById('lblSimStartInvest')) document.getElementById('lblSimStartInvest').textContent = formatEUR(sInvest);
-      if (document.getElementById('lblSimMonthlyInvest')) document.getElementById('lblSimMonthlyInvest').textContent = formatEUR(mInvest);
-      if (document.getElementById('lblSimReturn')) document.getElementById('lblSimReturn').textContent = ret.toFixed(1) + ' %';
-      if (document.getElementById('lblSimStartCash')) document.getElementById('lblSimStartCash').textContent = formatEUR(sCash);
-      if (document.getElementById('lblSimMonthlyCash')) document.getElementById('lblSimMonthlyCash').textContent = formatEUR(mCash);
-      if (document.getElementById('lblSimYears')) document.getElementById('lblSimYears').textContent = years + ' Jahre';
-      if (document.getElementById('lblSimSpecialStatus')) document.getElementById('lblSimSpecialStatus').textContent = incSpecial ? 'Aktiv' : 'Inaktiv';
-    }
-
-    function renderForecastChart() {
-      const ctx = document.getElementById('forecastChart');
-      if (!ctx) return;
-
-      const sInvest = Number(document.getElementById('simStartInvest')?.value || 0);
-      const mInvest = Number(document.getElementById('simMonthlyInvest')?.value || 0);
-      const retAnnual = Number(document.getElementById('simReturn')?.value || 7) / 100;
-      const monthlyRate = retAnnual / 12;
-
-      const sCash = Number(document.getElementById('simStartCash')?.value || 0);
-      const mCash = Number(document.getElementById('simMonthlyCash')?.value || 0);
-      const years = Number(document.getElementById('simYears')?.value || 20);
-      const incSpecial = document.getElementById('simIncludeSpecial')?.checked || false;
-
-      const extra13Val = Number(appData.extra13 || 3137);
-      const extra14Val = Number(appData.extra14 || 3100);
-
-      const labels = ['Jahr 0'];
-      const wealthData = [sInvest + sCash];
-      const investData = [sInvest];
-      const cashData = [sCash];
-
-      let currentInvest = sInvest;
-      let currentCash = sCash;
-      let totalContributed = sInvest + sCash;
-
-      for (let y = 1; y <= years; y++) {
-        labels.push(`Jahr ${y}`);
-        for (let m = 1; m <= 12; m++) {
-          currentInvest += mInvest;
-          currentCash += mCash;
-          totalContributed += (mInvest + mCash);
-
-          if (incSpecial) {
-            if (m === 7) {
-              currentInvest += (extra13Val / 2);
-              currentCash += (extra13Val / 2);
-              totalContributed += extra13Val;
-            }
-            if (m === 12) {
-              currentInvest += (extra14Val / 2);
-              currentCash += (extra14Val / 2);
-              totalContributed += extra14Val;
-            }
-          }
-
-          currentInvest *= (1 + monthlyRate);
-        }
-        wealthData.push(Math.round(currentInvest + currentCash));
-        investData.push(Math.round(currentInvest));
-        cashData.push(Math.round(currentCash));
-      }
-
-      const finalWealth = wealthData[wealthData.length - 1];
-      const finalCash = cashData[cashData.length - 1];
-      const interestEarned = finalWealth - totalContributed;
-
-      if (document.getElementById('simTotalContributed')) document.getElementById('simTotalContributed').textContent = formatEUR(totalContributed);
-      if (document.getElementById('simTotalInterest')) document.getElementById('simTotalInterest').textContent = '+' + formatEUR(interestEarned);
-      if (document.getElementById('simTotalCash')) document.getElementById('simTotalCash').textContent = formatEUR(finalCash);
-      if (document.getElementById('simTotalWealth')) document.getElementById('simTotalWealth').textContent = formatEUR(finalWealth);
-
-      if (forecastChartInstance) {
-        forecastChartInstance.data.labels = labels;
-        forecastChartInstance.data.datasets[0].data = wealthData;
-        forecastChartInstance.data.datasets[1].data = investData;
-        forecastChartInstance.data.datasets[2].data = cashData;
-        forecastChartInstance.update();
-        return;
-      }
-
-      forecastChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [
-            { label: 'Gesamtvermögen', data: wealthData, borderColor: '#10b981', borderWidth: 3, tension: 0.3, fill: false },
-            { label: 'Investments (Verzinst)', data: investData, borderColor: '#6366f1', borderWidth: 2, tension: 0.3, fill: false },
-            { label: 'Notgroschen / Cash (0%)', data: cashData, borderColor: '#f59e0b', borderWidth: 2, tension: 0.3, fill: false }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 } }
-            }
-          },
-          scales: {
-            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }
-          }
-        }
-      });
-    }
-
-    window.closeModal = function() {
-      document.getElementById('customModal')?.classList.add('hidden');
     }
 
     window.confirmCloseCurrentMonth = function() {
-      const modal = document.getElementById('customModal');
-      const title = document.getElementById('modalTitle');
-      const body = document.getElementById('modalBody');
-      const saveBtn = document.getElementById('modalSaveBtn');
-      if (!modal || !title || !body || !saveBtn) return;
-
-      title.textContent = "Aktuellen Monat abschließen?";
-      body.innerHTML = `<p class="text-xs text-slate-300">Dadurch wird der aktuelle Monat in der Historie gesichert und der verbleibende Puffer in den Notgroschen übertragen.</p>`;
-      saveBtn.textContent = "Jetzt abschließen";
-      saveBtn.onclick = function() {
-        executeCloseCurrentMonth();
-        closeModal();
-      };
-      modal.classList.remove('hidden');
-    }
-
-    function executeCloseCurrentMonth() {
-      const monthKey = appData.currentMonthKey || getCurrentYearMonth();
+      const key = appData.currentMonthKey || '2026-11';
+      const label = formatYearMonthLabel(key);
       const totals = calculateCurrentTotals();
 
       appData.lastBackupState = JSON.parse(JSON.stringify(appData));
 
-      if (totals.availableBuffer > 0) {
-        const cashPlan = (appData.plans || []).find(p => p.category.toLowerCase().includes('notgroschen') || p.name.toLowerCase().includes('notgroschen'));
-        if (cashPlan) {
-          cashPlan.current = Number(cashPlan.current || 0) + totals.availableBuffer;
-        }
-      }
-
-      (appData.plans || []).forEach(p => {
-        p.current = Number(p.current || 0) + Number(p.monthly || 0);
-      });
-
-      const updatedTotals = calculateCurrentTotals();
-
+      if (!appData.closedMonths) appData.closedMonths = {};
       const plansHistory = {};
       (appData.plans || []).forEach(p => {
         plansHistory[p.id] = Number(p.current || 0);
       });
 
-      appData.closedMonths = appData.closedMonths || {};
-      appData.closedMonths[monthKey] = {
-        dateLabel: formatYearMonthLabel(monthKey),
-        totalWealth: updatedTotals.totalWealth,
-        savings: updatedTotals.savingsRate,
+      appData.closedMonths[key] = {
+        dateLabel: label,
+        totalWealth: totals.totalWealth,
+        savings: totals.savingsRate,
         plansHistory: plansHistory
       };
 
-      const [y, m] = monthKey.split('-').map(Number);
-      let nextY = y, nextM = m + 1;
-      if (nextM > 12) { nextM = 1; nextY++; }
-      appData.currentMonthKey = `${nextY}-${String(nextM).padStart(2, '0')}`;
-      appData.dailyExpenses = [];
-
       saveState();
-      showNotification("Monat erfolgreich abgeschlossen!");
+      showNotification(`Monat ${label} erfolgreich abgeschlossen!`);
     }
 
     window.undoLastMonthClose = function() {
@@ -1568,254 +1060,366 @@
         showNotification("Kein vorheriger Stand zum Wiederherstellen vorhanden.");
         return;
       }
+      const currentMonthKey = appData.currentMonthKey || '2026-11';
       appData = JSON.parse(JSON.stringify(appData.lastBackupState));
       appData.lastBackupState = null;
+      appData.currentMonthKey = currentMonthKey;
+
+      if (appData.closedMonths && appData.closedMonths[currentMonthKey]) {
+        delete appData.closedMonths[currentMonthKey];
+      }
       saveState();
-      showNotification("Letzter Monatsabschluss wurde rückgängig gemacht.");
+      showNotification("Monatsabschluss erfolgreich rückgängig gemacht.");
     }
 
-    window.editYearEndGoalModal = function() {
-      const modal = document.getElementById('customModal');
-      const title = document.getElementById('modalTitle');
-      const body = document.getElementById('modalBody');
-      const saveBtn = document.getElementById('modalSaveBtn');
-      if (!modal || !title || !body || !saveBtn) return;
-
-      const totals = calculateCurrentTotals();
-      const currentGoal = appData.yearEndGoal || Math.max(10000, totals.totalWealth);
-      title.textContent = "Jahresend-Ziel anpassen";
-      body.innerHTML = `
-        <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">Ziel-Vermögen am 31.12. (€)</label>
-          <input type="number" id="modalGoalInput" value="${currentGoal}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-        </div>
-      `;
-      saveBtn.textContent = "Speichern";
-      saveBtn.onclick = function() {
-        const val = Number(document.getElementById('modalGoalInput')?.value || 10000);
-        appData.yearEndGoal = val;
+    window.deleteClosedMonth = function(k) {
+      if (appData.closedMonths && appData.closedMonths[k]) {
+        delete appData.closedMonths[k];
         saveState();
-        closeModal();
-        showNotification("Jahresend-Ziel aktualisiert!");
-      };
-      modal.classList.remove('hidden');
-    }
-
-    window.editClosedMonthModal = function(key) {
-      const modal = document.getElementById('customModal');
-      const title = document.getElementById('modalTitle');
-      const body = document.getElementById('modalBody');
-      const saveBtn = document.getElementById('modalSaveBtn');
-      if (!modal || !title || !body || !saveBtn) return;
-
-      const item = appData.closedMonths[key];
-      let plansFields = '';
-      (appData.plans || []).forEach(p => {
-        const val = item.plansHistory && item.plansHistory[p.id] !== undefined ? item.plansHistory[p.id] : p.current;
-        plansFields += `
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">${p.name} (€)</label>
-            <input type="number" data-plan-id="${p.id}" class="modal-plan-input w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" value="${val}">
-          </div>
-        `;
-      });
-
-      title.textContent = `Monat bearbeiten: ${item.dateLabel}`;
-      body.innerHTML = `
-        <div class="space-y-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Sparbetrag (€)</label>
-            <input type="number" id="modalMonthSavings" value="${item.savings}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-          </div>
-          ${plansFields}
-        </div>
-      `;
-      saveBtn.textContent = "Speichern";
-      saveBtn.onclick = function() {
-        item.savings = Number(document.getElementById('modalMonthSavings')?.value || 0);
-        item.plansHistory = item.plansHistory || {};
-        let newTotal = 0;
-        document.querySelectorAll('.modal-plan-input').forEach(inp => {
-          const pid = inp.getAttribute('data-plan-id');
-          const pval = Number(inp.value || 0);
-          item.plansHistory[pid] = pval;
-          newTotal += pval;
-        });
-        item.totalWealth = newTotal;
-        saveState();
-        closeModal();
-        showNotification("Monatseintrag aktualisiert!");
-      };
-      modal.classList.remove('hidden');
-    }
-
-    window.deleteClosedMonth = function(key) {
-      if (appData.closedMonths && appData.closedMonths[key]) {
-        delete appData.closedMonths[key];
-        saveState();
-        showNotification("Monatseintrag gelöscht.");
+        showNotification("Monat aus Historie gelöscht.");
       }
     }
 
-    window.addNewPlanModal = function() {
-      const modal = document.getElementById('customModal');
-      const title = document.getElementById('modalTitle');
-      const body = document.getElementById('modalBody');
-      const saveBtn = document.getElementById('modalSaveBtn');
-      if (!modal || !title || !body || !saveBtn) return;
+    function renderPlansList() {
+      const container = document.getElementById('plansListContainer');
+      if (!container) return;
+      container.innerHTML = '';
 
-      title.textContent = "Neuen Sparplan anlegen";
-      body.innerHTML = `
-        <div class="space-y-3">
+      (appData.plans || []).forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-4 flex flex-col justify-between';
+        card.innerHTML = `
           <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Name</label>
-            <input type="text" id="modalPlanName" placeholder="z. B. Tagesgeldkonto" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+            <div class="flex items-center justify-between mb-1">
+              <h4 class="font-bold text-sm text-white">${p.name}</h4>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">${p.category}</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-900 text-xs">
+              <div>
+                <span class="text-slate-500 block">Aktueller Stand</span>
+                <span class="font-extrabold text-emerald-400 text-sm">${formatEUR(p.current)}</span>
+              </div>
+              <div>
+                <span class="text-slate-500 block">Mtl. Sparrate</span>
+                <span class="font-extrabold text-indigo-400 text-sm">${formatEUR(p.monthly)}</span>
+              </div>
+            </div>
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Kategorie</label>
-            <input type="text" id="modalPlanCategory" placeholder="z. B. ETF, Notgroschen" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+          <div class="flex items-center gap-2 pt-2">
+            <button onclick="editPlanModal('${p.id}')" class="flex-1 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold text-xs rounded-xl transition">Bearbeiten</button>
+            <button onclick="deletePlan('${p.id}')" class="p-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-xl transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Aktueller Wert (€)</label>
-            <input type="number" id="modalPlanCurrent" value="1000" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Sparrate mtl. (€)</label>
-            <input type="number" id="modalPlanMonthly" value="100" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-          </div>
-        </div>
-      `;
-      saveBtn.textContent = "Anlegen";
-      saveBtn.onclick = function() {
-        const name = document.getElementById('modalPlanName')?.value || 'Neuer Plan';
-        const category = document.getElementById('modalPlanCategory')?.value || 'Allgemein';
-        const current = Number(document.getElementById('modalPlanCurrent')?.value || 0);
-        const monthly = Number(document.getElementById('modalPlanMonthly')?.value || 0);
-
-        appData.plans = appData.plans || [];
-        appData.plans.push({ id: 'p_' + Date.now(), name, category, current, monthly });
-        saveState();
-        closeModal();
-        showNotification("Sparplan erfolgreich angelegt!");
-      };
-      modal.classList.remove('hidden');
+        `;
+        container.appendChild(card);
+      });
     }
 
-    window.editPlanModal = function(id) {
-      const plan = (appData.plans || []).find(p => p.id === id);
-      if (!plan) return;
+    function renderIncomeAndFixed() {
+      const netInput = document.getElementById('inputNetIncome');
+      if (netInput) netInput.value = appData.netIncome || 0;
 
-      const modal = document.getElementById('customModal');
-      const title = document.getElementById('modalTitle');
-      const body = document.getElementById('modalBody');
-      const saveBtn = document.getElementById('modalSaveBtn');
-      if (!modal || !title || !body || !saveBtn) return;
+      const extra13Input = document.getElementById('inputExtra13');
+      if (extra13Input) extra13Input.value = appData.extra13 || 0;
 
-      title.textContent = `Sparplan bearbeiten: ${plan.name}`;
-      body.innerHTML = `
-        <div class="space-y-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Name</label>
-            <input type="text" id="modalEditPlanName" value="${plan.name}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Aktueller Wert (€)</label>
-            <input type="number" id="modalEditPlanCurrent" value="${plan.current}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Sparrate mtl. (€)</label>
-            <input type="number" id="modalEditPlanMonthly" value="${plan.monthly}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-          </div>
-        </div>
-      `;
-      saveBtn.textContent = "Speichern";
-      saveBtn.onclick = function() {
-        plan.name = document.getElementById('modalEditPlanName')?.value || plan.name;
-        plan.current = Number(document.getElementById('modalEditPlanCurrent')?.value || 0);
-        plan.monthly = Number(document.getElementById('modalEditPlanMonthly')?.value || 0);
-        saveState();
-        closeModal();
-        showNotification("Sparplan aktualisiert!");
-      };
-      modal.classList.remove('hidden');
+      const extra14Input = document.getElementById('inputExtra14');
+      if (extra14Input) extra14Input.value = appData.extra14 || 0;
+
+      const t13 = document.getElementById('einnahmenExtra13Toggle');
+      if (t13) {
+        t13.innerHTML = `
+          <button onclick="toggleExtraSalary(13)" class="px-3 py-1 rounded-lg text-xs font-bold transition ${appData.extra13Claimed ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'}">
+            ${appData.extra13Claimed ? 'Aktiviert (+ ' + formatEUR(appData.extra13) + ')' : 'Inaktiv'}
+          </button>
+        `;
+      }
+
+      const t14 = document.getElementById('einnahmenExtra14Toggle');
+      if (t14) {
+        t14.innerHTML = `
+          <button onclick="toggleExtraSalary(14)" class="px-3 py-1 rounded-lg text-xs font-bold transition ${appData.extra14Claimed ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'}">
+            ${appData.extra14Claimed ? 'Aktiviert (+ ' + formatEUR(appData.extra14) + ')' : 'Inaktiv'}
+          </button>
+        `;
+      }
+
+      const fixContainer = document.getElementById('fixedExpensesListContainer');
+      if (fixContainer) {
+        fixContainer.innerHTML = '';
+        let totalFix = 0;
+        (appData.fixedExpenses || []).forEach(f => {
+          totalFix += Number(f.amount || 0);
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between bg-slate-950/70 border border-slate-800 rounded-xl px-4 py-3';
+          row.innerHTML = `
+            <div>
+              <span class="font-bold text-xs text-white block">${f.name}</span>
+              <span class="text-xs font-extrabold text-rose-400">${formatEUR(f.amount)}/M.</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="editFixedExpenseModal('${f.id}')" class="p-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-lg text-xs">Bearbeiten</button>
+              <button onclick="deleteFixedExpense('${f.id}')" class="p-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-lg text-xs">Löschen</button>
+            </div>
+          `;
+          fixContainer.appendChild(row);
+        });
+        document.getElementById('totalFixedDisplay').textContent = formatEUR(totalFix);
+      }
+
+      const totals = calculateCurrentTotals();
+      document.getElementById('variableRestgeldDisplay').textContent = formatEUR(totals.restgeldVariable);
+      document.getElementById('variableSpentDisplay').textContent = formatEUR(totals.dailySpent);
+
+      const dailyContainer = document.getElementById('dailyExpensesListContainer');
+      if (dailyContainer) {
+        dailyContainer.innerHTML = '';
+        const list = appData.dailyExpenses || [];
+        document.getElementById('expenseCountLabel').textContent = `${list.length} Ausgaben`;
+        if (list.length === 0) {
+          dailyContainer.innerHTML = '<p class="text-xs text-slate-500 italic py-1">Noch keine Einkäufe diesen Monat erfasst.</p>';
+        } else {
+          list.forEach((e, idx) => {
+            const item = document.createElement('div');
+            item.className = 'flex items-center justify-between bg-slate-950/70 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs';
+            item.innerHTML = `
+              <div>
+                <span class="font-bold text-white block">${e.title}</span>
+                <span class="text-[10px] text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full inline-block mt-0.5">${e.category || 'Sonstiges'}</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="font-extrabold text-amber-400">${formatEUR(e.amount)}</span>
+                <button onclick="deleteDailyExpense(${idx})" class="text-rose-400 hover:text-rose-300">✕</button>
+              </div>
+            `;
+            dailyContainer.appendChild(item);
+          });
+        }
+      }
     }
 
-    window.deletePlan = function(id) {
-      appData.plans = (appData.plans || []).filter(p => p.id !== id);
+    window.updateIncomeValues = function() {
+      appData.netIncome = Number(document.getElementById('inputNetIncome').value || 0);
+      appData.extra13 = Number(document.getElementById('inputExtra13').value || 0);
+      appData.extra14 = Number(document.getElementById('inputExtra14').value || 0);
       saveState();
-      showNotification("Sparplan gelöscht.");
     }
 
-    window.addFixedExpense = function() {
-      const name = prompt("Name der Fixausgabe:");
-      if (!name) return;
-      const amount = Number(prompt("Monatlicher Betrag (€):") || 0);
-      appData.fixedExpenses = appData.fixedExpenses || [];
-      appData.fixedExpenses.push({ id: 'f_' + Date.now(), name, amount });
-      saveState();
-    }
-
-    window.deleteFixedExpense = function(id) {
-      appData.fixedExpenses = (appData.fixedExpenses || []).filter(f => f.id !== id);
-      saveState();
-    }
-
-    window.addVariableBudgetModal = function() {
-      const name = prompt("Name des variablen Budgets:");
-      if (!name) return;
-      const amount = Number(prompt("Monatliches Budget (€):") || 0);
-      appData.variableBudgets = appData.variableBudgets || [];
-      appData.variableBudgets.push({ id: 'vb_' + Date.now(), name, amount });
-      saveState();
-    }
-
-    window.deleteVariableBudget = function(id) {
-      appData.variableBudgets = (appData.variableBudgets || []).filter(b => b.id !== id);
+    window.toggleExtraSalary = function(num) {
+      if (num === 13) appData.extra13Claimed = !appData.extra13Claimed;
+      if (num === 14) appData.extra14Claimed = !appData.extra14Claimed;
       saveState();
     }
 
     window.addDailyExpense = function() {
-      const titleInput = document.getElementById('expenseTitle');
-      const amountInput = document.getElementById('expenseAmount');
-      const catSelect = document.getElementById('expenseCategory');
+      const title = document.getElementById('expenseTitle').value.trim();
+      const amount = Number(document.getElementById('expenseAmount').value);
+      const category = document.getElementById('expenseCategory').value;
 
-      const title = titleInput?.value.trim();
-      const amount = Number(amountInput?.value || 0);
-      const category = catSelect?.value || 'Sonstiges';
-
-      if (!title || amount <= 0) {
+      if (!title || !amount || amount <= 0) {
         showNotification("Bitte Titel und gültigen Betrag eingeben.");
         return;
       }
 
-      appData.dailyExpenses = appData.dailyExpenses || [];
+      if (!appData.dailyExpenses) appData.dailyExpenses = [];
       appData.dailyExpenses.push({ title, amount, category });
-
-      if (titleInput) titleInput.value = '';
-      if (amountInput) amountInput.value = '';
+      document.getElementById('expenseTitle').value = '';
+      document.getElementById('expenseAmount').value = '';
 
       saveState();
-      showNotification("Ausgabe gebucht!");
+      showNotification("Ausgabe erfolgreich gebucht!");
     }
 
     window.deleteDailyExpense = function(idx) {
-      if (appData.dailyExpenses && appData.dailyExpenses[idx] !== undefined) {
+      if (appData.dailyExpenses && appData.dailyExpenses[idx]) {
         appData.dailyExpenses.splice(idx, 1);
         saveState();
       }
     }
 
-    window.exportDataJSON = function() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
-      const dlAnchor = document.createElement('a');
-      dlAnchor.setAttribute("href", dataStr);
-      dlAnchor.setAttribute("download", "finanz_vermoegensplaner_backup.json");
-      document.body.appendChild(dlAnchor);
-      dlAnchor.click();
-      dlAnchor.remove();
+    function renderExpenseCategoryChart() {
+      const ctx = document.getElementById('expenseCategoryChart');
+      const chartWrapper = document.getElementById('expenseChartWrapper');
+      const emptyState = document.getElementById('expenseChartEmptyState');
+      if (!ctx || !chartWrapper || !emptyState) return;
+
+      const expenses = appData.dailyExpenses || [];
+      if (expenses.length === 0) {
+        chartWrapper.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        if (expenseCategoryChartInstance) {
+          expenseCategoryChartInstance.destroy();
+          expenseCategoryChartInstance = null;
+        }
+        return;
+      }
+
+      chartWrapper.classList.remove('hidden');
+      emptyState.classList.add('hidden');
+
+      const catTotals = {};
+      expenses.forEach(e => {
+        const cat = e.category || 'Sonstiges';
+        catTotals[cat] = (catTotals[cat] || 0) + Number(e.amount || 0);
+      });
+
+      const categories = Object.keys(catTotals);
+      const dataValues = categories.map(c => catTotals[c]);
+      const palette = ['#f59e0b', '#ec4899', '#6366f1', '#10b981', '#3b82f6', '#8b5cf6', '#14b8a6', '#64748b'];
+      const colors = categories.map((_, i) => palette[i % palette.length]);
+
+      if (expenseCategoryChartInstance) expenseCategoryChartInstance.destroy();
+      expenseCategoryChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: categories,
+          datasets: [{
+            data: dataValues,
+            backgroundColor: colors,
+            borderWidth: 0,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } }
+          },
+          cutout: '65%'
+        }
+      });
     }
 
-    function showNotification(msg) {
+    function initSimDefaultsFromPlans() {
+      const totals = calculateCurrentTotals();
+      const totalInvest = (appData.plans || []).filter(p => p.category !== 'Notgroschen').reduce((a, b) => a + Number(b.current || 0), 0);
+      const mtlInvest = (appData.plans || []).filter(p => p.category !== 'Notgroschen').reduce((a, b) => a + Number(b.monthly || 0), 0);
+      const notgroschenPlan = (appData.plans || []).find(p => p.category === 'Notgroschen');
+      const notgroschenVal = notgroschenPlan ? Number(notgroschenPlan.current || 0) : 2200;
+
+      document.getElementById('simStartInvest').value = totalInvest || 7000;
+      document.getElementById('simMonthlyInvest').value = mtlInvest || 400;
+      document.getElementById('simStartCash').value = notgroschenVal;
+      updateSimFromUI();
+    }
+
+    window.updateSimFromUI = function() {
+      const startInv = Number(document.getElementById('simStartInvest').value);
+      const mtlInv = Number(document.getElementById('simMonthlyInvest').value);
+      const retRate = Number(document.getElementById('simReturn').value);
+      const startCash = Number(document.getElementById('simStartCash').value);
+      const mtlCash = Number(document.getElementById('simMonthlyCash').value);
+      const years = Number(document.getElementById('simYears').value);
+      const includeSpecial = document.getElementById('simIncludeSpecial').checked;
+
+      document.getElementById('lblSimStartInvest').textContent = formatEUR(startInv);
+      document.getElementById('lblSimMonthlyInvest').textContent = formatEUR(mtlInv) + ' /M.';
+      document.getElementById('lblSimReturn').textContent = retRate.toFixed(1) + ' %';
+      document.getElementById('lblSimStartCash').textContent = formatEUR(startCash);
+      document.getElementById('lblSimMonthlyCash').textContent = formatEUR(mtlCash) + ' /M.';
+      document.getElementById('lblSimYears').textContent = years + ' Jahre';
+      document.getElementById('lblSimSpecialStatus').textContent = includeSpecial ? 'Aktiv' : 'Inaktiv';
+
+      let labels = ['Heute'];
+      let invSeries = [startInv];
+      let cashSeries = [startCash];
+      let totalSeries = [startInv + startCash];
+
+      let curInv = startInv;
+      let curCash = startCash;
+      let totalContributed = startInv + startCash;
+
+      const mRate = retRate / 100 / 12;
+
+      for (let y = 1; y <= years; y++) {
+        for (let m = 1; m <= 12; m++) {
+          curInv = curInv * (1 + mRate) + mtlInv;
+          curCash += mtlCash;
+          totalContributed += mtlInv + mtlCash;
+
+          if (includeSpecial && (m === 7)) {
+            curInv += Number(appData.extra13 || 3137);
+            totalContributed += Number(appData.extra13 || 3137);
+          }
+          if (includeSpecial && (m === 12)) {
+            curInv += Number(appData.extra14 || 3100);
+            totalContributed += Number(appData.extra14 || 3100);
+          }
+        }
+        labels.push(`Jahr ${y}`);
+        invSeries.push(Math.round(curInv));
+        cashSeries.push(Math.round(curCash));
+        totalSeries.push(Math.round(curInv + curCash));
+      }
+
+      const finalTotal = curInv + curCash;
+      const finalInterest = finalTotal - totalContributed;
+
+      document.getElementById('simTotalContributed').textContent = formatEUR(totalContributed);
+      document.getElementById('simTotalInterest').textContent = '+' + formatEUR(finalInterest);
+      document.getElementById('simTotalCash').textContent = formatEUR(curCash);
+      document.getElementById('simTotalWealth').textContent = formatEUR(finalTotal);
+
+      const ctx = document.getElementById('forecastChart');
+      if (!ctx) return;
+
+      if (forecastChartInstance) forecastChartInstance.destroy();
+      forecastChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Gesamtvermögen',
+              data: totalSeries,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              fill: true,
+              borderWidth: 3,
+              tension: 0.2
+            },
+            {
+              label: 'Verzinstes Kapital (ETF/Invest)',
+              data: invSeries,
+              borderColor: '#6366f1',
+              borderWidth: 2,
+              tension: 0.2
+            },
+            {
+              label: 'Notgroschen / Cash',
+              data: cashSeries,
+              borderColor: '#f59e0b',
+              borderWidth: 2,
+              tension: 0.2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#94a3b8', font: { size: 11 } } }
+          },
+          scales: {
+            x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+          }
+        }
+      });
+    }
+
+    function renderForecastChart() {
+      if (document.getElementById('tab-prognose') && !document.getElementById('tab-prognose').classList.contains('hidden')) {
+        updateSimFromUI();
+      }
+    }
+
+    window.closeModal = function() {
+      document.getElementById('customModal').classList.add('hidden');
+    }
+
+    window.showNotification = function(msg) {
       const box = document.getElementById('customNotificationBox');
       if (!box) return;
       box.textContent = msg;
@@ -1827,7 +1431,186 @@
       }, 3000);
     }
 
-    window.addEventListener('load', () => {
+    window.editYearEndGoalModal = function() {
+      const modal = document.getElementById('customModal');
+      document.getElementById('modalTitle').textContent = 'Jahresend-Ziel anpassen';
+      document.getElementById('modalBody').innerHTML = `
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Neues Ziel (€)</label>
+          <input type="number" id="modalGoalInput" value="${appData.yearEndGoal || 10000}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+        </div>
+      `;
+      document.getElementById('modalSaveBtn').onclick = function() {
+        appData.yearEndGoal = Number(document.getElementById('modalGoalInput').value || 10000);
+        saveState();
+        closeModal();
+        showNotification("Ziel erfolgreich aktualisiert!");
+      };
+      modal.classList.remove('hidden');
+    }
+
+    window.addNewPlanModal = function() {
+      const modal = document.getElementById('customModal');
+      document.getElementById('modalTitle').textContent = 'Neuen Sparplan anlegen';
+      document.getElementById('modalBody').innerHTML = `
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Name</label>
+            <input type="text" id="modalPlanName" placeholder="z. B. Krypto, Tagesgeld" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Kategorie</label>
+            <select id="modalPlanCat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+              <option value="ETF">ETF</option>
+              <option value="Notgroschen">Notgroschen</option>
+              <option value="Edelmetall">Edelmetall</option>
+              <option value="Freizeit">Freizeit</option>
+              <option value="Sonstiges">Sonstiges</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Aktueller Stand (€)</label>
+            <input type="number" id="modalPlanCur" value="0" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Mtl. Sparrate (€)</label>
+            <input type="number" id="modalPlanMtl" value="0" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+      `;
+      document.getElementById('modalSaveBtn').onclick = function() {
+        const name = document.getElementById('modalPlanName').value.trim();
+        const category = document.getElementById('modalPlanCat').value;
+        const current = Number(document.getElementById('modalPlanCur').value || 0);
+        const monthly = Number(document.getElementById('modalPlanMtl').value || 0);
+
+        if (!name) {
+          showNotification("Bitte Namen eingeben.");
+          return;
+        }
+
+        if (!appData.plans) appData.plans = [];
+        appData.plans.push({ id: 'p_' + Date.now(), name, category, current, monthly });
+        saveState();
+        closeModal();
+        showNotification("Sparplan hinzugefügt!");
+      };
+      modal.classList.remove('hidden');
+    }
+
+    window.editPlanModal = function(id) {
+      const p = (appData.plans || []).find(x => x.id === id);
+      if (!p) return;
+      const modal = document.getElementById('customModal');
+      document.getElementById('modalTitle').textContent = 'Sparplan bearbeiten';
+      document.getElementById('modalBody').innerHTML = `
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Name</label>
+            <input type="text" id="modalPlanName" value="${p.name}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Aktueller Stand (€)</label>
+            <input type="number" id="modalPlanCur" value="${p.current}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Mtl. Sparrate (€)</label>
+            <input type="number" id="modalPlanMtl" value="${p.monthly}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+      `;
+      document.getElementById('modalSaveBtn').onclick = function() {
+        p.name = document.getElementById('modalPlanName').value.trim();
+        p.current = Number(document.getElementById('modalPlanCur').value || 0);
+        p.monthly = Number(document.getElementById('modalPlanMtl').value || 0);
+        saveState();
+        closeModal();
+        showNotification("Sparplan aktualisiert!");
+      };
+      modal.classList.remove('hidden');
+    }
+
+    window.deletePlan = function(id) {
+      appData.plans = (appData.plans || []).filter(x => x.id !== id);
+      saveState();
+      showNotification("Sparplan gelöscht.");
+    }
+
+    window.addFixedExpense = function() {
+      const modal = document.getElementById('customModal');
+      document.getElementById('modalTitle').textContent = 'Fixkosten hinzufügen';
+      document.getElementById('modalBody').innerHTML = `
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Bezeichnung</label>
+            <input type="text" id="modalFixName" placeholder="z. B. Netflix, Versicherung" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Monatlicher Betrag (€)</label>
+            <input type="number" id="modalFixAmount" value="0" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+      `;
+      document.getElementById('modalSaveBtn').onclick = function() {
+        const name = document.getElementById('modalFixName').value.trim();
+        const amount = Number(document.getElementById('modalFixAmount').value || 0);
+        if (!name) {
+          showNotification("Bitte Bezeichnung eingeben.");
+          return;
+        }
+        if (!appData.fixedExpenses) appData.fixedExpenses = [];
+        appData.fixedExpenses.push({ id: 'f_' + Date.now(), name, amount });
+        saveState();
+        closeModal();
+        showNotification("Fixkosten hinzugefügt!");
+      };
+      modal.classList.remove('hidden');
+    }
+
+    window.editFixedExpenseModal = function(id) {
+      const f = (appData.fixedExpenses || []).find(x => x.id === id);
+      if (!f) return;
+      const modal = document.getElementById('customModal');
+      document.getElementById('modalTitle').textContent = 'Fixkosten bearbeiten';
+      document.getElementById('modalBody').innerHTML = `
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Bezeichnung</label>
+            <input type="text" id="modalFixName" value="${f.name}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Monatlicher Betrag (€)</label>
+            <input type="number" id="modalFixAmount" value="${f.amount}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+      `;
+      document.getElementById('modalSaveBtn').onclick = function() {
+        f.name = document.getElementById('modalFixName').value.trim();
+        f.amount = Number(document.getElementById('modalFixAmount').value || 0);
+        saveState();
+        closeModal();
+        showNotification("Fixkosten aktualisiert!");
+      };
+      modal.classList.remove('hidden');
+    }
+
+    window.deleteFixedExpense = function(id) {
+      appData.fixedExpenses = (appData.fixedExpenses || []).filter(x => x.id !== id);
+      saveState();
+      showNotification("Fixkosten entfernt.");
+    }
+
+    window.exportDataJSON = function() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+      const dlAnchor = document.createElement('a');
+      dlAnchor.setAttribute("href", dataStr);
+      dlAnchor.setAttribute("download", "finanz_backup.json");
+      document.body.appendChild(dlAnchor);
+      dlAnchor.click();
+      dlAnchor.remove();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
       initFirebase();
     });
   </script>
