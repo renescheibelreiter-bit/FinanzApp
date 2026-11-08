@@ -255,12 +255,12 @@
               </p>
             </div>
             <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <button onclick="confirmCloseCurrentMonth()" class="px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <button id="btnCloseMonth" type="button" onclick="window.confirmCloseCurrentMonth()" class="px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition flex items-center justify-center gap-2 cursor-pointer relative z-10">
+                <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                 Aktuellen Monat abschließen
               </button>
-              <button onclick="undoLastMonthClose()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+              <button id="btnUndoMonth" type="button" onclick="window.undoLastMonthClose()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-pointer relative z-10">
+                <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
                 Rückgängig
               </button>
             </div>
@@ -589,12 +589,8 @@
   <!-- Notification Toast -->
   <div id="customNotificationBox" class="fixed bottom-5 right-5 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-2xl z-50 text-xs font-semibold transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
-  <!-- Firebase & App Logic Script -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
+  <!-- App & Firebase Logic Script (Robust für GitHub Pages & Lokal) -->
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDAa-LXGXwhMDEhyTZcvGaqLuI1HeK4UjI",
       authDomain: "finanzapp-dd2bc.firebaseapp.com",
@@ -605,10 +601,11 @@
       measurementId: "G-Q9HFPW7CYD"
     };
 
-    let db, auth;
+    let db = null, auth = null, firebaseDocRef = null, firebaseSetDoc = null;
     let isRemoteUpdate = false;
 
     let appData = {
+      lastUpdated: 0,
       netIncome: 2704.14,
       extra13: 3137,
       extra14: 3100,
@@ -665,21 +662,23 @@
 
     window.formatEUR = function(val) {
       return Number(val || 0).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
-    }
+    };
 
     window.formatYearMonthLabel = function(ymStr) {
+      if (!ymStr || typeof ymStr !== 'string') return 'November 2026';
       const parts = ymStr.split('-');
       if (parts.length < 2) return ymStr;
       const [y, m] = parts;
       const months = ['', 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
-      return `${months[parseInt(m, 10)]} ${y}`;
-    }
+      return `${months[parseInt(m, 10)] || m} ${y}`;
+    };
 
-    async function initApp() {
+    function initApp() {
       const localSaved = localStorage.getItem('finanzplaner_pro_v3');
       if (localSaved) {
         try {
-          appData = { ...appData, ...JSON.parse(localSaved) };
+          const parsed = JSON.parse(localSaved);
+          appData = { ...appData, ...parsed };
         } catch (e) {
           console.warn("Konnte lokalen Speicher nicht lesen:", e);
         }
@@ -688,20 +687,36 @@
         appData.currentMonthKey = '2026-11';
       }
       renderAll();
+      connectFirebaseAsync();
+    }
 
+    async function connectFirebaseAsync() {
       try {
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
+        const { getAuth, signInAnonymously } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+        const { getFirestore, doc, setDoc, onSnapshot } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         db = getFirestore(app);
+        firebaseSetDoc = setDoc;
 
         await signInAnonymously(auth);
-
-        const docRef = doc(db, 'finanzapp_data', 'shared_main_vault');
+        firebaseDocRef = doc(db, 'finanzapp_data', 'shared_main_vault');
         
-        onSnapshot(docRef, (snap) => {
+        onSnapshot(firebaseDocRef, (snap) => {
           if (snap.exists()) {
-            isRemoteUpdate = true;
             const cloudData = snap.data();
+            const cloudTime = Number(cloudData.lastUpdated || 0);
+            const localTime = Number(appData.lastUpdated || 0);
+
+            // Verhindert, dass ältere Cloud-Daten deinen neueren lokalen Monatsabschluss überschreiben
+            if (localTime > cloudTime) {
+              saveState();
+              return;
+            }
+
+            isRemoteUpdate = true;
             appData = { ...appData, ...cloudData };
             if (!appData.currentMonthKey) {
               appData.currentMonthKey = '2026-11';
@@ -717,21 +732,21 @@
           }
         }, (err) => {
           console.warn("Firestore Listener Hinweis:", err.message);
-          document.getElementById('headerSubtitle').textContent = 'Lokaler Modus aktiv';
+          document.getElementById('headerSubtitle').textContent = 'Lokaler Modus aktiv (GitHub)';
         });
       } catch (e) {
-        console.warn("Cloud-Verbindung fehlgeschlagen:", e);
-        document.getElementById('headerSubtitle').textContent = 'Lokaler Modus aktiv';
+        console.warn("Cloud-Verbindung auf dieser Domain nicht aktiv (Lokaler Speicher wird genutzt):", e.message);
+        document.getElementById('headerSubtitle').textContent = 'Lokaler Modus aktiv (GitHub)';
       }
     }
 
     async function saveState() {
+      appData.lastUpdated = Date.now();
       localStorage.setItem('finanzplaner_pro_v3', JSON.stringify(appData));
       renderAll();
-      if (!db || !auth || !auth.currentUser || isRemoteUpdate) return;
+      if (!db || !auth || !auth.currentUser || !firebaseDocRef || !firebaseSetDoc || isRemoteUpdate) return;
       try {
-        const docRef = doc(db, 'finanzapp_data', 'shared_main_vault');
-        await setDoc(docRef, appData);
+        await firebaseSetDoc(firebaseDocRef, appData);
       } catch (e) {
         console.warn("Cloud-Speicherung übersprungen:", e.message);
       }
@@ -1709,6 +1724,11 @@
         card.setAttribute('draggable', 'true');
 
         card.addEventListener('dragstart', (e) => {
+          // Verhindert, dass ein Klick auf einen Button als Drag-Versuch gewertet wird
+          if (e.target.closest('button, input, select, a')) {
+            e.preventDefault();
+            return;
+          }
           draggedCard = card;
           e.dataTransfer.effectAllowed = 'move';
           setTimeout(() => card.classList.add('opacity-40', 'scale-[0.99]'), 0);
@@ -1780,6 +1800,23 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       initApp();
+
+      // Zusätzliche direkte Event-Listener für maximale Zuverlässigkeit auf GitHub
+      const closeBtn = document.getElementById('btnCloseMonth');
+      if (closeBtn) {
+        closeBtn.onclick = (e) => {
+          e.stopPropagation();
+          window.confirmCloseCurrentMonth();
+        };
+      }
+      const undoBtn = document.getElementById('btnUndoMonth');
+      if (undoBtn) {
+        undoBtn.onclick = (e) => {
+          e.stopPropagation();
+          window.undoLastMonthClose();
+        };
+      }
+
       setTimeout(() => {
         restoreDashboardOrder();
         initDashboardDragAndDrop();
