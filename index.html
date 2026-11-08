@@ -494,4 +494,1345 @@
             <span id="expenseCountLabel">0 Ausgaben</span>
           </div>
           <div id="dailyExpensesListContainer" class="space-y-2 max-h-[180px] overflow-y-auto pr-1">
-            <p class="text-xs text-
+            <p class="text-xs text-slate-500 italic py-1">Noch keine Einkäufe diesen Monat erfasst.</p>
+          </div>
+        </div>
+
+        <!-- Summe Variable Budgets List -->
+        <div class="pt-2 border-t border-slate-800">
+          <div id="variableBudgetsListContainer" class="space-y-2 mb-3">
+            <p class="text-xs text-slate-500 italic">Keine variablen Budgets erfasst.</p>
+          </div>
+          <div class="flex items-center justify-between text-xs pt-2 border-t border-slate-900 font-semibold">
+            <span class="text-slate-400">Summe Variable Budgets:</span>
+            <span class="text-white font-extrabold" id="totalVariableBudgetsDisplay">0 €</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PROGNOSE TAB ==================== -->
+    <div id="tab-prognose" class="space-y-6 tab-content hidden">
+      <div class="bg-[#0b101d] border border-slate-800/90 rounded-2xl p-6 shadow-2xl space-y-6">
+        
+        <!-- Top Box: 6 Sliders -->
+        <div class="bg-[#0e1525] border border-slate-800/80 rounded-2xl p-6 grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6">
+          
+          <div>
+            <div class="flex justify-between items-center text-xs font-bold mb-2">
+              <span class="text-slate-300">Startkapital (Verzinst / ETF)</span>
+              <span class="text-indigo-400 font-extrabold" id="lblSimStartInvest">7.000 €</span>
+            </div>
+            <input type="range" id="simStartInvest" min="0" max="200000" step="500" value="7000" oninput="updateSimFromUI()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center text-xs font-bold mb-2">
+              <span class="text-slate-300">Sparrate (Verzinst / Monat)</span>
+              <span class="text-indigo-400 font-extrabold" id="lblSimMonthlyInvest">400 €</span>
+            </div>
+            <input type="range" id="simMonthlyInvest" min="0" max="5000" step="25" value="400" oninput="updateSimFromUI()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center text-xs font-bold mb-2">
+              <span class="text-slate-300">Rendite p.a. (%)</span>
+              <span class="text-emerald-400 font-extrabold" id="lblSimReturn">7.0 %</span>
+            </div>
+            <input type="range" id="simReturn" min="0" max="15" step="0.5" value="7.0" oninput="updateSimFromUI()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center text-xs font-bold mb-2">
+              <span class="text-slate-300">Notgroschen & Cash (0 %)</span>
+              <span class="text-amber-400 font-extrabold" id="lblSimStartCash">2.200 €</span>
+            </div>
+            <input type="range" id="simStartCash" min="0" max="100000" step="500" value="2200" oninput="updateSimFromUI()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500">
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center text-xs font-bold mb-2">
+              <span class="text-slate-300">Sparrate Notgroschen (0 %)</span>
+              <span class="text-amber-400 font-extrabold" id="lblSimMonthlyCash">0 €</span>
+            </div>
+            <input type="range" id="simMonthlyCash" min="0" max="3000" step="25" value="0" oninput="updateSimFromUI()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500">
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center text-xs font-bold mb-2">
+              <span class="text-slate-300">Zeithorizont</span>
+              <span class="text-indigo-400 font-extrabold" id="lblSimYears">20 Jahre</span>
+            </div>
+            <input type="range" id="simYears" min="1" max="40" step="1" value="20" oninput="updateSimFromUI()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+          </div>
+
+        </div>
+
+        <!-- Toggle Box: Sonderzahlungen einbeziehen -->
+        <div class="bg-[#0e1525] border border-slate-800/80 rounded-xl px-5 py-3.5 flex items-center justify-between">
+          <span class="text-xs font-bold text-white">Sonderzahlungen (13. & 14. Gehalt) einbeziehen</span>
+          <label class="inline-flex items-center cursor-pointer select-none">
+            <input type="checkbox" id="simIncludeSpecial" checked onchange="updateSimFromUI()" class="sr-only peer">
+            <div class="relative w-10 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+            <span class="ml-2.5 text-xs font-bold text-amber-400" id="lblSimSpecialStatus">Aktiv</span>
+          </label>
+        </div>
+
+        <!-- 4 Summary KPI Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-[#0e1525] border border-slate-800/80 rounded-2xl p-5">
+            <span class="text-xs font-medium text-slate-400 block mb-1.5">Eingezahltes Kapital</span>
+            <div class="text-2xl font-extrabold text-white" id="simTotalContributed">0 €</div>
+          </div>
+
+          <div class="bg-[#0e1525] border border-slate-800/80 rounded-2xl p-5">
+            <span class="text-xs font-medium text-slate-400 block mb-1.5">Zinsgewinn</span>
+            <div class="text-2xl font-extrabold text-indigo-400" id="simTotalInterest">+0 €</div>
+          </div>
+
+          <div class="bg-[#0e1525] border border-slate-800/80 rounded-2xl p-5">
+            <span class="text-xs font-medium text-amber-400/90 block mb-1.5">Notgroschen / Cash</span>
+            <div class="text-2xl font-extrabold text-amber-400" id="simTotalCash">0 €</div>
+          </div>
+
+          <div class="bg-gradient-to-br from-[#06241f] to-[#0b1724] border border-emerald-500/30 rounded-2xl p-5">
+            <span class="text-xs font-medium text-emerald-400 block mb-1.5">Gesamtvermögen</span>
+            <div class="text-2xl font-extrabold text-emerald-400" id="simTotalWealth">0 €</div>
+          </div>
+        </div>
+
+        <!-- Forecast Chart Box -->
+        <div class="bg-[#0e1525] border border-slate-800/80 rounded-2xl p-5">
+          <div class="relative min-h-[380px]">
+            <canvas id="forecastChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal Dialog -->
+  <div id="customModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+      <h3 id="modalTitle" class="font-bold text-base text-white mb-4">Eintrag bearbeiten</h3>
+      <div id="modalBody" class="space-y-4"></div>
+      <div class="mt-6 flex justify-end space-x-3">
+        <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">Abbrechen</button>
+        <button id="modalSaveBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-indigo-600/20 transition">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="customNotificationBox" class="fixed bottom-5 right-5 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-2xl z-50 text-xs font-semibold transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+
+  <!-- Firebase & App Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Firebase Konfiguration (Live Cloud Sync)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDAa-LXGXwhMDEhyTZcvGaqLuI1HeK4UjI",
+      authDomain: "finanzapp-dd2bc.firebaseapp.com",
+      projectId: "finanzapp-dd2bc",
+      storageBucket: "finanzapp-dd2bc.firebasestorage.app",
+      messagingSenderId: "511955094335",
+      appId: "1:511955094335:web:33b52762b4146230b4e18a",
+      measurementId: "G-Q9HFPW7CYD"
+    };
+
+    let db, auth;
+    let appData = {
+      netIncome: 2704.14,
+      extra13: 3137,
+      extra14: 3100,
+      extra13Claimed: false,
+      extra14Claimed: false,
+      yearEndGoal: 10000,
+      currentMonthKey: '2026-11',
+      lastBackupState: null,
+      fixedExpenses: [
+        { id: 'f1', name: 'Miete', amount: 820 },
+        { id: 'f2', name: 'Internet', amount: 40 },
+        { id: 'f3', name: 'Essen', amount: 400 },
+        { id: 'f4', name: 'Handy Rene', amount: 14.50 },
+        { id: 'f5', name: 'Strom', amount: 60 },
+        { id: 'f6', name: 'Jahreskosten', amount: 180 },
+        { id: 'f7', name: 'Fitnessstudio', amount: 34.90 },
+        { id: 'f8', name: 'Handy Jasmin', amount: 9 },
+        { id: 'f9', name: 'Partner Anteil', amount: -490 },
+        { id: 'f10', name: 'Versicherung', amount: 45 }
+      ],
+      variableBudgets: [],
+      plans: [
+        { id: 'p1', name: 'Notgroschen', category: 'Notgroschen', current: 2200, monthly: 0 },
+        { id: 'p2', name: 'MSCI World ETF', category: 'ETF', current: 3600, monthly: 400 },
+        { id: 'p3', name: 'Edelmetall', category: 'Edelmetall', current: 1600, monthly: 0 },
+        { id: 'p4', name: 'Spaßkonto & Urlaub', category: 'Freizeit', current: 0, monthly: 0 }
+      ],
+      closedMonths: {
+        '2026-09': { 
+          dateLabel: 'September 2026', 
+          totalWealth: 4600, 
+          savings: 800, 
+          plansHistory: { 'p1': 2000, 'p2': 2600 } 
+        },
+        '2026-10': { 
+          dateLabel: 'Oktober 2026', 
+          totalWealth: 5800, 
+          savings: 800, 
+          plansHistory: { 'p1': 2200, 'p2': 3600 } 
+        }
+      },
+      dailyExpenses: [
+        { title: 'Novarockkarten', amount: 300, category: 'Freizeit' },
+        { title: 'Kleidung', amount: 50, category: 'Sonstiges' },
+        { title: 'Tennisturnierbeitrag', amount: 28, category: 'Freizeit' },
+        { title: 'Tabak', amount: 19.59, category: 'Freizeit' },
+        { title: 'Mc Donalds', amount: 14.20, category: 'Freizeit' },
+        { title: 'Billa', amount: 3, category: 'Lebensmittel' },
+        { title: 'Schlosskauf', amount: 3.99, category: 'Sonstiges' },
+        { title: 'Wirtshaus', amount: 20, category: 'Sonstiges' },
+        { title: 'Vino', amount: 28, category: 'Sonstiges' },
+        { title: 'Mc Donalds', amount: 15.60, category: 'Sonstiges' },
+        { title: 'Trafik', amount: 6.40, category: 'Sonstiges' },
+        { title: 'Vino', amount: 28, category: 'Sonstiges' },
+        { title: 'Döner', amount: 13, category: 'Lebensmittel' },
+        { title: 'Game', amount: 19.99, category: 'Lebensmittel' }
+      ]
+    };
+
+    let isRemoteUpdate = false;
+    let assetDonutInstance = null;
+    let historicalChartInstance = null;
+    let forecastChartInstance = null;
+
+    window.formatEUR = function(val) {
+      return Number(val || 0).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
+    }
+
+    window.getCurrentYearMonth = function() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    window.formatYearMonthLabel = function(ymStr) {
+      const parts = ymStr.split('-');
+      if (parts.length < 2) return ymStr;
+      const [y, m] = parts;
+      const months = ['', 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+      return `${months[parseInt(m, 10)]} ${y}`;
+    }
+
+    async function initFirebase() {
+      // Zuerst lokalen Speicher laden für Sofort-Ansicht
+      const localSaved = localStorage.getItem('finanzplaner_pro_v3');
+      if (localSaved) {
+        try {
+          appData = { ...appData, ...JSON.parse(localSaved) };
+        } catch (e) {
+          console.warn("Konnte lokalen Speicher nicht lesen:", e);
+        }
+      }
+      renderAll();
+
+      try {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        await signInAnonymously(auth);
+
+        // Firestore Dokument-Referenz für deine FinanzApp
+        const docRef = doc(db, 'finanzapp_data', 'shared_main_vault');
+        
+        // Echtzeit-Listener (Lauscht auf Änderungen von jedem Gerät)
+        onSnapshot(docRef, (snap) => {
+          if (snap.exists()) {
+            isRemoteUpdate = true;
+            appData = { ...appData, ...snap.data() };
+            localStorage.setItem('finanzplaner_pro_v3', JSON.stringify(appData));
+            renderAll();
+            isRemoteUpdate = false;
+            document.getElementById('headerSubtitle').textContent = 'Live-Cloud-Sync aktiv';
+          } else {
+            // Falls noch kein Cloud-Dokument existiert, initialisieren
+            saveState();
+          }
+        }, (err) => {
+          console.warn("Firestore Listener Hinweis:", err.message);
+          document.getElementById('headerSubtitle').textContent = 'Lokaler Modus aktiv';
+        });
+      } catch (e) {
+        console.warn("Cloud-Verbindung fehlgeschlagen, nutze lokalen Modus:", e);
+        document.getElementById('headerSubtitle').textContent = 'Lokaler Modus aktiv';
+      }
+    }
+
+    async function saveState() {
+      localStorage.setItem('finanzplaner_pro_v3', JSON.stringify(appData));
+      renderAll();
+      if (!db || !auth || !auth.currentUser || isRemoteUpdate) return;
+      try {
+        const docRef = doc(db, 'finanzapp_data', 'shared_main_vault');
+        await setDoc(docRef, appData, { merge: true });
+      } catch (e) {
+        console.warn("Cloud-Speicherung übersprungen:", e.message);
+      }
+    }
+
+    function renderAll() {
+      renderDashboard();
+      renderPlansList();
+      renderIncomeAndFixed();
+      renderForecastChart();
+    }
+
+    window.openTab = function(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(el => {
+        el.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
+        el.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-800/60');
+      });
+      const targetTab = document.getElementById(`tab-${tabId}`);
+      if (targetTab) targetTab.classList.remove('hidden');
+      const btn = document.getElementById(`nav-${tabId}`);
+      if (btn) {
+        btn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-800/60');
+        btn.classList.add('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
+      }
+      if (tabId === 'dashboard') renderDashboard();
+      if (tabId === 'sparplaene') renderPlansList();
+      if (tabId === 'einnahmen') renderIncomeAndFixed();
+      if (tabId === 'prognose') {
+        initSimDefaultsFromPlans();
+        renderForecastChart();
+      }
+    }
+
+    function calculateCurrentTotals() {
+      const fixedSum = (appData.fixedExpenses || []).reduce((acc, f) => acc + Number(f.amount || 0), 0);
+      const savingsRate = (appData.plans || []).reduce((acc, p) => acc + Number(p.monthly || 0), 0);
+      const dailySpent = (appData.dailyExpenses || []).reduce((acc, e) => acc + Number(e.amount || 0), 0);
+      const varBudgetsSum = (appData.variableBudgets || []).reduce((acc, b) => acc + Number(b.amount || 0), 0);
+
+      let activeNetIncome = Number(appData.netIncome || 0);
+      let activeExtraLabelParts = [];
+      if (appData.extra13Claimed) {
+        activeNetIncome += Number(appData.extra13 || 0);
+        activeExtraLabelParts.push('13. Gehalt');
+      }
+      if (appData.extra14Claimed) {
+        activeNetIncome += Number(appData.extra14 || 0);
+        activeExtraLabelParts.push('14. Gehalt');
+      }
+
+      const restgeldVariable = activeNetIncome - fixedSum - savingsRate - dailySpent;
+      const availableBuffer = restgeldVariable;
+      const totalWealth = (appData.plans || []).reduce((acc, p) => acc + Number(p.current || 0), 0);
+
+      return {
+        fixedSum,
+        savingsRate,
+        dailySpent,
+        varBudgetsSum,
+        activeNetIncome,
+        activeExtraLabelParts,
+        restgeldVariable,
+        availableBuffer,
+        totalWealth
+      };
+    }
+
+    function renderDashboard() {
+      const totals = calculateCurrentTotals();
+
+      const elWealth = document.getElementById('dashTotalWealth');
+      if (elWealth) elWealth.textContent = formatEUR(totals.totalWealth);
+
+      const elIncome = document.getElementById('dashNetIncome');
+      if (elIncome) elIncome.textContent = formatEUR(totals.activeNetIncome) + '/M.';
+
+      const elIncomeSub = document.getElementById('dashNetIncomeSub');
+      const elIncomeLabel = document.getElementById('dashNetIncomeLabel');
+      if (elIncomeSub && elIncomeLabel) {
+        if (totals.activeExtraLabelParts.length > 0) {
+          elIncomeLabel.textContent = 'Netto (inkl. Sonderzahlung)';
+          elIncomeSub.textContent = `Inkl. ${totals.activeExtraLabelParts.join(' & ')}`;
+        } else {
+          elIncomeLabel.textContent = 'Reguläres Netto';
+          elIncomeSub.textContent = 'Ohne 13./14. Gehalt';
+        }
+      }
+
+      const elFixed = document.getElementById('dashFixedExpenses');
+      if (elFixed) elFixed.textContent = formatEUR(totals.fixedSum) + '/M.';
+
+      const netInc = Number(appData.netIncome || 0);
+      const fixedPct = netInc > 0 ? Math.round((totals.fixedSum / netInc) * 100) : 0;
+      const elFixedPct = document.getElementById('dashFixedPercentage');
+      if (elFixedPct) elFixedPct.textContent = `${fixedPct}% vom Netto`;
+
+      const elBuffer = document.getElementById('dashBuffer');
+      if (elBuffer) {
+        elBuffer.textContent = formatEUR(totals.availableBuffer) + '/M.';
+        elBuffer.className = `text-xl lg:text-2xl font-extrabold tracking-tight mt-1 truncate ${totals.availableBuffer >= 0 ? 'text-amber-400' : 'text-rose-500'}`;
+      }
+
+      let effectiveNet = Number(appData.netIncome || 0);
+      if (appData.extra13Claimed) effectiveNet += Number(appData.extra13 || 0);
+      if (appData.extra14Claimed) effectiveNet += Number(appData.extra14 || 0);
+
+      const distHeader = document.getElementById('distNetHeaderLabel');
+      if (distHeader) distHeader.textContent = `Netto: ${formatEUR(effectiveNet)} (inkl. Sonderzahlung!)`;
+
+      const fixVal = totals.fixedSum;
+      const sparVal = totals.savingsRate;
+      const konsumVal = totals.dailySpent;
+      const bufferVal = Math.max(0, totals.availableBuffer);
+
+      const baseDenom = effectiveNet > 0 ? effectiveNet : 1;
+      const fixPct = Math.round((fixVal / baseDenom) * 100);
+      const sparPct = Math.round((sparVal / baseDenom) * 100);
+      const konsumPct = Math.round((konsumVal / baseDenom) * 100);
+      const bufferPct = Math.max(0, 100 - fixPct - sparPct - konsumPct);
+
+      const barFix = document.getElementById('distBarFix');
+      const barSpar = document.getElementById('distBarSpar');
+      const barKonsum = document.getElementById('distBarKonsum');
+      const barBuffer = document.getElementById('distBarBuffer');
+
+      if (barFix) barFix.style.width = fixPct + '%';
+      if (barSpar) barSpar.style.width = sparPct + '%';
+      if (barKonsum) barKonsum.style.width = konsumPct + '%';
+      if (barBuffer) barBuffer.style.width = bufferPct + '%';
+
+      document.getElementById('distFixPct').textContent = fixPct + '%';
+      document.getElementById('distFixVal').textContent = formatEUR(fixVal);
+      document.getElementById('distSparPct').textContent = sparPct + '%';
+      document.getElementById('distSparVal').textContent = formatEUR(sparVal);
+      document.getElementById('distKonsumPct').textContent = konsumPct + '%';
+      document.getElementById('distKonsumVal').textContent = formatEUR(konsumVal);
+      document.getElementById('distBufferPct').textContent = bufferPct + '%';
+      document.getElementById('distBufferVal').textContent = formatEUR(totals.availableBuffer);
+
+      const ruleText = document.getElementById('rule50Text');
+      if (ruleText) {
+        if (fixPct <= 50) {
+          ruleText.textContent = `50/30/20-Regel: Fixkosten bei starken ${fixPct}% (Optimal unter 50%).`;
+        } else {
+          ruleText.textContent = `50/30/20-Regel: Fixkosten bei ${fixPct}% (Über 50%-Empfehlung).`;
+        }
+      }
+
+      const cashPlan = (appData.plans || []).find(p => p.category.toLowerCase().includes('notgroschen') || p.name.toLowerCase().includes('notgroschen'));
+      const cashVal = cashPlan ? Number(cashPlan.current || 0) : 0;
+      const monthsReserve = totals.fixedSum > 0 ? (cashVal / totals.fixedSum).toFixed(1) : '0';
+      const notgroschenEl = document.getElementById('notgroschenMonthsCount');
+      if (notgroschenEl) notgroschenEl.textContent = `${monthsReserve} Monate`;
+
+      if (!appData.yearEndGoal || appData.yearEndGoal < totals.totalWealth) {
+        appData.yearEndGoal = Math.max(10000, totals.totalWealth);
+      }
+      const targetGoal = appData.yearEndGoal;
+      const missingAmount = Math.max(0, targetGoal - totals.totalWealth);
+      
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const remainingMonths = Math.max(1, 12 - currentMonth);
+      
+      const requiredMonthlySavings = totals.totalWealth >= targetGoal ? 0 : (missingAmount / remainingMonths);
+      const progressPct = targetGoal > 0 ? Math.min(100, Math.round((totals.totalWealth / targetGoal) * 100)) : 0;
+
+      const subtext = document.getElementById('yearEndGoalSubtext');
+      if (subtext) {
+        if (totals.totalWealth >= targetGoal) {
+          subtext.textContent = `Ziel von ${formatEUR(targetGoal)} bereits erreicht! 🎉`;
+        } else {
+          subtext.textContent = `Dir fehlen noch ${formatEUR(missingAmount)} bis zum Jahresendziel.`;
+        }
+      }
+
+      const goalMonthsVal = document.getElementById('yearEndGoalMonthsVal');
+      if (goalMonthsVal) {
+        if (totals.totalWealth >= targetGoal) {
+          goalMonthsVal.textContent = 'Ziel erreicht! 🎉';
+        } else {
+          goalMonthsVal.textContent = `${formatEUR(requiredMonthlySavings)} / Monat (${remainingMonths} M.)`;
+        }
+      }
+
+      const progressBar = document.getElementById('yearEndGoalProgressBar');
+      if (progressBar) progressBar.style.width = progressPct + '%';
+
+      const istLabel = document.getElementById('yearEndGoalIstLabel');
+      if (istLabel) istLabel.textContent = `Ist: ${formatEUR(totals.totalWealth)} / Ziel: ${formatEUR(targetGoal)}`;
+
+      const pctLabel = document.getElementById('yearEndGoalPctLabel');
+      if (pctLabel) pctLabel.textContent = progressPct + '%';
+
+      const monthKey = appData.currentMonthKey || getCurrentYearMonth();
+      const badge = document.getElementById('currentMonthBadge');
+      if (badge) badge.textContent = formatYearMonthLabel(monthKey);
+
+      renderAssetDistributionChart();
+      renderHistoricalAssetChart();
+      renderHistoryLog();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const sortableGrid = document.getElementById('sortableDashboardGrid');
+      if (!sortableGrid) return;
+
+      let draggedCard = null;
+
+      sortableGrid.addEventListener('dragstart', (e) => {
+        const card = e.target.closest('.dash-draggable-card');
+        if (!card) return;
+        draggedCard = card;
+        e.dataTransfer.effectAllowed = 'move';
+        setTimeout(() => card.classList.add('opacity-40'), 0);
+      });
+
+      sortableGrid.addEventListener('dragend', (e) => {
+        const card = e.target.closest('.dash-draggable-card');
+        if (card) card.classList.remove('opacity-40');
+        draggedCard = null;
+        saveDashboardOrder();
+      });
+
+      sortableGrid.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        const overCard = e.target.closest('.dash-draggable-card');
+        if (!overCard || overCard === draggedCard) return;
+
+        const rect = overCard.getBoundingClientRect();
+        const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+        sortableGrid.insertBefore(draggedCard, next ? overCard.nextSibling : overCard);
+      });
+
+      loadDashboardOrder();
+    });
+
+    function saveDashboardOrder() {
+      const sortableGrid = document.getElementById('sortableDashboardGrid');
+      if (!sortableGrid) return;
+      const ids = Array.from(sortableGrid.querySelectorAll('.dash-draggable-card')).map(el => el.getAttribute('data-id'));
+      localStorage.setItem('finanzplaner_dash_order', JSON.stringify(ids));
+    }
+
+    function loadDashboardOrder() {
+      const saved = localStorage.getItem('finanzplaner_dash_order');
+      if (!saved) return;
+      try {
+        const ids = JSON.parse(saved);
+        const sortableGrid = document.getElementById('sortableDashboardGrid');
+        if (!sortableGrid) return;
+        const cardMap = {};
+        sortableGrid.querySelectorAll('.dash-draggable-card').forEach(el => {
+          cardMap[el.getAttribute('data-id')] = el;
+        });
+        ids.forEach(id => {
+          if (cardMap[id]) {
+            sortableGrid.appendChild(cardMap[id]);
+          }
+        });
+      } catch (e) {
+        console.warn("Konnte Dashboard-Reihenfolge nicht laden:", e);
+      }
+    }
+
+    function renderAssetDistributionChart() {
+      const ctx = document.getElementById('assetDistributionChart');
+      if (!ctx) return;
+
+      const labels = (appData.plans || []).map(p => p.name);
+      const dataVals = (appData.plans || []).map(p => Number(p.current || 0));
+      const colors = ['#6366f1', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#3b82f6'];
+
+      if (assetDonutInstance) {
+        assetDonutInstance.data.labels = labels;
+        assetDonutInstance.data.datasets[0].data = dataVals;
+        assetDonutInstance.update();
+        return;
+      }
+
+      assetDonutInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels.length > 0 ? labels : ['Keine Sparpläne'],
+          datasets: [{
+            data: dataVals.length > 0 ? dataVals : [1],
+            backgroundColor: dataVals.length > 0 ? colors.slice(0, dataVals.length) : ['#1e293b'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 } }
+            }
+          },
+          cutout: '70%'
+        }
+      });
+    }
+
+    function renderHistoricalAssetChart() {
+      const ctx = document.getElementById('historicalAssetChart');
+      if (!ctx) return;
+
+      const closedKeys = Object.keys(appData.closedMonths || {}).sort();
+      const labels = closedKeys.map(k => appData.closedMonths[k].dateLabel);
+      labels.push('Aktuell (Live)');
+
+      const totalsData = closedKeys.map(k => Number(appData.closedMonths[k].totalWealth || 0));
+      const totalsCurrent = calculateCurrentTotals().totalWealth;
+      totalsData.push(totalsCurrent);
+
+      const datasets = [{
+        label: 'Gesamtvermögen',
+        data: totalsData,
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderWidth: 3,
+        fill: true,
+        tension: 0.3
+      }];
+
+      const planColors = ['#6366f1', '#f59e0b', '#ec4899', '#8b5cf6', '#3b82f6'];
+      (appData.plans || []).forEach((plan, idx) => {
+        const planVals = closedKeys.map(k => {
+          const mObj = appData.closedMonths[k];
+          return mObj.plansHistory && mObj.plansHistory[plan.id] !== undefined ? Number(mObj.plansHistory[plan.id]) : Number(plan.current || 0);
+        });
+        planVals.push(Number(plan.current || 0));
+
+        datasets.push({
+          label: plan.name,
+          data: planVals,
+          borderColor: planColors[idx % planColors.length],
+          borderWidth: 2,
+          borderDash: [4, 4],
+          fill: false,
+          tension: 0.3
+        });
+      });
+
+      if (historicalChartInstance) {
+        historicalChartInstance.data.labels = labels;
+        historicalChartInstance.data.datasets = datasets;
+        historicalChartInstance.update();
+        return;
+      }
+
+      historicalChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 } }
+            }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+          }
+        }
+      });
+    }
+
+    function renderHistoryLog() {
+      const container = document.getElementById('dashPerformanceHistoryContainer');
+      if (!container) return;
+
+      const keys = Object.keys(appData.closedMonths || {}).sort().reverse();
+      if (keys.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-500 italic">Noch keine Monate abgeschlossen.</p>`;
+        return;
+      }
+
+      let html = '';
+      keys.forEach(k => {
+        const item = appData.closedMonths[k];
+        html += `
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 space-y-3 relative group">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-white">${item.dateLabel}</span>
+              <div class="flex items-center gap-1.5">
+                <button onclick="editClosedMonthModal('${k}')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition">Bearbeiten</button>
+                <button onclick="deleteClosedMonth('${k}')" class="text-[10px] bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-2 py-1 rounded transition">Löschen</button>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-slate-800/80">
+              <div>
+                <span class="text-[10px] text-slate-400 block">Gesamtvermögen</span>
+                <span class="font-extrabold text-emerald-400">${formatEUR(item.totalWealth)}</span>
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-400 block">Sparbetrag</span>
+                <span class="font-extrabold text-indigo-400">+${formatEUR(item.savings)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function renderPlansList() {
+      const container = document.getElementById('plansListContainer');
+      if (!container) return;
+
+      const plans = appData.plans || [];
+      if (plans.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-500 italic">Keine Sparpläne vorhanden.</p>`;
+        return;
+      }
+
+      let html = '';
+      plans.forEach(p => {
+        html += `
+          <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-semibold bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full">${p.category}</span>
+                <h4 class="font-bold text-sm text-white mt-1">${p.name}</h4>
+              </div>
+              <div class="flex gap-1">
+                <button onclick="editPlanModal('${p.id}')" class="p-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-lg text-xs">✏️</button>
+                <button onclick="deletePlan('${p.id}')" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg text-xs">🗑️</button>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-slate-800">
+              <div>
+                <span class="text-[10px] text-slate-400 block">Aktueller Wert</span>
+                <span class="font-extrabold text-emerald-400 text-sm">${formatEUR(p.current)}</span>
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-400 block">Sparrate mtl.</span>
+                <span class="font-extrabold text-indigo-400 text-sm">+${formatEUR(p.monthly)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function renderIncomeAndFixed() {
+      const netInput = document.getElementById('inputNetIncome');
+      if (netInput) netInput.value = appData.netIncome || 0;
+
+      const ex13 = document.getElementById('inputExtra13');
+      if (ex13) ex13.value = appData.extra13 || 0;
+
+      const ex14 = document.getElementById('inputExtra14');
+      if (ex14) ex14.value = appData.extra14 || 0;
+
+      const t13 = document.getElementById('einnahmenExtra13Toggle');
+      if (t13) {
+        t13.innerHTML = `
+          <button onclick="toggleExtra13()" class="px-3 py-1 rounded-lg text-xs font-bold transition ${appData.extra13Claimed ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'}">
+            ${appData.extra13Claimed ? 'Aktiviert (Juli)' : 'Ausgeschaltet'}
+          </button>
+        `;
+      }
+
+      const t14 = document.getElementById('einnahmenExtra14Toggle');
+      if (t14) {
+        t14.innerHTML = `
+          <button onclick="toggleExtra14()" class="px-3 py-1 rounded-lg text-xs font-bold transition ${appData.extra14Claimed ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'}">
+            ${appData.extra14Claimed ? 'Aktiviert (Dezember)' : 'Ausgeschaltet'}
+          </button>
+        `;
+      }
+
+      const fixedContainer = document.getElementById('fixedExpensesListContainer');
+      const fixedList = appData.fixedExpenses || [];
+      let fixedHtml = '';
+      let fixedSum = 0;
+
+      if (fixedList.length === 0) {
+        fixedHtml = `<p class="text-xs text-slate-500 italic">Keine Fixkosten erfasst.</p>`;
+      } else {
+        fixedList.forEach(f => {
+          fixedSum += Number(f.amount || 0);
+          fixedHtml += `
+            <div class="flex items-center justify-between bg-slate-950/70 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs">
+              <span class="font-medium text-white">${f.name}</span>
+              <div class="flex items-center gap-3">
+                <span class="font-extrabold text-rose-400">${formatEUR(f.amount)}</span>
+                <button onclick="deleteFixedExpense('${f.id}')" class="text-rose-400 hover:text-rose-300">✕</button>
+              </div>
+            </div>
+          `;
+        });
+      }
+      if (fixedContainer) fixedContainer.innerHTML = fixedHtml;
+      const totalFixedDisp = document.getElementById('totalFixedDisplay');
+      if (totalFixedDisp) totalFixedDisp.textContent = formatEUR(fixedSum);
+
+      const varContainer = document.getElementById('variableBudgetsListContainer');
+      const varList = appData.variableBudgets || [];
+      let varHtml = '';
+      let varSum = 0;
+      if (varList.length === 0) {
+        varHtml = `<p class="text-xs text-slate-500 italic">Keine variablen Budgets erfasst.</p>`;
+      } else {
+        varList.forEach(b => {
+          varSum += Number(b.amount || 0);
+          varHtml += `
+            <div class="flex items-center justify-between bg-slate-950/70 border border-slate-800 rounded-xl px-3.5 py-2 text-xs">
+              <span class="font-medium text-white">${b.name}</span>
+              <div class="flex items-center gap-3">
+                <span class="font-extrabold text-amber-400">${formatEUR(b.amount)}</span>
+                <button onclick="deleteVariableBudget('${b.id}')" class="text-rose-400 hover:text-rose-300">✕</button>
+              </div>
+            </div>
+          `;
+        });
+      }
+      if (varContainer) varContainer.innerHTML = varHtml;
+      const totVarDisp = document.getElementById('totalVariableBudgetsDisplay');
+      if (totVarDisp) totVarDisp.textContent = formatEUR(varSum);
+
+      const dailyList = appData.dailyExpenses || [];
+      const dailyContainer = document.getElementById('dailyExpensesListContainer');
+      const dailyCountLabel = document.getElementById('expenseCountLabel');
+      const spentDisp = document.getElementById('variableSpentDisplay');
+      const restgeldDisp = document.getElementById('variableRestgeldDisplay');
+
+      let dailySum = 0;
+      let dailyHtml = '';
+      if (dailyList.length === 0) {
+        dailyHtml = `<p class="text-xs text-slate-500 italic py-1">Noch keine Einkäufe diesen Monat erfasst.</p>`;
+      } else {
+        dailyList.forEach((e, idx) => {
+          dailySum += Number(e.amount || 0);
+          dailyHtml += `
+            <div class="flex items-center justify-between bg-slate-950 border border-slate-800/80 rounded-xl px-3 py-2 text-xs">
+              <div>
+                <span class="font-bold text-white">${e.title}</span>
+                <span class="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded ml-2">${e.category}</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="font-extrabold text-amber-400">-${formatEUR(e.amount)}</span>
+                <button onclick="deleteDailyExpense(${idx})" class="text-rose-400 hover:text-rose-300">✕</button>
+              </div>
+            </div>
+          `;
+        });
+      }
+      if (dailyContainer) dailyContainer.innerHTML = dailyHtml;
+      if (dailyCountLabel) dailyCountLabel.textContent = `${dailyList.length} Ausgaben`;
+      if (spentDisp) spentDisp.textContent = formatEUR(dailySum);
+
+      const totals = calculateCurrentTotals();
+      if (restgeldDisp) {
+        restgeldDisp.textContent = formatEUR(totals.restgeldVariable);
+        restgeldDisp.className = `text-2xl lg:text-3xl font-extrabold ${totals.restgeldVariable >= 0 ? 'text-amber-400' : 'text-rose-500'}`;
+      }
+    }
+
+    window.updateIncomeValues = function() {
+      appData.netIncome = Number(document.getElementById('inputNetIncome')?.value || 0);
+      appData.extra13 = Number(document.getElementById('inputExtra13')?.value || 0);
+      appData.extra14 = Number(document.getElementById('inputExtra14')?.value || 0);
+      saveState();
+    }
+
+    window.toggleExtra13 = function() {
+      appData.extra13Claimed = !appData.extra13Claimed;
+      saveState();
+    }
+
+    window.toggleExtra14 = function() {
+      appData.extra14Claimed = !appData.extra14Claimed;
+      saveState();
+    }
+
+    function initSimDefaultsFromPlans() {
+      const investPlans = (appData.plans || []).filter(p => !p.category.toLowerCase().includes('notgroschen'));
+      const cashPlans = (appData.plans || []).filter(p => p.category.toLowerCase().includes('notgroschen') || p.name.toLowerCase().includes('notgroschen'));
+
+      const startInvest = investPlans.reduce((acc, p) => acc + Number(p.current || 0), 0);
+      const monthlyInvest = investPlans.reduce((acc, p) => acc + Number(p.monthly || 0), 0);
+
+      const startCash = cashPlans.reduce((acc, p) => acc + Number(p.current || 0), 0);
+      const monthlyCash = cashPlans.reduce((acc, p) => acc + Number(p.monthly || 0), 0);
+
+      if (document.getElementById('simStartInvest')) document.getElementById('simStartInvest').value = startInvest;
+      if (document.getElementById('simMonthlyInvest')) document.getElementById('simMonthlyInvest').value = monthlyInvest;
+      if (document.getElementById('simStartCash')) document.getElementById('simStartCash').value = startCash;
+      if (document.getElementById('simMonthlyCash')) document.getElementById('simMonthlyCash').value = monthlyCash;
+
+      updateSimLabels();
+    }
+
+    window.updateSimFromUI = function() {
+      updateSimLabels();
+      renderForecastChart();
+    }
+
+    function updateSimLabels() {
+      const sInvest = Number(document.getElementById('simStartInvest')?.value || 0);
+      const mInvest = Number(document.getElementById('simMonthlyInvest')?.value || 0);
+      const ret = Number(document.getElementById('simReturn')?.value || 7);
+      const sCash = Number(document.getElementById('simStartCash')?.value || 0);
+      const mCash = Number(document.getElementById('simMonthlyCash')?.value || 0);
+      const years = Number(document.getElementById('simYears')?.value || 20);
+      const incSpecial = document.getElementById('simIncludeSpecial')?.checked || false;
+
+      if (document.getElementById('lblSimStartInvest')) document.getElementById('lblSimStartInvest').textContent = formatEUR(sInvest);
+      if (document.getElementById('lblSimMonthlyInvest')) document.getElementById('lblSimMonthlyInvest').textContent = formatEUR(mInvest);
+      if (document.getElementById('lblSimReturn')) document.getElementById('lblSimReturn').textContent = ret.toFixed(1) + ' %';
+      if (document.getElementById('lblSimStartCash')) document.getElementById('lblSimStartCash').textContent = formatEUR(sCash);
+      if (document.getElementById('lblSimMonthlyCash')) document.getElementById('lblSimMonthlyCash').textContent = formatEUR(mCash);
+      if (document.getElementById('lblSimYears')) document.getElementById('lblSimYears').textContent = years + ' Jahre';
+      if (document.getElementById('lblSimSpecialStatus')) document.getElementById('lblSimSpecialStatus').textContent = incSpecial ? 'Aktiv' : 'Inaktiv';
+    }
+
+    function renderForecastChart() {
+      const ctx = document.getElementById('forecastChart');
+      if (!ctx) return;
+
+      const sInvest = Number(document.getElementById('simStartInvest')?.value || 0);
+      const mInvest = Number(document.getElementById('simMonthlyInvest')?.value || 0);
+      const retAnnual = Number(document.getElementById('simReturn')?.value || 7) / 100;
+      const monthlyRate = retAnnual / 12;
+
+      const sCash = Number(document.getElementById('simStartCash')?.value || 0);
+      const mCash = Number(document.getElementById('simMonthlyCash')?.value || 0);
+      const years = Number(document.getElementById('simYears')?.value || 20);
+      const incSpecial = document.getElementById('simIncludeSpecial')?.checked || false;
+
+      const extra13Val = Number(appData.extra13 || 3137);
+      const extra14Val = Number(appData.extra14 || 3100);
+
+      const labels = ['Jahr 0'];
+      const wealthData = [sInvest + sCash];
+      const investData = [sInvest];
+      const cashData = [sCash];
+
+      let currentInvest = sInvest;
+      let currentCash = sCash;
+      let totalContributed = sInvest + sCash;
+
+      for (let y = 1; y <= years; y++) {
+        labels.push(`Jahr ${y}`);
+        for (let m = 1; m <= 12; m++) {
+          currentInvest += mInvest;
+          currentCash += mCash;
+          totalContributed += (mInvest + mCash);
+
+          if (incSpecial) {
+            if (m === 7) {
+              currentInvest += (extra13Val / 2);
+              currentCash += (extra13Val / 2);
+              totalContributed += extra13Val;
+            }
+            if (m === 12) {
+              currentInvest += (extra14Val / 2);
+              currentCash += (extra14Val / 2);
+              totalContributed += extra14Val;
+            }
+          }
+
+          currentInvest *= (1 + monthlyRate);
+        }
+        wealthData.push(Math.round(currentInvest + currentCash));
+        investData.push(Math.round(currentInvest));
+        cashData.push(Math.round(currentCash));
+      }
+
+      const finalWealth = wealthData[wealthData.length - 1];
+      const finalCash = cashData[cashData.length - 1];
+      const interestEarned = finalWealth - totalContributed;
+
+      if (document.getElementById('simTotalContributed')) document.getElementById('simTotalContributed').textContent = formatEUR(totalContributed);
+      if (document.getElementById('simTotalInterest')) document.getElementById('simTotalInterest').textContent = '+' + formatEUR(interestEarned);
+      if (document.getElementById('simTotalCash')) document.getElementById('simTotalCash').textContent = formatEUR(finalCash);
+      if (document.getElementById('simTotalWealth')) document.getElementById('simTotalWealth').textContent = formatEUR(finalWealth);
+
+      if (forecastChartInstance) {
+        forecastChartInstance.data.labels = labels;
+        forecastChartInstance.data.datasets[0].data = wealthData;
+        forecastChartInstance.data.datasets[1].data = investData;
+        forecastChartInstance.data.datasets[2].data = cashData;
+        forecastChartInstance.update();
+        return;
+      }
+
+      forecastChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Gesamtvermögen', data: wealthData, borderColor: '#10b981', borderWidth: 3, tension: 0.3, fill: false },
+            { label: 'Investments (Verzinst)', data: investData, borderColor: '#6366f1', borderWidth: 2, tension: 0.3, fill: false },
+            { label: 'Notgroschen / Cash (0%)', data: cashData, borderColor: '#f59e0b', borderWidth: 2, tension: 0.3, fill: false }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 } }
+            }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+          }
+        }
+      });
+    }
+
+    window.closeModal = function() {
+      document.getElementById('customModal')?.classList.add('hidden');
+    }
+
+    window.confirmCloseCurrentMonth = function() {
+      const modal = document.getElementById('customModal');
+      const title = document.getElementById('modalTitle');
+      const body = document.getElementById('modalBody');
+      const saveBtn = document.getElementById('modalSaveBtn');
+      if (!modal || !title || !body || !saveBtn) return;
+
+      title.textContent = "Aktuellen Monat abschließen?";
+      body.innerHTML = `<p class="text-xs text-slate-300">Dadurch wird der aktuelle Monat in der Historie gesichert und der verbleibende Puffer in den Notgroschen übertragen.</p>`;
+      saveBtn.textContent = "Jetzt abschließen";
+      saveBtn.onclick = function() {
+        executeCloseCurrentMonth();
+        closeModal();
+      };
+      modal.classList.remove('hidden');
+    }
+
+    function executeCloseCurrentMonth() {
+      const monthKey = appData.currentMonthKey || getCurrentYearMonth();
+      const totals = calculateCurrentTotals();
+
+      appData.lastBackupState = JSON.parse(JSON.stringify(appData));
+
+      if (totals.availableBuffer > 0) {
+        const cashPlan = (appData.plans || []).find(p => p.category.toLowerCase().includes('notgroschen') || p.name.toLowerCase().includes('notgroschen'));
+        if (cashPlan) {
+          cashPlan.current = Number(cashPlan.current || 0) + totals.availableBuffer;
+        }
+      }
+
+      (appData.plans || []).forEach(p => {
+        p.current = Number(p.current || 0) + Number(p.monthly || 0);
+      });
+
+      const updatedTotals = calculateCurrentTotals();
+
+      const plansHistory = {};
+      (appData.plans || []).forEach(p => {
+        plansHistory[p.id] = Number(p.current || 0);
+      });
+
+      appData.closedMonths = appData.closedMonths || {};
+      appData.closedMonths[monthKey] = {
+        dateLabel: formatYearMonthLabel(monthKey),
+        totalWealth: updatedTotals.totalWealth,
+        savings: updatedTotals.savingsRate,
+        plansHistory: plansHistory
+      };
+
+      const [y, m] = monthKey.split('-').map(Number);
+      let nextY = y, nextM = m + 1;
+      if (nextM > 12) { nextM = 1; nextY++; }
+      appData.currentMonthKey = `${nextY}-${String(nextM).padStart(2, '0')}`;
+      appData.dailyExpenses = [];
+
+      saveState();
+      showNotification("Monat erfolgreich abgeschlossen!");
+    }
+
+    window.undoLastMonthClose = function() {
+      if (!appData.lastBackupState) {
+        showNotification("Kein vorheriger Stand zum Wiederherstellen vorhanden.");
+        return;
+      }
+      appData = JSON.parse(JSON.stringify(appData.lastBackupState));
+      appData.lastBackupState = null;
+      saveState();
+      showNotification("Letzter Monatsabschluss wurde rückgängig gemacht.");
+    }
+
+    window.editYearEndGoalModal = function() {
+      const modal = document.getElementById('customModal');
+      const title = document.getElementById('modalTitle');
+      const body = document.getElementById('modalBody');
+      const saveBtn = document.getElementById('modalSaveBtn');
+      if (!modal || !title || !body || !saveBtn) return;
+
+      const totals = calculateCurrentTotals();
+      const currentGoal = appData.yearEndGoal || Math.max(10000, totals.totalWealth);
+      title.textContent = "Jahresend-Ziel anpassen";
+      body.innerHTML = `
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Ziel-Vermögen am 31.12. (€)</label>
+          <input type="number" id="modalGoalInput" value="${currentGoal}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+        </div>
+      `;
+      saveBtn.textContent = "Speichern";
+      saveBtn.onclick = function() {
+        const val = Number(document.getElementById('modalGoalInput')?.value || 10000);
+        appData.yearEndGoal = val;
+        saveState();
+        closeModal();
+        showNotification("Jahresend-Ziel aktualisiert!");
+      };
+      modal.classList.remove('hidden');
+    }
+
+    window.editClosedMonthModal = function(key) {
+      const modal = document.getElementById('customModal');
+      const title = document.getElementById('modalTitle');
+      const body = document.getElementById('modalBody');
+      const saveBtn = document.getElementById('modalSaveBtn');
+      if (!modal || !title || !body || !saveBtn) return;
+
+      const item = appData.closedMonths[key];
+      let plansFields = '';
+      (appData.plans || []).forEach(p => {
+        const val = item.plansHistory && item.plansHistory[p.id] !== undefined ? item.plansHistory[p.id] : p.current;
+        plansFields += `
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">${p.name} (€)</label>
+            <input type="number" data-plan-id="${p.id}" class="modal-plan-input w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" value="${val}">
+          </div>
+        `;
+      });
+
+      title.textContent = `Monat bearbeiten: ${item.dateLabel}`;
+      body.innerHTML = `
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Sparbetrag (€)</label>
+            <input type="number" id="modalMonthSavings" value="${item.savings}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          ${plansFields}
+        </div>
+      `;
+      saveBtn.textContent = "Speichern";
+      saveBtn.onclick = function() {
+        item.savings = Number(document.getElementById('modalMonthSavings')?.value || 0);
+        item.plansHistory = item.plansHistory || {};
+        let newTotal = 0;
+        document.querySelectorAll('.modal-plan-input').forEach(inp => {
+          const pid = inp.getAttribute('data-plan-id');
+          const pval = Number(inp.value || 0);
+          item.plansHistory[pid] = pval;
+          newTotal += pval;
+        });
+        item.totalWealth = newTotal;
+        saveState();
+        closeModal();
+        showNotification("Monatseintrag aktualisiert!");
+      };
+      modal.classList.remove('hidden');
+    }
+
+    window.deleteClosedMonth = function(key) {
+      if (appData.closedMonths && appData.closedMonths[key]) {
+        delete appData.closedMonths[key];
+        saveState();
+        showNotification("Monatseintrag gelöscht.");
+      }
+    }
+
+    window.addNewPlanModal = function() {
+      const modal = document.getElementById('customModal');
+      const title = document.getElementById('modalTitle');
+      const body = document.getElementById('modalBody');
+      const saveBtn = document.getElementById('modalSaveBtn');
+      if (!modal || !title || !body || !saveBtn) return;
+
+      title.textContent = "Neuen Sparplan anlegen";
+      body.innerHTML = `
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Name</label>
+            <input type="text" id="modalPlanName" placeholder="z. B. Tagesgeldkonto" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Kategorie</label>
+            <input type="text" id="modalPlanCategory" placeholder="z. B. ETF, Notgroschen" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Aktueller Wert (€)</label>
+            <input type="number" id="modalPlanCurrent" value="1000" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Sparrate mtl. (€)</label>
+            <input type="number" id="modalPlanMonthly" value="100" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+      `;
+      saveBtn.textContent = "Anlegen";
+      saveBtn.onclick = function() {
+        const name = document.getElementById('modalPlanName')?.value || 'Neuer Plan';
+        const category = document.getElementById('modalPlanCategory')?.value || 'Allgemein';
+        const current = Number(document.getElementById('modalPlanCurrent')?.value || 0);
+        const monthly = Number(document.getElementById('modalPlanMonthly')?.value || 0);
+
+        appData.plans = appData.plans || [];
+        appData.plans.push({ id: 'p_' + Date.now(), name, category, current, monthly });
+        saveState();
+        closeModal();
+        showNotification("Sparplan erfolgreich angelegt!");
+      };
+      modal.classList.remove('hidden');
+    }
+
+    window.editPlanModal = function(id) {
+      const plan = (appData.plans || []).find(p => p.id === id);
+      if (!plan) return;
+
+      const modal = document.getElementById('customModal');
+      const title = document.getElementById('modalTitle');
+      const body = document.getElementById('modalBody');
+      const saveBtn = document.getElementById('modalSaveBtn');
+      if (!modal || !title || !body || !saveBtn) return;
+
+      title.textContent = `Sparplan bearbeiten: ${plan.name}`;
+      body.innerHTML = `
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Name</label>
+            <input type="text" id="modalEditPlanName" value="${plan.name}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Aktueller Wert (€)</label>
+            <input type="number" id="modalEditPlanCurrent" value="${plan.current}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Sparrate mtl. (€)</label>
+            <input type="number" id="modalEditPlanMonthly" value="${plan.monthly}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+      `;
+      saveBtn.textContent = "Speichern";
+      saveBtn.onclick = function() {
+        plan.name = document.getElementById('modalEditPlanName')?.value || plan.name;
+        plan.current = Number(document.getElementById('modalEditPlanCurrent')?.value || 0);
+        plan.monthly = Number(document.getElementById('modalEditPlanMonthly')?.value || 0);
+        saveState();
+        closeModal();
+        showNotification("Sparplan aktualisiert!");
+      };
+      modal.classList.remove('hidden');
+    }
+
+    window.deletePlan = function(id) {
+      appData.plans = (appData.plans || []).filter(p => p.id !== id);
+      saveState();
+      showNotification("Sparplan gelöscht.");
+    }
+
+    window.addFixedExpense = function() {
+      const name = prompt("Name der Fixausgabe:");
+      if (!name) return;
+      const amount = Number(prompt("Monatlicher Betrag (€):") || 0);
+      appData.fixedExpenses = appData.fixedExpenses || [];
+      appData.fixedExpenses.push({ id: 'f_' + Date.now(), name, amount });
+      saveState();
+    }
+
+    window.deleteFixedExpense = function(id) {
+      appData.fixedExpenses = (appData.fixedExpenses || []).filter(f => f.id !== id);
+      saveState();
+    }
+
+    window.addVariableBudgetModal = function() {
+      const name = prompt("Name des variablen Budgets:");
+      if (!name) return;
+      const amount = Number(prompt("Monatliches Budget (€):") || 0);
+      appData.variableBudgets = appData.variableBudgets || [];
+      appData.variableBudgets.push({ id: 'vb_' + Date.now(), name, amount });
+      saveState();
+    }
+
+    window.deleteVariableBudget = function(id) {
+      appData.variableBudgets = (appData.variableBudgets || []).filter(b => b.id !== id);
+      saveState();
+    }
+
+    window.addDailyExpense = function() {
+      const titleInput = document.getElementById('expenseTitle');
+      const amountInput = document.getElementById('expenseAmount');
+      const catSelect = document.getElementById('expenseCategory');
+
+      const title = titleInput?.value.trim();
+      const amount = Number(amountInput?.value || 0);
+      const category = catSelect?.value || 'Sonstiges';
+
+      if (!title || amount <= 0) {
+        showNotification("Bitte Titel und gültigen Betrag eingeben.");
+        return;
+      }
+
+      appData.dailyExpenses = appData.dailyExpenses || [];
+      appData.dailyExpenses.push({ title, amount, category });
+
+      if (titleInput) titleInput.value = '';
+      if (amountInput) amountInput.value = '';
+
+      saveState();
+      showNotification("Ausgabe gebucht!");
+    }
+
+    window.deleteDailyExpense = function(idx) {
+      if (appData.dailyExpenses && appData.dailyExpenses[idx] !== undefined) {
+        appData.dailyExpenses.splice(idx, 1);
+        saveState();
+      }
+    }
+
+    window.exportDataJSON = function() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+      const dlAnchor = document.createElement('a');
+      dlAnchor.setAttribute("href", dataStr);
+      dlAnchor.setAttribute("download", "finanz_vermoegensplaner_backup.json");
+      document.body.appendChild(dlAnchor);
+      dlAnchor.click();
+      dlAnchor.remove();
+    }
+
+    function showNotification(msg) {
+      const box = document.getElementById('customNotificationBox');
+      if (!box) return;
+      box.textContent = msg;
+      box.classList.remove('opacity-0', 'pointer-events-none');
+      box.classList.add('opacity-100');
+      setTimeout(() => {
+        box.classList.remove('opacity-100');
+        box.classList.add('opacity-0', 'pointer-events-none');
+      }, 3000);
+    }
+
+    window.addEventListener('load', () => {
+      initFirebase();
+    });
+  </script>
+</body>
+</html>
