@@ -73,8 +73,8 @@
       <div id="sortableDashboardGrid" class="space-y-6">
         
         <!-- Top 4 KPI Cards -->
-        <div class="dash-draggable-card space-y-6" draggable="true" data-id="kpis">
-          <div class="flex items-center justify-between px-1 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
+        <div class="dash-draggable-card space-y-6 cursor-grab active:cursor-grabbing" draggable="true" data-id="kpis">
+          <div class="flex items-center justify-between px-1 text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
             <span>⠷ Dashboard Kennzahlen</span>
             <span>Zum Verschieben greifen</span>
           </div>
@@ -132,8 +132,8 @@
         </div>
 
         <!-- Distribution -->
-        <div class="dash-draggable-card space-y-2" draggable="true" data-id="distribution">
-          <div class="flex items-center justify-between px-1 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
+        <div class="dash-draggable-card space-y-2 cursor-grab active:cursor-grabbing" draggable="true" data-id="distribution">
+          <div class="flex items-center justify-between px-1 text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
             <span>⠷ Einkommens- & Budget-Verteilung</span>
             <span>Zum Verschieben greifen</span>
           </div>
@@ -205,8 +205,8 @@
         </div>
 
         <!-- Goal -->
-        <div class="dash-draggable-card space-y-2" draggable="true" data-id="goal">
-          <div class="flex items-center justify-between px-1 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
+        <div class="dash-draggable-card space-y-2 cursor-grab active:cursor-grabbing" draggable="true" data-id="goal">
+          <div class="flex items-center justify-between px-1 text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
             <span>⠷ Jahresend-Ziel</span>
             <span>Zum Verschieben greifen</span>
           </div>
@@ -245,8 +245,8 @@
         </div>
 
         <!-- Closing -->
-        <div class="dash-draggable-card space-y-2" draggable="true" data-id="closing">
-          <div class="flex items-center justify-between px-1 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
+        <div class="dash-draggable-card space-y-2 cursor-grab active:cursor-grabbing" draggable="true" data-id="closing">
+          <div class="flex items-center justify-between px-1 text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
             <span>⠷ Monatsabschluss & Historie</span>
             <span>Zum Verschieben greifen</span>
           </div>
@@ -277,8 +277,8 @@
         </div>
 
         <!-- Charts -->
-        <div class="dash-draggable-card space-y-2" draggable="true" data-id="charts">
-          <div class="flex items-center justify-between px-1 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
+        <div class="dash-draggable-card space-y-2 cursor-grab active:cursor-grabbing" draggable="true" data-id="charts">
+          <div class="flex items-center justify-between px-1 text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
             <span>⠷ Charts & Verlauf</span>
             <span>Zum Verschieben greifen</span>
           </div>
@@ -307,8 +307,8 @@
         </div>
 
         <!-- History -->
-        <div class="dash-draggable-card space-y-2" draggable="true" data-id="history">
-          <div class="flex items-center justify-between px-1 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
+        <div class="dash-draggable-card space-y-2 cursor-grab active:cursor-grabbing" draggable="true" data-id="history">
+          <div class="flex items-center justify-between px-1 text-slate-500 hover:text-slate-300 text-[10px] uppercase font-bold tracking-wider">
             <span>⠷ Abgeschlossene Monate (Historie Log)</span>
             <span>Zum Verschieben greifen</span>
           </div>
@@ -1610,8 +1610,88 @@
       dlAnchor.remove();
     }
 
+    // Drag & Drop Logic for Dashboard Cards
+    function initDashboardDragAndDrop() {
+      const container = document.getElementById('sortableDashboardGrid');
+      if (!container) return;
+
+      let draggedCard = null;
+
+      container.querySelectorAll('.dash-draggable-card').forEach(card => {
+        card.addEventListener('dragstart', (e) => {
+          draggedCard = card;
+          e.dataTransfer.effectAllowed = 'move';
+          setTimeout(() => card.classList.add('opacity-40'), 0);
+        });
+
+        card.addEventListener('dragend', () => {
+          draggedCard = null;
+          container.querySelectorAll('.dash-draggable-card').forEach(c => c.classList.remove('opacity-40', 'border-indigo-500'));
+          saveDashboardOrder();
+        });
+
+        card.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+        });
+
+        card.addEventListener('dragenter', (e) => {
+          e.preventDefault();
+          if (card !== draggedCard) {
+            card.classList.add('border-indigo-500/80');
+          }
+        });
+
+        card.addEventListener('dragleave', () => {
+          card.classList.remove('border-indigo-500/80');
+        });
+
+        card.addEventListener('drop', (e) => {
+          e.preventDefault();
+          card.classList.remove('border-indigo-500/80');
+          if (draggedCard && draggedCard !== card) {
+            const allCards = Array.from(container.querySelectorAll('.dash-draggable-card'));
+            const draggedIdx = allCards.indexOf(draggedCard);
+            const targetIdx = allCards.indexOf(card);
+
+            if (draggedIdx < targetIdx) {
+              container.insertBefore(draggedCard, card.nextSibling);
+            } else {
+              container.insertBefore(draggedCard, card);
+            }
+          }
+        });
+      });
+    }
+
+    function saveDashboardOrder() {
+      const container = document.getElementById('sortableDashboardGrid');
+      if (!container) return;
+      const order = Array.from(container.querySelectorAll('.dash-draggable-card')).map(c => c.getAttribute('data-id'));
+      appData.dashboardOrder = order;
+      saveState();
+    }
+
+    function restoreDashboardOrder() {
+      const container = document.getElementById('sortableDashboardGrid');
+      if (!container || !appData.dashboardOrder) return;
+      const cardsMap = {};
+      container.querySelectorAll('.dash-draggable-card').forEach(c => {
+        cardsMap[c.getAttribute('data-id')] = c;
+      });
+      appData.dashboardOrder.forEach(id => {
+        if (cardsMap[id]) {
+          container.appendChild(cardsMap[id]);
+        }
+      });
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       initFirebase();
+      setTimeout(() => {
+        restoreDashboardOrder();
+        initDashboardDragAndDrop();
+      }, 200);
     });
   </script>
 </body>
