@@ -634,7 +634,7 @@
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // Firebase Konfiguration (Live Cloud Sync)
+    // Firebase Konfiguration
     const firebaseConfig = {
       apiKey: "AIzaSyDAa-LXGXwhMDEhyTZcvGaqLuI1HeK4UjI",
       authDomain: "finanzapp-dd2bc.firebaseapp.com",
@@ -729,7 +729,6 @@
     }
 
     async function initFirebase() {
-      // Zuerst lokalen Speicher laden für Sofort-Ansicht
       const localSaved = localStorage.getItem('finanzplaner_pro_v3');
       if (localSaved) {
         try {
@@ -747,10 +746,9 @@
 
         await signInAnonymously(auth);
 
-        // Firestore Dokument-Referenz für deine FinanzApp
+        // Direkter, korrekter Firestore-Pfad passend zu deinen Regeln
         const docRef = doc(db, 'finanzapp_data', 'shared_main_vault');
         
-        // Echtzeit-Listener (Lauscht auf Änderungen von jedem Gerät)
         onSnapshot(docRef, (snap) => {
           if (snap.exists()) {
             isRemoteUpdate = true;
@@ -760,7 +758,6 @@
             isRemoteUpdate = false;
             document.getElementById('headerSubtitle').textContent = 'Live-Cloud-Sync aktiv';
           } else {
-            // Falls noch kein Cloud-Dokument existiert, initialisieren
             saveState();
           }
         }, (err) => {
@@ -768,7 +765,7 @@
           document.getElementById('headerSubtitle').textContent = 'Lokaler Modus aktiv';
         });
       } catch (e) {
-        console.warn("Cloud-Verbindung fehlgeschlagen, nutze lokalen Modus:", e);
+        console.warn("Cloud-Verbindung fehlgeschlagen:", e);
         document.getElementById('headerSubtitle').textContent = 'Lokaler Modus aktiv';
       }
     }
