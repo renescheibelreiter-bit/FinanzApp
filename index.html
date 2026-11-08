@@ -589,7 +589,7 @@
   <!-- Notification Toast -->
   <div id="customNotificationBox" class="fixed bottom-5 right-5 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-2xl z-50 text-xs font-semibold transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
-  <!-- Firebase & App Logic -->
+  <!-- Firebase & App Logic Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -606,6 +606,8 @@
     };
 
     let db, auth;
+    let isRemoteUpdate = false;
+
     let appData = {
       netIncome: 2704.14,
       extra13: 3137,
@@ -656,7 +658,6 @@
       ]
     };
 
-    let isRemoteUpdate = false;
     let assetDonutInstance = null;
     let historicalChartInstance = null;
     let forecastChartInstance = null;
@@ -664,10 +665,6 @@
 
     window.formatEUR = function(val) {
       return Number(val || 0).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
-    }
-
-    window.getCurrentYearMonth = function() {
-      return '2026-11';
     }
 
     window.formatYearMonthLabel = function(ymStr) {
@@ -678,7 +675,7 @@
       return `${months[parseInt(m, 10)]} ${y}`;
     }
 
-    async function initFirebase() {
+    async function initApp() {
       const localSaved = localStorage.getItem('finanzplaner_pro_v3');
       if (localSaved) {
         try {
@@ -687,10 +684,8 @@
           console.warn("Konnte lokalen Speicher nicht lesen:", e);
         }
       }
-      appData.currentMonthKey = '2026-11';
-      if (appData.closedMonths) {
-        delete appData.closedMonths['2026-11'];
-        delete appData.closedMonths['2026-12'];
+      if (!appData.currentMonthKey) {
+        appData.currentMonthKey = '2026-11';
       }
       renderAll();
 
@@ -706,18 +701,19 @@
         onSnapshot(docRef, (snap) => {
           if (snap.exists()) {
             isRemoteUpdate = true;
-            appData = { ...appData, ...snap.data() };
-            appData.currentMonthKey = '2026-11';
-            if (appData.closedMonths) {
-              delete appData.closedMonths['2026-11'];
-              delete appData.closedMonths['2026-12'];
+            const cloudData = snap.data();
+            appData = { ...appData, ...cloudData };
+            if (!appData.currentMonthKey) {
+              appData.currentMonthKey = '2026-11';
             }
             localStorage.setItem('finanzplaner_pro_v3', JSON.stringify(appData));
             renderAll();
+            restoreDashboardOrder();
             isRemoteUpdate = false;
             document.getElementById('headerSubtitle').textContent = 'Live-Cloud-Sync aktiv';
           } else {
             saveState();
+            document.getElementById('headerSubtitle').textContent = 'Live-Cloud-Sync aktiv';
           }
         }, (err) => {
           console.warn("Firestore Listener Hinweis:", err.message);
@@ -735,7 +731,7 @@
       if (!db || !auth || !auth.currentUser || isRemoteUpdate) return;
       try {
         const docRef = doc(db, 'finanzapp_data', 'shared_main_vault');
-        await setDoc(docRef, appData, { merge: true });
+        await setDoc(docRef, appData);
       } catch (e) {
         console.warn("Cloud-Speicherung übersprungen:", e.message);
       }
@@ -1024,24 +1020,90 @@
       const key = appData.currentMonthKey || '2026-11';
       const label = formatYearMonthLabel(key);
       const totals = calculateCurrentTotals();
+      const bufferToSave = Math.max(0, totals.availableBuffer);
+      const totalAdded = totals.savingsRate + bufferToSave;
 
-      appData.lastBackupState = JSON.parse(JSON.stringify(appData));
+      const modal = document.getElementById('customModal');
+      document.getElementById('modalTitle').textContent = `Monat ${label} abschließen?`;
+      document.getElementById('modalBody').innerHTML = `
+        <div class="space-y-3 text-xs text-slate-300">
+          <p>Möchtest du den Monat <strong class="text-white">${label}</strong> wirklich abschließen?</p>
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-2">
+            <div class="flex justify-between">
+              <span class="text-slate-400">Reguläre Sparraten:</span>
+              <span class="font-bold text-indigo-400">+${formatEUR(totals.savingsRate)}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Freier Puffer (in Notgroschen):</span>
+              <span class="font-bold text-amber-400">+${formatEUR(bufferToSave)}</span>
+            </div>
+            <div class="flex justify-between border-t border-slate-800 pt-2">
+              <span class="text-white font-semibold">Neues Gesamtvermögen:</span>
+              <span class="font-extrabold text-emerald-400">${formatEUR(totals.totalWealth + totalAdded)}</span>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-400">Deine täglichen Ausgaben werden für den neuen Monat auf 0 € zurückgesetzt und der Monat springt weiter.</p>
+        </div>
+      `;
 
-      if (!appData.closedMonths) appData.closedMonths = {};
-      const plansHistory = {};
-      (appData.plans || []).forEach(p => {
-        plansHistory[p.id] = Number(p.current || 0);
-      });
+      const saveBtn = document.getElementById('modalSaveBtn');
+      saveBtn.textContent = 'Jetzt abschließen';
+      saveBtn.onclick = function() {
+        // Backup für "Rückgängig" speichern
+        appData.lastBackupState = JSON.parse(JSON.stringify(appData));
 
-      appData.closedMonths[key] = {
-        dateLabel: label,
-        totalWealth: totals.totalWealth,
-        savings: totals.savingsRate,
-        plansHistory: plansHistory
+        // 1. Sparraten zu den jeweiligen Sparplänen addieren
+        (appData.plans || []).forEach(p => {
+          p.current = Number(p.current || 0) + Number(p.monthly || 0);
+        });
+
+        // 2. Freien Puffer in den Notgroschen buchen (falls positiv)
+        if (bufferToSave > 0) {
+          let notgroschenPlan = (appData.plans || []).find(p => p.category === 'Notgroschen' || p.name.toLowerCase().includes('notgroschen'));
+          if (notgroschenPlan) {
+            notgroschenPlan.current = Number(notgroschenPlan.current || 0) + bufferToSave;
+          } else if (appData.plans && appData.plans.length > 0) {
+            appData.plans[0].current = Number(appData.plans[0].current || 0) + bufferToSave;
+          }
+        }
+
+        // 3. Neue Vermögenswerte für die Historie erfassen
+        const newTotalWealth = (appData.plans || []).reduce((acc, p) => acc + Number(p.current || 0), 0);
+        if (!appData.closedMonths) appData.closedMonths = {};
+        const plansHistory = {};
+        (appData.plans || []).forEach(p => {
+          plansHistory[p.id] = Number(p.current || 0);
+        });
+
+        appData.closedMonths[key] = {
+          dateLabel: label,
+          totalWealth: newTotalWealth,
+          savings: totalAdded,
+          plansHistory: plansHistory
+        };
+
+        // 4. Monat um 1 weiterschalten
+        const parts = key.split('-');
+        let y = parseInt(parts[0], 10);
+        let m = parseInt(parts[1], 10) + 1;
+        if (m > 12) {
+          m = 1;
+          y += 1;
+        }
+        appData.currentMonthKey = `${y}-${String(m).padStart(2, '0')}`;
+
+        // 5. Variable Ausgaben & Sonderzahlungen für den neuen Monat zurücksetzen
+        appData.dailyExpenses = [];
+        appData.extra13Claimed = false;
+        appData.extra14Claimed = false;
+
+        saveBtn.textContent = 'Speichern';
+        saveState();
+        closeModal();
+        showNotification(`Monat ${label} erfolgreich abgeschlossen!`);
       };
 
-      saveState();
-      showNotification(`Monat ${label} erfolgreich abgeschlossen!`);
+      modal.classList.remove('hidden');
     }
 
     window.undoLastMonthClose = function() {
@@ -1049,16 +1111,54 @@
         showNotification("Kein vorheriger Stand zum Wiederherstellen vorhanden.");
         return;
       }
-      const currentMonthKey = appData.currentMonthKey || '2026-11';
-      appData = JSON.parse(JSON.stringify(appData.lastBackupState));
-      appData.lastBackupState = null;
-      appData.currentMonthKey = currentMonthKey;
 
-      if (appData.closedMonths && appData.closedMonths[currentMonthKey]) {
-        delete appData.closedMonths[currentMonthKey];
-      }
-      saveState();
-      showNotification("Monatsabschluss erfolgreich rückgängig gemacht.");
+      const modal = document.getElementById('customModal');
+      document.getElementById('modalTitle').textContent = 'Monatsabschluss rückgängig machen?';
+      document.getElementById('modalBody').innerHTML = `
+        <p class="text-xs text-slate-300">Möchtest du den letzten Monatsabschluss wirklich rückgängig machen? Alle Kontostände, Ausgaben und der aktuelle Monat werden auf den Stand vor dem Abschluss zurückgesetzt.</p>
+      `;
+
+      const saveBtn = document.getElementById('modalSaveBtn');
+      saveBtn.textContent = 'Rückgängig machen';
+      saveBtn.onclick = function() {
+        appData = JSON.parse(JSON.stringify(appData.lastBackupState));
+        appData.lastBackupState = null;
+        saveBtn.textContent = 'Speichern';
+        saveState();
+        closeModal();
+        showNotification("Monatsabschluss erfolgreich rückgängig gemacht.");
+      };
+
+      modal.classList.remove('hidden');
+    }
+
+    window.editClosedMonth = function(k) {
+      if (!appData.closedMonths || !appData.closedMonths[k]) return;
+      const m = appData.closedMonths[k];
+      const modal = document.getElementById('customModal');
+      document.getElementById('modalTitle').textContent = `Historie bearbeiten (${m.dateLabel})`;
+      document.getElementById('modalBody').innerHTML = `
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Gesamtvermögen (€)</label>
+            <input type="number" id="modalHistWealth" value="${m.totalWealth}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Sparbetrag im Monat (€)</label>
+            <input type="number" id="modalHistSavings" value="${m.savings}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+      `;
+      const saveBtn = document.getElementById('modalSaveBtn');
+      saveBtn.textContent = 'Speichern';
+      saveBtn.onclick = function() {
+        m.totalWealth = Number(document.getElementById('modalHistWealth').value || 0);
+        m.savings = Number(document.getElementById('modalHistSavings').value || 0);
+        saveState();
+        closeModal();
+        showNotification("Eintrag in der Historie aktualisiert!");
+      };
+      modal.classList.remove('hidden');
     }
 
     window.deleteClosedMonth = function(k) {
@@ -1281,7 +1381,6 @@
     }
 
     function initSimDefaultsFromPlans() {
-      const totals = calculateCurrentTotals();
       const totalInvest = (appData.plans || []).filter(p => p.category !== 'Notgroschen').reduce((a, b) => a + Number(b.current || 0), 0);
       const mtlInvest = (appData.plans || []).filter(p => p.category !== 'Notgroschen').reduce((a, b) => a + Number(b.monthly || 0), 0);
       const notgroschenPlan = (appData.plans || []).find(p => p.category === 'Notgroschen');
@@ -1680,7 +1779,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      initFirebase();
+      initApp();
       setTimeout(() => {
         restoreDashboardOrder();
         initDashboardDragAndDrop();
