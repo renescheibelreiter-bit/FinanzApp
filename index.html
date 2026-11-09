@@ -41,12 +41,18 @@
             Finanz- & Vermögensplaner 
             <span class="text-[10px] bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Pro</span>
           </h1>
-          <p class="text-xs text-slate-400" id="headerSubtitle">Lokaler Modus aktiv</p>
+          <p class="text-xs text-slate-400" id="headerSubtitle">Lokaler Speicher aktiv</p>
         </div>
       </div>
-      <button onclick="exportDataJSON()" title="Daten exportieren" class="sm:hidden p-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-300 transition">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-      </button>
+      <div class="flex items-center gap-2 sm:hidden">
+        <button onclick="exportDataJSON()" title="Daten exportieren" class="p-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-300 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        </button>
+        <label title="Daten importieren" class="p-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-300 transition cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          <input type="file" accept=".json" onchange="importDataJSON(event)" class="hidden">
+        </label>
+      </div>
     </div>
     
     <div class="flex items-center space-x-1 sm:space-x-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0 no-scrollbar">
@@ -66,9 +72,15 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
         Prognose
       </button>
-      <button onclick="exportDataJSON()" title="Daten exportieren" class="hidden sm:flex p-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-300 transition shrink-0">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-      </button>
+      <div class="hidden sm:flex items-center space-x-1 shrink-0">
+        <button onclick="exportDataJSON()" title="Daten exportieren" class="p-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-300 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        </button>
+        <label title="Daten importieren" class="p-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-300 transition cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          <input type="file" accept=".json" onchange="importDataJSON(event)" class="hidden">
+        </label>
+      </div>
     </div>
   </header>
 
@@ -435,19 +447,12 @@
           </div>
         </div>
 
-        <!-- Quick Add Expense Form mit Enter-Support -->
+        <!-- Quick Add Expense Form mit dynamischem Kategorien-Dropdown -->
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
           <input type="text" id="expenseTitle" onkeydown="if(event.key==='Enter') addDailyExpense()" placeholder="z. B. Supermarkt, Tankstelle" class="sm:col-span-5 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
           <input type="number" id="expenseAmount" onkeydown="if(event.key==='Enter') addDailyExpense()" placeholder="Betrag (€)" class="sm:col-span-3 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
-          <select id="expenseCategory" class="sm:col-span-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
-            <option value="Lebensmittel">Lebensmittel</option>
-            <option value="Freizeit">Freizeit</option>
-            <option value="Wohnen">Wohnen</option>
-            <option value="Transport">Transport / Auto</option>
-            <option value="Kleidung">Kleidung</option>
-            <option value="Gesundheit">Gesundheit</option>
-            <option value="Technik">Technik</option>
-            <option value="Sonstiges">Sonstiges</option>
+          <select id="expenseCategory" onchange="checkCategoryDropdown(this)" class="sm:col-span-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
+            <!-- Dynamisch via renderCategoriesSelect() -->
           </select>
           <button onclick="addDailyExpense()" class="sm:col-span-2 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1">
             + Buchen
@@ -608,6 +613,7 @@
       yearEndGoal: 10000,
       currentMonthKey: '2026-11',
       lastBackupState: null,
+      categories: ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'],
       fixedExpenses: [
         { id: 'f1', name: 'Miete', amount: 820 },
         { id: 'f2', name: 'Internet', amount: 40 },
@@ -683,6 +689,9 @@
       if (!appData.currentMonthKey) {
         appData.currentMonthKey = '2026-11';
       }
+      if (!appData.categories) {
+        appData.categories = ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'];
+      }
       const subtitle = document.getElementById('headerSubtitle');
       if (subtitle) subtitle.textContent = 'Lokaler Speicher aktiv';
       renderAll();
@@ -695,6 +704,7 @@
     }
 
     function renderAll() {
+      renderCategoriesSelect();
       renderDashboard();
       renderPlansList();
       renderIncomeAndFixed();
@@ -760,6 +770,48 @@
         totalWealth
       };
     }
+
+    function renderCategoriesSelect() {
+      const select = document.getElementById('expenseCategory');
+      if (!select) return;
+      const currentVal = select.value;
+      const cats = appData.categories || ['Lebensmittel', 'Freizeit', 'Sonstiges'];
+      
+      let html = cats.map(c => `<option value="${c}" ${currentVal === c ? 'selected' : ''}>${c}</option>`).join('');
+      html += `<option value="__NEW__" class="text-amber-400 font-semibold">+ Neue Kategorie hinzufügen...</option>`;
+      select.innerHTML = html;
+    }
+
+    window.checkCategoryDropdown = function(select) {
+      if (select.value === '__NEW__') {
+        const modal = document.getElementById('customModal');
+        document.getElementById('modalTitle').textContent = 'Neue Kategorie erstellen';
+        document.getElementById('modalBody').innerHTML = `
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Kategoriename</label>
+            <input type="text" id="modalInstantCatName" placeholder="z. B. Haustiere, Auto" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+        `;
+        document.getElementById('modalSaveBtn').onclick = function() {
+          const name = document.getElementById('modalInstantCatName').value.trim();
+          if (!name) {
+            showNotification("Bitte Namen eingeben.");
+            select.value = appData.categories[0] || 'Sonstiges';
+            closeModal();
+            return;
+          }
+          if (!appData.categories) appData.categories = [];
+          if (!appData.categories.includes(name)) {
+            appData.categories.push(name);
+          }
+          saveState();
+          select.value = name;
+          closeModal();
+          showNotification(`Kategorie "${name}" hinzugefügt!`);
+        };
+        modal.classList.remove('hidden');
+      }
+    };
 
     function renderDashboard() {
       const totals = calculateCurrentTotals();
@@ -977,7 +1029,6 @@
       });
     }
 
-    // Flexible Monthly Closing Modal with Savings Plan Selector
     window.openCloseMonthModal = function() {
       const key = appData.currentMonthKey || '2026-11';
       const label = formatYearMonthLabel(key);
@@ -1019,12 +1070,10 @@
         const targetPlanId = document.getElementById('modalBufferTargetPlan').value;
         appData.lastBackupState = JSON.parse(JSON.stringify(appData));
 
-        // 1. Sparraten zu den jeweiligen Sparplänen addieren
         (appData.plans || []).forEach(p => {
           p.current = Number(p.current || 0) + Number(p.monthly || 0);
         });
 
-        // 2. Freien Puffer auf den ausgewählten Ziel-Sparplan buchen
         if (bufferToSave > 0) {
           const targetPlan = (appData.plans || []).find(p => p.id === targetPlanId);
           if (targetPlan) {
@@ -1034,7 +1083,6 @@
           }
         }
 
-        // 3. Neue Vermögenswerte für die Historie erfassen
         const newTotalWealth = (appData.plans || []).reduce((acc, p) => acc + Number(p.current || 0), 0);
         if (!appData.closedMonths) appData.closedMonths = {};
         const plansHistory = {};
@@ -1049,7 +1097,6 @@
           plansHistory: plansHistory
         };
 
-        // 4. Monat weiterschalten
         const parts = key.split('-');
         let y = parseInt(parts[0], 10);
         let m = parseInt(parts[1], 10) + 1;
@@ -1059,7 +1106,6 @@
         }
         appData.currentMonthKey = `${y}-${String(m).padStart(2, '0')}`;
 
-        // 5. Reset tägliche Ausgaben & Sonderzahlungen
         appData.dailyExpenses = [];
         appData.extra13Claimed = false;
         appData.extra14Claimed = false;
@@ -1340,8 +1386,8 @@
       const exp = appData.dailyExpenses[idx];
       const modal = document.getElementById('customModal');
       document.getElementById('modalTitle').textContent = 'Ausgabe bearbeiten';
-      const categories = ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'];
-      const optionsHtml = categories.map(c => `<option value="${c}" ${exp.category === c ? 'selected' : ''}>${c}</option>`).join('');
+      const cats = appData.categories || ['Lebensmittel', 'Freizeit', 'Sonstiges'];
+      const optionsHtml = cats.map(c => `<option value="${c}" ${exp.category === c ? 'selected' : ''}>${c}</option>`).join('');
 
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
@@ -1384,8 +1430,8 @@
     window.addVariableBudgetModal = function() {
       const modal = document.getElementById('customModal');
       document.getElementById('modalTitle').textContent = 'Variables Budget anlegen';
-      const categories = ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'];
-      const optionsHtml = categories.map(c => `<option value="${c}">${c}</option>`).join('');
+      const cats = appData.categories || ['Lebensmittel', 'Freizeit', 'Sonstiges'];
+      const optionsHtml = cats.map(c => `<option value="${c}">${c}</option>`).join('');
 
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
@@ -1395,7 +1441,7 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-400 mb-1">Verknüpfte Kategorie</label>
-            <select id="modalVbCat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+            <select id="modalVbCat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
               ${optionsHtml}
             </select>
           </div>
@@ -1429,8 +1475,8 @@
       if (!vb) return;
       const modal = document.getElementById('customModal');
       document.getElementById('modalTitle').textContent = 'Variables Budget bearbeiten';
-      const categories = ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'];
-      const optionsHtml = categories.map(c => `<option value="${c}" ${vb.category === c ? 'selected' : ''}>${c}</option>`).join('');
+      const cats = appData.categories || ['Lebensmittel', 'Freizeit', 'Sonstiges'];
+      const optionsHtml = cats.map(c => `<option value="${c}" ${vb.category === c ? 'selected' : ''}>${c}</option>`).join('');
 
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
@@ -1440,7 +1486,7 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-400 mb-1">Verknüpfte Kategorie</label>
-            <select id="modalVbCat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+            <select id="modalVbCat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
               ${optionsHtml}
             </select>
           </div>
@@ -1841,7 +1887,27 @@
       dlAnchor.remove();
     }
 
-    // Drag & Drop Logic for Dashboard Cards
+    window.importDataJSON = function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed && typeof parsed === 'object') {
+            appData = { ...appData, ...parsed };
+            saveState();
+            showNotification("Backup erfolgreich importiert!");
+          } else {
+            showNotification("Ungültige JSON-Datei.");
+          }
+        } catch (err) {
+          showNotification("Fehler beim Einlesen der Datei.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
     function initDashboardDragAndDrop() {
       const container = document.getElementById('sortableDashboardGrid');
       if (!container) return;
