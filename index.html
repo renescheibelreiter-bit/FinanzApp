@@ -676,7 +676,6 @@
   <!-- Firebase & App Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     const ALL_MONTH_KEYS = [];
@@ -689,8 +688,6 @@
     window.undoStack = [];
     let notificationTimeout = null;
     let db = null;
-    let auth = null;
-    let userId = null;
     let isSyncingFromCloud = false;
 
     window.appData = {
@@ -749,7 +746,6 @@
 
     async function initFirebase() {
       try {
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = {
           apiKey: "AIzaSyDAa-LXGXwhMDEhyTZcvGaqLuI1HeK4UjI",
           authDomain: "finanzapp-dd2bc.firebaseapp.com",
@@ -761,20 +757,11 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        auth = getAuth(app);
         db = getFirestore(app);
 
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
-
-        userId = auth.currentUser?.uid || crypto.randomUUID();
-        if (!userId) return;
-
-        // Real-time Firestore sync listener
-        const docRef = doc(db, 'artifacts', appId, 'users', userId, 'finanz_data', 'state');
+        // Direktes, gemeinsames Dokument in Firestore ohne Authentifizierungs-Sperre
+        const docRef = doc(db, 'finanzplaner_pro_public', 'main_shared_data');
+        
         onSnapshot(docRef, (docSnap) => {
           if (docSnap.exists()) {
             const cloudData = docSnap.data();
@@ -794,7 +781,6 @@
               isSyncingFromCloud = false;
             }
           } else {
-            // Seed initial data if cloud is empty
             saveStateToCloud();
           }
         }, (error) => {
@@ -807,11 +793,9 @@
     }
 
     async function saveStateToCloud() {
-      if (isSyncingFromCloud || !db || !auth || !auth.currentUser) return;
+      if (isSyncingFromCloud || !db) return;
       try {
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const currentUserId = auth.currentUser.uid;
-        const docRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'finanz_data', 'state');
+        const docRef = doc(db, 'finanzplaner_pro_public', 'main_shared_data');
         await setDoc(docRef, {
           payload: JSON.stringify(window.appData),
           updatedAt: new Date().toISOString()
