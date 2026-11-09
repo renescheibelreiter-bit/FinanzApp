@@ -41,7 +41,7 @@
             Finanz- & Vermögensplaner 
             <span class="text-[10px] bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Pro</span>
           </h1>
-          <p class="text-xs text-slate-400" id="headerSubtitle">Automatische Bestandsfortschreibung aktiv</p>
+          <p class="text-xs text-slate-400" id="headerSubtitle">Cloud-Synchronisation aktiv</p>
         </div>
       </div>
       <div class="flex items-center gap-2 sm:hidden">
@@ -673,8 +673,12 @@
   <!-- Notification Toast -->
   <div id="customNotificationBox" class="fixed bottom-5 right-5 bg-slate-900 border border-emerald-500/50 text-white px-4 py-3 rounded-xl shadow-2xl z-50 text-xs font-semibold transition-all duration-300 opacity-0 pointer-events-none flex items-center gap-3"></div>
 
-  <!-- App Logic -->
-  <script>
+  <!-- Firebase & App Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
     const ALL_MONTH_KEYS = [];
     [2026, 2027].forEach(y => {
       for (let m = 1; m <= 12; m++) {
@@ -682,10 +686,14 @@
       }
     });
 
-    let undoStack = [];
+    window.undoStack = [];
     let notificationTimeout = null;
+    let db = null;
+    let auth = null;
+    let userId = null;
+    let isSyncingFromCloud = false;
 
-    let appData = {
+    window.appData = {
       netIncome: 2704.14,
       extra13: 3137,
       extra14: 3100,
@@ -739,44 +747,108 @@
       return `${months[parseInt(m, 10)]} ${y}`;
     }
 
-    function initApp() {
-      const localSaved = localStorage.getItem('finanzplaner_pro_v6');
-      if (localSaved) {
-        try {
-          appData = { ...appData, ...JSON.parse(localSaved) };
-        } catch (e) {
-          console.warn("Konnte lokalen Speicher nicht lesen:", e);
-        }
-      }
-      if (!appData.currentMonthKey) appData.currentMonthKey = '2026-11';
-      if (!appData.categories) appData.categories = ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport / Auto', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'];
-      if (!appData.defaultFixedExpenses) appData.defaultFixedExpenses = appData.fixedExpenses || [];
-      if (!appData.basePlans) appData.basePlans = appData.plans || [];
-      if (!appData.monthOverrides) appData.monthOverrides = {};
-      if (!appData.deletedPlansArchive) appData.deletedPlansArchive = [];
+    async function initFirebase() {
+      try {
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
 
-      buildMonthSelectorOptions();
-      ensureMonthExists(appData.currentMonthKey);
-      renderAll();
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+
+        userId = auth.currentUser?.uid || crypto.randomUUID();
+        if (!userId) return;
+
+        // Real-time Firestore sync listener
+        const docRef = doc(db, 'artifacts', appId, 'users', userId, 'finanz_data', 'state');
+        onSnapshot(docRef, (docSnap) => {
+          if (docSnap.exists()) {
+            const cloudData = docSnap.data();
+            if (cloudData && cloudData.payload) {
+              isSyncingFromCloud = true;
+              try {
+                const parsed = JSON.parse(cloudData.payload);
+                if (parsed) {
+                  window.appData = { ...window.appData, ...parsed };
+                  if (!window.appData.monthOverrides) window.appData.monthOverrides = {};
+                  if (!window.appData.deletedPlansArchive) window.appData.deletedPlansArchive = [];
+                  renderAll();
+                }
+              } catch (e) {
+                console.error("Cloud parse error:", e);
+              }
+              isSyncingFromCloud = false;
+            }
+          }
+        }, (error) => {
+          console.error("Firestore sync error:", error);
+        });
+
+      } catch (err) {
+        console.warn("Firebase init fallback to local:", err);
+      }
     }
 
-    function pushUndoSnapshot(actionLabel = 'Letzte Änderung') {
-      const snapshot = JSON.parse(JSON.stringify(appData));
-      undoStack.push({
+    async function saveStateToCloud() {
+      if (isSyncingFromCloud || !db || !auth || !auth.currentUser) return;
+      try {
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const currentUserId = auth.currentUser.uid;
+        const docRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'finanz_data', 'state');
+        await setDoc(docRef, {
+          payload: JSON.stringify(window.appData),
+          updatedAt: new Date().toISOString()
+        });
+      } catch (err) {
+        console.error("Cloud save error:", err);
+      }
+    }
+
+    function initApp() {
+      const localSaved = localStorage.getItem('finanzplaner_pro_v7');
+      if (localSaved) {
+        try {
+          window.appData = { ...window.appData, ...JSON.parse(localSaved) };
+        } catch (e) {
+          console.warn("Local storage read error:", e);
+        }
+      }
+      if (!window.appData.currentMonthKey) window.appData.currentMonthKey = '2026-11';
+      if (!window.appData.categories) window.appData.categories = ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport / Auto', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'];
+      if (!window.appData.defaultFixedExpenses) window.appData.defaultFixedExpenses = window.appData.fixedExpenses || [];
+      if (!window.appData.basePlans) window.appData.basePlans = window.appData.plans || [];
+      if (!window.appData.monthOverrides) window.appData.monthOverrides = {};
+      if (!window.appData.deletedPlansArchive) window.appData.deletedPlansArchive = [];
+
+      buildMonthSelectorOptions();
+      ensureMonthExists(window.appData.currentMonthKey);
+      renderAll();
+      initFirebase();
+    }
+
+    window.pushUndoSnapshot = function(actionLabel = 'Letzte Änderung') {
+      const snapshot = JSON.parse(JSON.stringify(window.appData));
+      window.undoStack.push({
         label: actionLabel,
         state: snapshot
       });
-      if (undoStack.length > 12) {
-        undoStack.shift();
+      if (window.undoStack.length > 15) {
+        window.undoStack.shift();
       }
-      appData.lastBackupState = snapshot;
+      window.appData.lastBackupState = snapshot;
       updateUndoUI();
     }
 
     function updateUndoUI() {
       const badge = document.getElementById('undoBadgeCount');
       const planUndoBtn = document.getElementById('planTabUndoBtn');
-      const count = undoStack.length;
+      const count = window.undoStack.length;
       if (badge) {
         if (count > 0) {
           badge.textContent = count;
@@ -788,7 +860,7 @@
       if (planUndoBtn) {
         if (count > 0) {
           planUndoBtn.classList.remove('hidden');
-          const lastLabel = undoStack[undoStack.length - 1].label;
+          const lastLabel = window.undoStack[window.undoStack.length - 1].label;
           planUndoBtn.innerHTML = `
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
             Rückgängig: ${lastLabel}
@@ -800,23 +872,23 @@
     }
 
     window.undoLastAction = function() {
-      if (undoStack.length > 0) {
-        const lastItem = undoStack.pop();
-        const activeMonthBeforeUndo = appData.currentMonthKey;
-        appData = JSON.parse(JSON.stringify(lastItem.state));
-        appData.currentMonthKey = activeMonthBeforeUndo;
+      if (window.undoStack.length > 0) {
+        const lastItem = window.undoStack.pop();
+        const activeMonthBeforeUndo = window.appData.currentMonthKey;
+        window.appData = JSON.parse(JSON.stringify(lastItem.state));
+        window.appData.currentMonthKey = activeMonthBeforeUndo;
         const sel = document.getElementById('globalMonthSelector');
-        if (sel) sel.value = appData.currentMonthKey;
+        if (sel) sel.value = window.appData.currentMonthKey;
         saveState();
         updateUndoUI();
         showNotification(`Rückgängig gemacht: ${lastItem.label}`, false);
         return;
       }
-      if (appData.lastBackupState) {
-        const currentMonthKey = appData.currentMonthKey;
-        appData = JSON.parse(JSON.stringify(appData.lastBackupState));
-        appData.lastBackupState = null;
-        appData.currentMonthKey = currentMonthKey;
+      if (window.appData.lastBackupState) {
+        const currentMonthKey = window.appData.currentMonthKey;
+        window.appData = JSON.parse(JSON.stringify(window.appData.lastBackupState));
+        window.appData.lastBackupState = null;
+        window.appData.currentMonthKey = currentMonthKey;
         saveState();
         updateUndoUI();
         showNotification("Letzte Aktion erfolgreich rückgängig gemacht.", false);
@@ -828,45 +900,40 @@
     window.undoLastMonthClose = window.undoLastAction;
 
     function saveState() {
-      localStorage.setItem('finanzplaner_pro_v6', JSON.stringify(appData));
+      localStorage.setItem('finanzplaner_pro_v7', JSON.stringify(window.appData));
       updateUndoUI();
       renderAll();
+      saveStateToCloud();
     }
 
-    function getPreviousMonthKey(ymStr) {
-      const idx = ALL_MONTH_KEYS.indexOf(ymStr);
-      return idx > 0 ? ALL_MONTH_KEYS[idx - 1] : null;
-    }
-
-    // Stellt sicher, dass der Zielmonat und alle davorliegenden Monate logisch aufeinander aufbauen
     function ensureMonthExists(targetKey) {
       const targetIdx = ALL_MONTH_KEYS.indexOf(targetKey);
       if (targetIdx === -1) return;
 
       let startIdx = targetIdx;
-      while (startIdx > 0 && !appData.monthOverrides[ALL_MONTH_KEYS[startIdx]]) {
+      while (startIdx > 0 && !window.appData.monthOverrides[ALL_MONTH_KEYS[startIdx]]) {
         startIdx--;
       }
 
       for (let i = startIdx; i <= targetIdx; i++) {
         const key = ALL_MONTH_KEYS[i];
-        if (!appData.monthOverrides[key]) {
+        if (!window.appData.monthOverrides[key]) {
           const prevKey = i > 0 ? ALL_MONTH_KEYS[i - 1] : null;
           let basePlans = [];
           let baseFixed = [];
 
-          if (prevKey && appData.monthOverrides[prevKey]) {
-            basePlans = (appData.monthOverrides[prevKey].plans || []).map(p => ({
+          if (prevKey && window.appData.monthOverrides[prevKey]) {
+            basePlans = (window.appData.monthOverrides[prevKey].plans || []).map(p => ({
               ...p,
               current: Number(p.current || 0) + Number(p.monthly || 0)
             }));
-            baseFixed = JSON.parse(JSON.stringify(appData.monthOverrides[prevKey].fixedExpenses || []));
+            baseFixed = JSON.parse(JSON.stringify(window.appData.monthOverrides[prevKey].fixedExpenses || []));
           } else {
-            basePlans = JSON.parse(JSON.stringify(appData.basePlans || []));
-            baseFixed = JSON.parse(JSON.stringify(appData.defaultFixedExpenses || []));
+            basePlans = JSON.parse(JSON.stringify(window.appData.basePlans || []));
+            baseFixed = JSON.parse(JSON.stringify(window.appData.defaultFixedExpenses || []));
           }
 
-          appData.monthOverrides[key] = {
+          window.appData.monthOverrides[key] = {
             fixedExpenses: baseFixed,
             dailyExpenses: [],
             extraIncomes: [],
@@ -876,7 +943,6 @@
       }
     }
 
-    // Kaskadiert Änderungen an Sparplänen (Bestand, Sparrate, neuer Plan, Löschung) in alle Folgemonate
     function recalculateFutureMonths(fromKey, options = {}) {
       const startIdx = ALL_MONTH_KEYS.indexOf(fromKey);
       if (startIdx === -1) return;
@@ -884,11 +950,11 @@
       for (let i = startIdx + 1; i < ALL_MONTH_KEYS.length; i++) {
         const prevKey = ALL_MONTH_KEYS[i - 1];
         const currKey = ALL_MONTH_KEYS[i];
-        const prevData = appData.monthOverrides[prevKey];
+        const prevData = window.appData.monthOverrides[prevKey];
         if (!prevData) continue;
 
-        if (!appData.monthOverrides[currKey]) {
-          appData.monthOverrides[currKey] = {
+        if (!window.appData.monthOverrides[currKey]) {
+          window.appData.monthOverrides[currKey] = {
             fixedExpenses: JSON.parse(JSON.stringify(prevData.fixedExpenses || [])),
             dailyExpenses: [],
             extraIncomes: [],
@@ -898,7 +964,7 @@
             }))
           };
         } else {
-          const currData = appData.monthOverrides[currKey];
+          const currData = window.appData.monthOverrides[currKey];
           const updatedPlans = [];
 
           (prevData.plans || []).forEach(prevPlan => {
@@ -937,16 +1003,16 @@
     }
 
     function getActiveMonthData() {
-      const key = appData.currentMonthKey || '2026-11';
+      const key = window.appData.currentMonthKey || '2026-11';
       ensureMonthExists(key);
-      if (!appData.monthOverrides[key].extraIncomes) {
-        appData.monthOverrides[key].extraIncomes = [];
+      if (!window.appData.monthOverrides[key].extraIncomes) {
+        window.appData.monthOverrides[key].extraIncomes = [];
       }
-      return appData.monthOverrides[key];
+      return window.appData.monthOverrides[key];
     }
 
     function renderAll() {
-      const label = formatYearMonthLabel(appData.currentMonthKey || '2026-11');
+      const label = formatYearMonthLabel(window.appData.currentMonthKey || '2026-11');
       const hdr = document.getElementById('activeMonthTitleHeader');
       if (hdr) hdr.textContent = label;
       const fixT = document.getElementById('activeMonthFixTitle');
@@ -975,7 +1041,7 @@
         const opt = document.createElement('option');
         opt.value = key;
         opt.textContent = formatYearMonthLabel(key);
-        if (key === (appData.currentMonthKey || '2026-11')) {
+        if (key === (window.appData.currentMonthKey || '2026-11')) {
           opt.selected = true;
         }
         sel.appendChild(opt);
@@ -983,7 +1049,7 @@
     }
 
     window.changeActiveMonth = function(val) {
-      appData.currentMonthKey = val;
+      window.appData.currentMonthKey = val;
       ensureMonthExists(val);
       saveState();
     }
@@ -994,7 +1060,7 @@
       const m = now.getMonth() + 1;
       let key = `${y}-${m < 10 ? '0' + m : m}`;
       if (!ALL_MONTH_KEYS.includes(key)) key = '2026-11';
-      appData.currentMonthKey = key;
+      window.appData.currentMonthKey = key;
       ensureMonthExists(key);
       const sel = document.getElementById('globalMonthSelector');
       if (sel) sel.value = key;
@@ -1028,17 +1094,17 @@
       const dailySpent = (mData.dailyExpenses || []).reduce((acc, e) => acc + Number(e.amount || 0), 0);
       const extraIncomesSum = (mData.extraIncomes || []).reduce((acc, i) => acc + Number(i.amount || 0), 0);
 
-      let activeNetIncome = Number(appData.netIncome || 0);
+      let activeNetIncome = Number(window.appData.netIncome || 0);
       let activeExtraLabelParts = [];
-      const parts = (appData.currentMonthKey || '').split('-');
+      const parts = (window.appData.currentMonthKey || '').split('-');
       const monthNum = parts.length === 2 ? parseInt(parts[1], 10) : 0;
 
-      if (monthNum === 7 && appData.extra13Claimed) {
-        activeNetIncome += Number(appData.extra13 || 0);
+      if (monthNum === 7 && window.appData.extra13Claimed) {
+        activeNetIncome += Number(window.appData.extra13 || 0);
         activeExtraLabelParts.push('13. Gehalt');
       }
-      if (monthNum === 12 && appData.extra14Claimed) {
-        activeNetIncome += Number(appData.extra14 || 0);
+      if (monthNum === 12 && window.appData.extra14Claimed) {
+        activeNetIncome += Number(window.appData.extra14 || 0);
         activeExtraLabelParts.push('14. Gehalt');
       }
 
@@ -1122,7 +1188,7 @@
       const elNotgroschenCount = document.getElementById('notgroschenMonthsCount');
       if (elNotgroschenCount) elNotgroschenCount.textContent = `${monthsCovered} Monate`;
 
-      const target = Number(appData.yearEndGoal || 10000);
+      const target = Number(window.appData.yearEndGoal || 10000);
       const diff = target - totals.totalWealth;
       const pct = Math.min(100, Math.max(0, Math.round((totals.totalWealth / target) * 100)));
       
@@ -1133,7 +1199,7 @@
       const elGoalPct = document.getElementById('yearEndGoalPctLabel');
       if (elGoalPct) elGoalPct.textContent = pct + '%';
 
-      const partsKey = (appData.currentMonthKey || '2026-11').split('-');
+      const partsKey = (window.appData.currentMonthKey || '2026-11').split('-');
       const currentMonthIndex = partsKey.length === 2 ? parseInt(partsKey[1], 10) - 1 : 10;
       const remainingMonths = Math.max(1, 12 - currentMonthIndex);
 
@@ -1188,11 +1254,11 @@
       const ctx = document.getElementById('historicalAssetChart');
       if (!ctx) return;
 
-      const closedKeys = Object.keys(appData.closedMonths || {}).sort();
-      let labels = closedKeys.map(k => appData.closedMonths[k].dateLabel);
-      labels.push(formatYearMonthLabel(appData.currentMonthKey || '2026-11') + ' (Aktiv)');
+      const closedKeys = Object.keys(window.appData.closedMonths || {}).sort();
+      let labels = closedKeys.map(k => window.appData.closedMonths[k].dateLabel);
+      labels.push(formatYearMonthLabel(window.appData.currentMonthKey || '2026-11') + ' (Aktiv)');
 
-      let totalWealthSeries = closedKeys.map(k => Number(appData.closedMonths[k].totalWealth || 0));
+      let totalWealthSeries = closedKeys.map(k => Number(window.appData.closedMonths[k].totalWealth || 0));
       const currentTotals = calculateCurrentTotals();
       totalWealthSeries.push(currentTotals.totalWealth);
 
@@ -1201,7 +1267,7 @@
         const palette = ['#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#10b981', '#06b6d4'];
         const color = palette[idx % palette.length];
         const series = closedKeys.map(k => {
-          const hist = appData.closedMonths[k].plansHistory || {};
+          const hist = window.appData.closedMonths[k].plansHistory || {};
           return Number(hist[p.id] !== undefined ? hist[p.id] : 0);
         });
         series.push(Number(p.current || 0));
@@ -1253,14 +1319,14 @@
       if (!container) return;
       container.innerHTML = '';
 
-      const keys = Object.keys(appData.closedMonths || {}).sort().reverse();
+      const keys = Object.keys(window.appData.closedMonths || {}).sort().reverse();
       if (keys.length === 0) {
         container.innerHTML = '<p class="text-xs text-slate-500 italic">Noch keine Monate abgeschlossen.</p>';
         return;
       }
 
       keys.forEach(k => {
-        const m = appData.closedMonths[k];
+        const m = window.appData.closedMonths[k];
         const card = document.createElement('div');
         card.className = 'bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-3';
         card.innerHTML = `
@@ -1286,7 +1352,7 @@
     }
 
     window.openCloseMonthModal = function() {
-      const key = appData.currentMonthKey || '2026-11';
+      const key = window.appData.currentMonthKey || '2026-11';
       const label = formatYearMonthLabel(key);
       const totals = calculateCurrentTotals();
       const mData = getActiveMonthData();
@@ -1317,7 +1383,7 @@
 
         pushUndoSnapshot(`Monatsabschluss ${label}`);
 
-        if (!appData.closedMonths) appData.closedMonths = {};
+        if (!window.appData.closedMonths) window.appData.closedMonths = {};
         if (targetPlan && totals.availableBuffer > 0) {
           targetPlan.current = Number(targetPlan.current || 0) + totals.availableBuffer;
         }
@@ -1327,14 +1393,13 @@
           plansHistory[p.id] = Number(p.current || 0);
         });
 
-        appData.closedMonths[key] = {
+        window.appData.closedMonths[key] = {
           dateLabel: label,
           totalWealth: totals.totalWealth + Math.max(0, totals.availableBuffer),
           savings: totals.savingsRate + Math.max(0, totals.availableBuffer),
           plansHistory: plansHistory
         };
 
-        // Kaskadiere den neuen Stand nach Puffer-Zuweisung in alle Folgemonate
         recalculateFutureMonths(key);
 
         closeModal();
@@ -1346,9 +1411,9 @@
     }
 
     window.deleteClosedMonth = function(k) {
-      if (appData.closedMonths && appData.closedMonths[k]) {
-        pushUndoSnapshot(`Historie ${appData.closedMonths[k].dateLabel} gelöscht`);
-        delete appData.closedMonths[k];
+      if (window.appData.closedMonths && window.appData.closedMonths[k]) {
+        pushUndoSnapshot(`Historie ${window.appData.closedMonths[k].dateLabel} gelöscht`);
+        delete window.appData.closedMonths[k];
         saveState();
         showNotification("Monat aus Historie gelöscht.", true);
       }
@@ -1399,7 +1464,6 @@
       renderDeletedOrMissingPlans(activeIds);
     }
 
-    // Sucht nach Sparplänen, die im aktuellen Monat gelöscht wurden oder in anderen Monaten/Archiv existieren
     function renderDeletedOrMissingPlans(activeIds) {
       const section = document.getElementById('deletedPlansRecoverySection');
       const listContainer = document.getElementById('deletedPlansListContainer');
@@ -1407,18 +1471,16 @@
 
       const missingMap = new Map();
 
-      // 1. Aus basePlans prüfen
-      (appData.basePlans || []).forEach(bp => {
+      (window.appData.basePlans || []).forEach(bp => {
         if (!activeIds.has(bp.id)) {
           missingMap.set(bp.id, { ...bp, source: 'Stammdaten' });
         }
       });
 
-      // 2. Aus Vormonaten prüfen (mit dem aktuellsten bekannten Stand)
-      const currentIdx = ALL_MONTH_KEYS.indexOf(appData.currentMonthKey);
+      const currentIdx = ALL_MONTH_KEYS.indexOf(window.appData.currentMonthKey);
       for (let i = 0; i < ALL_MONTH_KEYS.length; i++) {
         const k = ALL_MONTH_KEYS[i];
-        const m = appData.monthOverrides[k];
+        const m = window.appData.monthOverrides[k];
         if (!m || !m.plans) continue;
         m.plans.forEach(p => {
           if (!activeIds.has(p.id)) {
@@ -1432,8 +1494,7 @@
         });
       }
 
-      // 3. Aus dem Lösch-Archiv prüfen
-      (appData.deletedPlansArchive || []).forEach(dp => {
+      (window.appData.deletedPlansArchive || []).forEach(dp => {
         if (!activeIds.has(dp.id) && !missingMap.has(dp.id)) {
           missingMap.set(dp.id, { ...dp, lastSeenMonth: dp.deletedAtMonth || 'Archiv' });
         }
@@ -1486,14 +1547,13 @@
     window.restoreDeletedPlan = function(id) {
       pushUndoSnapshot('Sparplan wiederhergestellt');
       const mData = getActiveMonthData();
-      const currentIdx = ALL_MONTH_KEYS.indexOf(appData.currentMonthKey);
+      const currentIdx = ALL_MONTH_KEYS.indexOf(window.appData.currentMonthKey);
 
       let planToRestore = null;
 
-      // Prüfe zuerst im unmittelbaren Vormonat für nahtlose Bestandsfortschreibung
       if (currentIdx > 0) {
         const prevKey = ALL_MONTH_KEYS[currentIdx - 1];
-        const prevData = appData.monthOverrides[prevKey];
+        const prevData = window.appData.monthOverrides[prevKey];
         if (prevData && prevData.plans) {
           const prevPlan = prevData.plans.find(p => p.id === id);
           if (prevPlan) {
@@ -1505,17 +1565,15 @@
         }
       }
 
-      // Falls nicht im direkten Vormonat, suche in Archiv oder basePlans
       if (!planToRestore) {
-        const fromArchive = (appData.deletedPlansArchive || []).find(p => p.id === id);
-        const fromBase = (appData.basePlans || []).find(p => p.id === id);
+        const fromArchive = (window.appData.deletedPlansArchive || []).find(p => p.id === id);
+        const fromBase = (window.appData.basePlans || []).find(p => p.id === id);
         planToRestore = fromArchive ? { ...fromArchive } : (fromBase ? { ...fromBase } : null);
       }
 
-      // Falls in irgendeinem anderen Monat vorhanden
       if (!planToRestore) {
         for (const k of ALL_MONTH_KEYS) {
-          const m = appData.monthOverrides[k];
+          const m = window.appData.monthOverrides[k];
           const found = m && m.plans ? m.plans.find(p => p.id === id) : null;
           if (found) {
             planToRestore = { ...found };
@@ -1534,20 +1592,19 @@
         mData.plans.push(planToRestore);
       }
 
-      // Auch in Folgemonate logisch weitergeben
-      recalculateFutureMonths(appData.currentMonthKey, { propagateMonthlyPlanId: id });
+      recalculateFutureMonths(window.appData.currentMonthKey, { propagateMonthlyPlanId: id });
 
       saveState();
-      showNotification(`Sparplan "${planToRestore.name}" ab ${formatYearMonthLabel(appData.currentMonthKey)} wiederhergestellt!`, true);
+      showNotification(`Sparplan "${planToRestore.name}" ab ${formatYearMonthLabel(window.appData.currentMonthKey)} wiederhergestellt!`, true);
     }
 
     window.permanentlyPurgeArchivedPlan = function(id) {
       pushUndoSnapshot('Archiv-Sparplan endgültig entfernt');
-      appData.deletedPlansArchive = (appData.deletedPlansArchive || []).filter(p => p.id !== id);
-      appData.basePlans = (appData.basePlans || []).filter(p => p.id !== id);
+      window.appData.deletedPlansArchive = (window.appData.deletedPlansArchive || []).filter(p => p.id !== id);
+      window.appData.basePlans = (window.appData.basePlans || []).filter(p => p.id !== id);
       ALL_MONTH_KEYS.forEach(k => {
-        if (appData.monthOverrides[k] && appData.monthOverrides[k].plans) {
-          appData.monthOverrides[k].plans = appData.monthOverrides[k].plans.filter(p => p.id !== id);
+        if (window.appData.monthOverrides[k] && window.appData.monthOverrides[k].plans) {
+          window.appData.monthOverrides[k].plans = window.appData.monthOverrides[k].plans.filter(p => p.id !== id);
         }
       });
       saveState();
@@ -1556,19 +1613,19 @@
 
     function renderIncomeAndFixed() {
       const netInput = document.getElementById('inputNetIncome');
-      if (netInput) netInput.value = appData.netIncome || 0;
+      if (netInput) netInput.value = window.appData.netIncome || 0;
 
       const extra13Input = document.getElementById('inputExtra13');
-      if (extra13Input) extra13Input.value = appData.extra13 || 0;
+      if (extra13Input) extra13Input.value = window.appData.extra13 || 0;
 
       const extra14Input = document.getElementById('inputExtra14');
-      if (extra14Input) extra14Input.value = appData.extra14 || 0;
+      if (extra14Input) extra14Input.value = window.appData.extra14 || 0;
 
       const t13 = document.getElementById('einnahmenExtra13Toggle');
       if (t13) {
         t13.innerHTML = `
-          <button onclick="toggleExtraSalary(13)" class="px-3 py-1 rounded-lg text-xs font-bold transition ${appData.extra13Claimed ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'}">
-            ${appData.extra13Claimed ? 'Aktiviert (+ ' + formatEUR(appData.extra13) + ')' : 'Inaktiv'}
+          <button onclick="toggleExtraSalary(13)" class="px-3 py-1 rounded-lg text-xs font-bold transition ${window.appData.extra13Claimed ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'}">
+            ${window.appData.extra13Claimed ? 'Aktiviert (+ ' + formatEUR(window.appData.extra13) + ')' : 'Inaktiv'}
           </button>
         `;
       }
@@ -1576,8 +1633,8 @@
       const t14 = document.getElementById('einnahmenExtra14Toggle');
       if (t14) {
         t14.innerHTML = `
-          <button onclick="toggleExtraSalary(14)" class="px-3 py-1 rounded-lg text-xs font-bold transition ${appData.extra14Claimed ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'}">
-            ${appData.extra14Claimed ? 'Aktiviert (+ ' + formatEUR(appData.extra14) + ')' : 'Inaktiv'}
+          <button onclick="toggleExtraSalary(14)" class="px-3 py-1 rounded-lg text-xs font-bold transition ${window.appData.extra14Claimed ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'}">
+            ${window.appData.extra14Claimed ? 'Aktiviert (+ ' + formatEUR(window.appData.extra14) + ')' : 'Inaktiv'}
           </button>
         `;
       }
@@ -1673,7 +1730,7 @@
       const currentVal = select.value;
       select.innerHTML = '';
 
-      (appData.categories || []).forEach(cat => {
+      (window.appData.categories || []).forEach(cat => {
         const opt = document.createElement('option');
         opt.value = cat;
         opt.textContent = cat;
@@ -1695,27 +1752,27 @@
         const newCat = prompt("Name der neuen Kategorie:");
         if (newCat && newCat.trim()) {
           const formatted = newCat.trim();
-          if (!appData.categories.includes(formatted)) {
-            appData.categories.push(formatted);
+          if (!window.appData.categories.includes(formatted)) {
+            window.appData.categories.push(formatted);
           }
           sel.value = formatted;
           saveState();
         } else {
-          sel.value = appData.categories[0] || 'Sonstiges';
+          sel.value = window.appData.categories[0] || 'Sonstiges';
         }
       }
     }
 
     window.updateIncomeValues = function() {
-      appData.netIncome = Number(document.getElementById('inputNetIncome').value || 0);
-      appData.extra13 = Number(document.getElementById('inputExtra13').value || 0);
-      appData.extra14 = Number(document.getElementById('inputExtra14').value || 0);
+      window.appData.netIncome = Number(document.getElementById('inputNetIncome').value || 0);
+      window.appData.extra13 = Number(document.getElementById('inputExtra13').value || 0);
+      window.appData.extra14 = Number(document.getElementById('inputExtra14').value || 0);
       saveState();
     }
 
     window.toggleExtraSalary = function(num) {
-      if (num === 13) appData.extra13Claimed = !appData.extra13Claimed;
-      if (num === 14) appData.extra14Claimed = !appData.extra14Claimed;
+      if (num === 13) window.appData.extra13Claimed = !window.appData.extra13Claimed;
+      if (num === 14) window.appData.extra14Claimed = !window.appData.extra14Claimed;
       saveState();
     }
 
@@ -1820,7 +1877,7 @@
       if (!e) return;
 
       let catOptions = '';
-      (appData.categories || []).forEach(c => {
+      (window.appData.categories || []).forEach(c => {
         catOptions += `<option value="${c}" ${c === e.category ? 'selected' : ''}>${c}</option>`;
       });
 
@@ -1862,7 +1919,7 @@
 
       const mData = getActiveMonthData();
       const expenses = mData.dailyExpenses || [];
-      const budgets = appData.variableBudgets || [];
+      const budgets = window.appData.variableBudgets || [];
 
       if (budgets.length === 0) {
         container.innerHTML = '<p class="text-xs text-slate-500 italic">Keine variablen Budgets erfasst.</p>';
@@ -2001,12 +2058,12 @@
           totalContributed += mtlInv + mtlCash;
 
           if (includeSpecial && (m === 7)) {
-            curInv += Number(appData.extra13 || 3137);
-            totalContributed += Number(appData.extra13 || 3137);
+            curInv += Number(window.appData.extra13 || 3137);
+            totalContributed += Number(window.appData.extra13 || 3137);
           }
           if (includeSpecial && (m === 12)) {
-            curInv += Number(appData.extra14 || 3100);
-            totalContributed += Number(appData.extra14 || 3100);
+            curInv += Number(window.appData.extra14 || 3100);
+            totalContributed += Number(window.appData.extra14 || 3100);
           }
         }
         labels.push(`Jahr ${y}`);
@@ -2091,7 +2148,7 @@
       box.innerHTML = `
         <span class="text-emerald-400 font-bold">✓</span>
         <span>${msg}</span>
-        ${showUndo && undoStack.length > 0 ? `
+        ${showUndo && window.undoStack.length > 0 ? `
           <button onclick="undoLastAction()" class="ml-2 px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-lg text-[11px] transition shadow">
             Rückgängig
           </button>
@@ -2112,11 +2169,11 @@
       document.getElementById('modalBody').innerHTML = `
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1">Neues Ziel (€)</label>
-          <input type="number" id="modalGoalInput" value="${appData.yearEndGoal || 10000}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          <input type="number" id="modalGoalInput" value="${window.appData.yearEndGoal || 10000}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
         </div>
       `;
       document.getElementById('modalSaveBtn').onclick = function() {
-        appData.yearEndGoal = Number(document.getElementById('modalGoalInput').value || 10000);
+        window.appData.yearEndGoal = Number(document.getElementById('modalGoalInput').value || 10000);
         saveState();
         closeModal();
         showNotification("Ziel erfolgreich aktualisiert!");
@@ -2126,7 +2183,7 @@
 
     window.addNewPlanModal = function() {
       const modal = document.getElementById('customModal');
-      document.getElementById('modalTitle').textContent = `Neuen Sparplan anlegen (ab ${formatYearMonthLabel(appData.currentMonthKey)})`;
+      document.getElementById('modalTitle').textContent = `Neuen Sparplan anlegen (ab ${formatYearMonthLabel(window.appData.currentMonthKey)})`;
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
           <div>
@@ -2165,10 +2222,9 @@
         if (!mData.plans) mData.plans = [];
         mData.plans.push(newPlan);
 
-        // Auch in basePlans hinterlegen und in alle Folgemonate logisch fortschreiben
-        if (!appData.basePlans) appData.basePlans = [];
-        appData.basePlans.push({ ...newPlan });
-        recalculateFutureMonths(appData.currentMonthKey, { propagateMonthlyPlanId: newPlan.id });
+        if (!window.appData.basePlans) window.appData.basePlans = [];
+        window.appData.basePlans.push({ ...newPlan });
+        recalculateFutureMonths(window.appData.currentMonthKey, { propagateMonthlyPlanId: newPlan.id });
 
         saveState();
         closeModal();
@@ -2185,7 +2241,7 @@
       const footer = document.getElementById('modalFooter');
       if (footer) footer.classList.remove('hidden');
 
-      document.getElementById('modalTitle').textContent = `Sparplan bearbeiten (${formatYearMonthLabel(appData.currentMonthKey)})`;
+      document.getElementById('modalTitle').textContent = `Sparplan bearbeiten (${formatYearMonthLabel(window.appData.currentMonthKey)})`;
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
           <div>
@@ -2220,8 +2276,7 @@
         p.monthly = Number(document.getElementById('modalPlanMtl').value || 0);
         const propagateMtl = document.getElementById('modalPropagateMtl').checked;
 
-        // Kaskadiere neuen Stand und ggf. die neue Sparrate in alle Folgemonate
-        recalculateFutureMonths(appData.currentMonthKey, {
+        recalculateFutureMonths(window.appData.currentMonthKey, {
           propagateMonthlyPlanId: propagateMtl ? p.id : null
         });
 
@@ -2232,13 +2287,12 @@
       modal.classList.remove('hidden');
     }
 
-    // Intelligenter Lösch-Dialog mit 3 klaren Optionen + Sofort-Rückgängig-Schutz
     window.deletePlanModal = function(id) {
       const mData = getActiveMonthData();
       const p = (mData.plans || []).find(x => x.id === id);
       if (!p) return;
 
-      const monthLabel = formatYearMonthLabel(appData.currentMonthKey);
+      const monthLabel = formatYearMonthLabel(window.appData.currentMonthKey);
       const modal = document.getElementById('customModal');
       const footer = document.getElementById('modalFooter');
       if (footer) footer.classList.add('hidden');
@@ -2298,16 +2352,16 @@
         return;
       }
 
-      const planBackupCopy = { ...p, deletedAtMonth: formatYearMonthLabel(appData.currentMonthKey) };
+      const planBackupCopy = { ...p, deletedAtMonth: formatYearMonthLabel(window.appData.currentMonthKey) };
       pushUndoSnapshot(`Sparplan "${p.name}" (${mode === 'pause_month' ? 'pausiert' : 'gelöscht'})`);
 
-      if (!appData.deletedPlansArchive) appData.deletedPlansArchive = [];
-      appData.deletedPlansArchive = appData.deletedPlansArchive.filter(item => item.id !== id);
-      appData.deletedPlansArchive.push(planBackupCopy);
+      if (!window.appData.deletedPlansArchive) window.appData.deletedPlansArchive = [];
+      window.appData.deletedPlansArchive = window.appData.deletedPlansArchive.filter(item => item.id !== id);
+      window.appData.deletedPlansArchive.push(planBackupCopy);
 
       if (mode === 'pause_month') {
         p.monthly = 0;
-        recalculateFutureMonths(appData.currentMonthKey);
+        recalculateFutureMonths(window.appData.currentMonthKey);
         closeModal();
         saveState();
         showNotification(`Sparrate für "${p.name}" in diesem Monat auf 0 € gesetzt.`, true);
@@ -2318,15 +2372,15 @@
         showNotification(`"${p.name}" für diesen Monat ausgeblendet.`, true);
       } else if (mode === 'from_here_onwards') {
         mData.plans = (mData.plans || []).filter(x => x.id !== id);
-        recalculateFutureMonths(appData.currentMonthKey, { deletedFromCurrentOnwardsId: id });
+        recalculateFutureMonths(window.appData.currentMonthKey, { deletedFromCurrentOnwardsId: id });
         closeModal();
         saveState();
         showNotification(`"${p.name}" ab diesem Monat gelöscht.`, true);
       } else if (mode === 'all_months') {
-        appData.basePlans = (appData.basePlans || []).filter(x => x.id !== id);
+        window.appData.basePlans = (window.appData.basePlans || []).filter(x => x.id !== id);
         ALL_MONTH_KEYS.forEach(k => {
-          if (appData.monthOverrides[k] && appData.monthOverrides[k].plans) {
-            appData.monthOverrides[k].plans = appData.monthOverrides[k].plans.filter(x => x.id !== id);
+          if (window.appData.monthOverrides[k] && window.appData.monthOverrides[k].plans) {
+            window.appData.monthOverrides[k].plans = window.appData.monthOverrides[k].plans.filter(x => x.id !== id);
           }
         });
         closeModal();
@@ -2339,7 +2393,7 @@
 
     window.addFixedExpense = function() {
       const modal = document.getElementById('customModal');
-      document.getElementById('modalTitle').textContent = `Fixkosten hinzufügen (${formatYearMonthLabel(appData.currentMonthKey)})`;
+      document.getElementById('modalTitle').textContent = `Fixkosten hinzufügen (${formatYearMonthLabel(window.appData.currentMonthKey)})`;
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
           <div>
@@ -2406,7 +2460,7 @@
 
     window.addVariableBudgetModal = function() {
       let catOptions = '';
-      (appData.categories || []).forEach(c => {
+      (window.appData.categories || []).forEach(c => {
         catOptions += `<option value="${c}">${c}</option>`;
       });
 
@@ -2430,12 +2484,12 @@
         const category = document.getElementById('modalBudgetCat').value;
         const amount = Number(document.getElementById('modalBudgetAmount').value || 0);
 
-        if (!appData.variableBudgets) appData.variableBudgets = [];
-        const existing = appData.variableBudgets.find(b => b.category === category);
+        if (!window.appData.variableBudgets) window.appData.variableBudgets = [];
+        const existing = window.appData.variableBudgets.find(b => b.category === category);
         if (existing) {
           existing.amount = amount;
         } else {
-          appData.variableBudgets.push({ id: 'b_' + Date.now(), category, amount });
+          window.appData.variableBudgets.push({ id: 'b_' + Date.now(), category, amount });
         }
 
         saveState();
@@ -2446,7 +2500,7 @@
     }
 
     window.exportDataJSON = function() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.appData, null, 2));
       const dlAnchor = document.createElement('a');
       dlAnchor.setAttribute("href", dataStr);
       dlAnchor.setAttribute("download", "finanz_backup.json");
@@ -2463,8 +2517,8 @@
         try {
           const parsed = JSON.parse(e.target.result);
           if (parsed && (parsed.basePlans || parsed.monthOverrides || parsed.plans)) {
-            appData = parsed;
-            if (!appData.monthOverrides) appData.monthOverrides = {};
+            window.appData = parsed;
+            if (!window.appData.monthOverrides) window.appData.monthOverrides = {};
             saveState();
             showNotification("Daten erfolgreich importiert!");
           } else {
@@ -2538,18 +2592,18 @@
       const container = document.getElementById('sortableDashboardGrid');
       if (!container) return;
       const order = Array.from(container.querySelectorAll('.dash-draggable-card')).map(c => c.getAttribute('data-id'));
-      appData.dashboardOrder = order;
+      window.appData.dashboardOrder = order;
       saveState();
     }
 
     function restoreDashboardOrder() {
       const container = document.getElementById('sortableDashboardGrid');
-      if (!container || !appData.dashboardOrder) return;
+      if (!container || !window.appData.dashboardOrder) return;
       const cardsMap = {};
       container.querySelectorAll('.dash-draggable-card').forEach(c => {
         cardsMap[c.getAttribute('data-id')] = c;
       });
-      appData.dashboardOrder.forEach(id => {
+      window.appData.dashboardOrder.forEach(id => {
         if (cardsMap[id]) {
           container.appendChild(cardsMap[id]);
         }
@@ -2617,18 +2671,18 @@
       const container = document.getElementById('sortableEinnahmenGrid');
       if (!container) return;
       const order = Array.from(container.querySelectorAll('.einnahmen-draggable-card')).map(c => c.getAttribute('data-id'));
-      appData.einnahmenOrder = order;
+      window.appData.einnahmenOrder = order;
       saveState();
     }
 
     function restoreEinnahmenOrder() {
       const container = document.getElementById('sortableEinnahmenGrid');
-      if (!container || !appData.einnahmenOrder) return;
+      if (!container || !window.appData.einnahmenOrder) return;
       const cardsMap = {};
       container.querySelectorAll('.einnahmen-draggable-card').forEach(c => {
         cardsMap[c.getAttribute('data-id')] = c;
       });
-      appData.einnahmenOrder.forEach(id => {
+      window.appData.einnahmenOrder.forEach(id => {
         if (cardsMap[id]) {
           container.appendChild(cardsMap[id]);
         }
