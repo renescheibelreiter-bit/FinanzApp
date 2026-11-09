@@ -41,7 +41,7 @@
             Finanz- & Vermögensplaner 
             <span class="text-[10px] bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Pro</span>
           </h1>
-          <p class="text-xs text-slate-400" id="headerSubtitle">Lokaler Speicher aktiv</p>
+          <p class="text-xs text-slate-400" id="headerSubtitle">Monats-Vorausplanung aktiv</p>
         </div>
       </div>
       <div class="flex items-center gap-2 sm:hidden">
@@ -85,7 +85,40 @@
   </header>
 
   <!-- Main Content Area -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-8">
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-8 space-y-6">
+
+    <!-- Active Month Selector Bar & Quick Actions -->
+    <div class="bg-gradient-to-r from-indigo-950/70 via-slate-900/90 to-slate-900/90 border border-indigo-500/30 rounded-2xl p-4 shadow-xl flex flex-col lg:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-start">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-400 block">Planungs- & Ansichtsmonat</span>
+            <h2 class="text-base font-extrabold text-white" id="activeMonthTitleHeader">November 2026</h2>
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-end">
+        <select id="globalMonthSelector" onchange="changeActiveMonth(this.value)" class="bg-slate-950 border border-indigo-500/40 rounded-xl px-3.5 py-2 text-xs font-bold text-white focus:outline-none focus:border-indigo-400 shadow-inner">
+          <!-- Dynamisch per JS befüllt -->
+        </select>
+        <button onclick="jumpToCurrentRealMonth()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition shrink-0" title="Zum echten aktuellen Monat wechseln">
+          Heute
+        </button>
+        <div class="h-5 w-[1px] bg-slate-800 mx-1 hidden sm:block"></div>
+        <button onclick="openCloseMonthModal()" class="px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition flex items-center gap-1.5 shrink-0">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Monat abschließen
+        </button>
+        <button onclick="undoLastMonthClose()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shrink-0" title="Letzten Abschluss rückgängig machen">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+          Rückgängig
+        </button>
+      </div>
+    </div>
 
     <!-- ==================== DASHBOARD TAB ==================== -->
     <div id="tab-dashboard" class="space-y-6 tab-content">
@@ -123,7 +156,7 @@
 
             <div class="bg-slate-950/70 border border-slate-800/90 rounded-xl p-4 shadow-lg relative overflow-hidden">
               <div class="flex items-center justify-between mb-2">
-                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Fixkosten</span>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Fixkosten (Monat)</span>
                 <div class="w-7 h-7 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                 </div>
@@ -254,38 +287,6 @@
           </div>
         </div>
 
-        <!-- Closing -->
-        <div class="dash-draggable-card bg-gradient-to-r from-slate-900/90 via-[#0d1424]/90 to-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-2xl flex flex-col gap-4" draggable="true" data-id="closing">
-          <div draggable="true" class="dash-drag-handle flex items-center justify-between pb-3 border-b border-slate-800/80 cursor-grab active:cursor-grabbing text-slate-400 hover:text-white text-xs font-bold tracking-wider">
-            <span class="flex items-center gap-2">⠷ Monatsabschluss & Historie</span>
-            <span class="text-[10px] text-slate-500 uppercase tracking-widest bg-slate-800/60 px-2 py-0.5 rounded">Zum Verschieben greifen</span>
-          </div>
-          <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div>
-              <div class="flex items-center gap-2 mb-1.5">
-                <h3 class="font-bold text-sm text-white flex items-center gap-2">
-                  <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                  Monatsabschluss
-                </h3>
-                <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30" id="currentMonthBadge">November 2026</span>
-              </div>
-              <p class="text-xs text-slate-400 leading-relaxed max-w-2xl">
-                Schließe den aktuellen Monat ab, um die Performance in der Historie zu sichern. Wähle dabei flexibel aus, welcher Sparplan den freien Puffer erhalten soll.
-              </p>
-            </div>
-            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <button onclick="openCloseMonthModal()" class="px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                Aktuellen Monat abschließen
-              </button>
-              <button onclick="undoLastMonthClose()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-                Rückgängig
-              </button>
-            </div>
-          </div>
-        </div>
-
         <!-- Charts -->
         <div class="dash-draggable-card bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-4" draggable="true" data-id="charts">
           <div draggable="true" class="dash-drag-handle flex items-center justify-between pb-3 border-b border-slate-800/80 cursor-grab active:cursor-grabbing text-slate-400 hover:text-white text-xs font-bold tracking-wider">
@@ -406,7 +407,7 @@
             <div class="flex items-center justify-between mb-4">
               <h3 class="font-bold text-base text-white flex items-center gap-2">
                 <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                Fixkosten monatlich
+                Fixkosten monatlich (<span id="activeMonthFixTitle">November 2026</span>)
               </h3>
               <button onclick="addFixedExpense()" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-3 py-1.5 rounded-lg transition">+ Hinzufügen</button>
             </div>
@@ -426,9 +427,9 @@
           <div>
             <h3 class="font-bold text-base text-white flex items-center gap-2">
               <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-              Variable Budgets & Tägliche Ausgaben
+              Variable Budgets & Tägliche Ausgaben (<span id="activeMonthExpenseTitle">November 2026</span>)
             </h3>
-            <p class="text-xs text-slate-400 mt-1">Erfasse tägliche Einkäufe blitzschnell per Klick nach Kategorien.</p>
+            <p class="text-xs text-slate-400 mt-1">Erfasse tägliche Einkäufe für diesen spezifischen Monat.</p>
           </div>
           <button onclick="addVariableBudgetModal()" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center gap-2">
             + Variables Budget anlegen
@@ -447,13 +448,15 @@
           </div>
         </div>
 
-        <!-- Quick Add Expense Form mit dynamischem Kategorien-Dropdown -->
+        <!-- Quick Add Expense Form mit dynamischer Kategorie-Erstellung via Dropdown -->
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-          <input type="text" id="expenseTitle" onkeydown="if(event.key==='Enter') addDailyExpense()" placeholder="z. B. Supermarkt, Tankstelle" class="sm:col-span-5 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
-          <input type="number" id="expenseAmount" onkeydown="if(event.key==='Enter') addDailyExpense()" placeholder="Betrag (€)" class="sm:col-span-3 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
-          <select id="expenseCategory" onchange="checkCategoryDropdown(this)" class="sm:col-span-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
-            <!-- Dynamisch via renderCategoriesSelect() -->
-          </select>
+          <input type="text" id="expenseTitle" placeholder="z. B. Supermarkt, Tankstelle" onkeydown="if(event.key==='Enter') addDailyExpense()" class="sm:col-span-4 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
+          <input type="number" id="expenseAmount" placeholder="Betrag (€)" onkeydown="if(event.key==='Enter') addDailyExpense()" class="sm:col-span-3 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
+          <div class="sm:col-span-3 relative">
+            <select id="expenseCategory" onchange="checkNewCategorySelect(this)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
+              <!-- Dynamisch per JS befüllt -->
+            </select>
+          </div>
           <button onclick="addDailyExpense()" class="sm:col-span-2 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1">
             + Buchen
           </button>
@@ -497,6 +500,25 @@
             <span class="text-white font-extrabold" id="totalVariableBudgetsDisplay">0 €</span>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- ==================== SPARPLÄNE TAB ==================== -->
+    <div id="tab-sparplaene" class="space-y-6 tab-content hidden">
+      <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h3 class="font-bold text-base text-white flex items-center gap-2">
+              <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+              Deine Sparpläne & Anlagen
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">Verwalte deine ETFs, Notgroschen und individuellen Sparpläne.</p>
+          </div>
+          <button onclick="addNewPlanModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/20 transition flex items-center gap-2">
+            + Sparplan anlegen
+          </button>
+        </div>
+        <div id="plansListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </div>
     </div>
 
@@ -601,10 +623,9 @@
   <!-- Notification Toast -->
   <div id="customNotificationBox" class="fixed bottom-5 right-5 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-2xl z-50 text-xs font-semibold transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
-  <!-- Application Script -->
+  <!-- App Logic -->
   <script>
     let appData = {
-      lastUpdated: 0,
       netIncome: 2704.14,
       extra13: 3137,
       extra14: 3100,
@@ -613,8 +634,8 @@
       yearEndGoal: 10000,
       currentMonthKey: '2026-11',
       lastBackupState: null,
-      categories: ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'],
-      fixedExpenses: [
+      categories: ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport / Auto', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'],
+      defaultFixedExpenses: [
         { id: 'f1', name: 'Miete', amount: 820 },
         { id: 'f2', name: 'Internet', amount: 40 },
         { id: 'f3', name: 'Essen', amount: 400 },
@@ -626,10 +647,8 @@
         { id: 'f9', name: 'Partner Anteil', amount: -490 },
         { id: 'f10', name: 'Versicherung', amount: 45 }
       ],
-      variableBudgets: [
-        { id: 'vb1', name: 'Monatslimit Supermarkt', category: 'Lebensmittel', amount: 350 },
-        { id: 'vb2', name: 'Freizeit & Hobby', category: 'Freizeit', amount: 200 }
-      ],
+      monthOverrides: {}, // { '2026-11': { fixedExpenses: [...], dailyExpenses: [...] } }
+      variableBudgets: [],
       plans: [
         { id: 'p1', name: 'Notgroschen', category: 'Notgroschen', current: 2200, monthly: 0 },
         { id: 'p2', name: 'MSCI World ETF', category: 'ETF', current: 3600, monthly: 400 },
@@ -637,25 +656,9 @@
         { id: 'p4', name: 'Spaßkonto & Urlaub', category: 'Freizeit', current: 0, monthly: 0 }
       ],
       closedMonths: {
-        '2026-09': { 
-          dateLabel: 'September 2026', 
-          totalWealth: 6200, 
-          savings: 800, 
-          plansHistory: { 'p1': 2000, 'p2': 2600, 'p3': 1600, 'p4': 0 } 
-        },
-        '2026-10': { 
-          dateLabel: 'Oktober 2026', 
-          totalWealth: 7400, 
-          savings: 800, 
-          plansHistory: { 'p1': 2200, 'p2': 3600, 'p3': 1600, 'p4': 0 } 
-        }
-      },
-      dailyExpenses: [
-        { title: 'Novarockkarten', amount: 300, category: 'Freizeit' },
-        { title: 'Kleidung', amount: 50, category: 'Kleidung' },
-        { title: 'Tennisturnierbeitrag', amount: 28, category: 'Freizeit' },
-        { title: 'Supermarkt', amount: 65, category: 'Lebensmittel' }
-      ]
+        '2026-09': { dateLabel: 'September 2026', totalWealth: 6200, savings: 800, plansHistory: { 'p1': 2000, 'p2': 2600, 'p3': 1600, 'p4': 0 } },
+        '2026-10': { dateLabel: 'Oktober 2026', totalWealth: 7400, savings: 800, plansHistory: { 'p1': 2200, 'p2': 3600, 'p3': 1600, 'p4': 0 } }
+      }
     };
 
     let assetDonutInstance = null;
@@ -665,51 +668,104 @@
 
     window.formatEUR = function(val) {
       return Number(val || 0).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
-    };
+    }
 
     window.formatYearMonthLabel = function(ymStr) {
-      if (!ymStr || typeof ymStr !== 'string') return 'November 2026';
       const parts = ymStr.split('-');
       if (parts.length < 2) return ymStr;
       const [y, m] = parts;
       const months = ['', 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
-      return `${months[parseInt(m, 10)] || m} ${y}`;
-    };
+      return `${months[parseInt(m, 10)]} ${y}`;
+    }
 
     function initApp() {
-      const localSaved = localStorage.getItem('finanzplaner_pro_v3');
+      const localSaved = localStorage.getItem('finanzplaner_pro_v5');
       if (localSaved) {
         try {
-          const parsed = JSON.parse(localSaved);
-          appData = { ...appData, ...parsed };
+          appData = { ...appData, ...JSON.parse(localSaved) };
         } catch (e) {
           console.warn("Konnte lokalen Speicher nicht lesen:", e);
         }
       }
-      if (!appData.currentMonthKey) {
-        appData.currentMonthKey = '2026-11';
-      }
-      if (!appData.categories) {
-        appData.categories = ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'];
-      }
-      const subtitle = document.getElementById('headerSubtitle');
-      if (subtitle) subtitle.textContent = 'Lokaler Speicher aktiv';
+      if (!appData.currentMonthKey) appData.currentMonthKey = '2026-11';
+      if (!appData.categories) appData.categories = ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport / Auto', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'];
+      if (!appData.defaultFixedExpenses) appData.defaultFixedExpenses = appData.fixedExpenses || [];
+      if (!appData.monthOverrides) appData.monthOverrides = {};
+
+      buildMonthSelectorOptions();
       renderAll();
     }
 
     function saveState() {
-      appData.lastUpdated = Date.now();
-      localStorage.setItem('finanzplaner_pro_v3', JSON.stringify(appData));
+      localStorage.setItem('finanzplaner_pro_v5', JSON.stringify(appData));
       renderAll();
     }
 
+    function getActiveMonthData() {
+      const key = appData.currentMonthKey || '2026-11';
+      if (!appData.monthOverrides[key]) {
+        // Init mit Standard-Fixkosten für diesen neuen Monat, aber 0 tägliche Ausgaben
+        appData.monthOverrides[key] = {
+          fixedExpenses: JSON.parse(JSON.stringify(appData.defaultFixedExpenses || [])),
+          dailyExpenses: []
+        };
+      }
+      return appData.monthOverrides[key];
+    }
+
     function renderAll() {
-      renderCategoriesSelect();
+      const label = formatYearMonthLabel(appData.currentMonthKey || '2026-11');
+      const hdr = document.getElementById('activeMonthTitleHeader');
+      if (hdr) hdr.textContent = label;
+      const fixT = document.getElementById('activeMonthFixTitle');
+      if (fixT) fixT.textContent = label;
+      const expT = document.getElementById('activeMonthExpenseTitle');
+      if (expT) expT.textContent = label;
+
       renderDashboard();
       renderPlansList();
       renderIncomeAndFixed();
       renderForecastChart();
       renderExpenseCategoryChart();
+      renderCategoryDropdown();
+    }
+
+    function buildMonthSelectorOptions() {
+      const sel = document.getElementById('globalMonthSelector');
+      if (!sel) return;
+      sel.innerHTML = '';
+
+      // Generiere z.B. 24 Monate rund um 2026/2027
+      const years = [2026, 2027];
+      years.forEach(y => {
+        for (let m = 1; m <= 12; m++) {
+          const mStr = m < 10 ? '0' + m : '' + m;
+          const key = `${y}-${mStr}`;
+          const opt = document.createElement('option');
+          opt.value = key;
+          opt.textContent = formatYearMonthLabel(key);
+          if (key === (appData.currentMonthKey || '2026-11')) {
+            opt.selected = true;
+          }
+          sel.appendChild(opt);
+        }
+      });
+    }
+
+    window.changeActiveMonth = function(val) {
+      appData.currentMonthKey = val;
+      renderAll();
+    }
+
+    window.jumpToCurrentRealMonth = function() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = now.getMonth() + 1;
+      const key = `${y}-${m < 10 ? '0' + m : m}`;
+      appData.currentMonthKey = key;
+      const sel = document.getElementById('globalMonthSelector');
+      if (sel) sel.value = key;
+      renderAll();
     }
 
     window.openTab = function(tabId) {
@@ -725,38 +781,51 @@
         btn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-800/60');
         btn.classList.add('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
       }
-      if (tabId === 'dashboard') renderDashboard();
-      if (tabId === 'sparplaene') renderPlansList();
-      if (tabId === 'einnahmen') renderIncomeAndFixed();
       if (tabId === 'prognose') {
         initSimDefaultsFromPlans();
         renderForecastChart();
       }
-      if (tabId === 'einnahmen' || tabId === 'dashboard') {
-        setTimeout(renderAll, 50);
-      }
+      renderAll();
     }
 
     function calculateCurrentTotals() {
-      const fixedSum = (appData.fixedExpenses || []).reduce((acc, f) => acc + Number(f.amount || 0), 0);
+      const mData = getActiveMonthData();
+      const fixedSum = (mData.fixedExpenses || []).reduce((acc, f) => acc + Number(f.amount || 0), 0);
       const savingsRate = (appData.plans || []).reduce((acc, p) => acc + Number(p.monthly || 0), 0);
-      const dailySpent = (appData.dailyExpenses || []).reduce((acc, e) => acc + Number(e.amount || 0), 0);
+      const dailySpent = (mData.dailyExpenses || []).reduce((acc, e) => acc + Number(e.amount || 0), 0);
       const varBudgetsSum = (appData.variableBudgets || []).reduce((acc, b) => acc + Number(b.amount || 0), 0);
 
       let activeNetIncome = Number(appData.netIncome || 0);
       let activeExtraLabelParts = [];
-      if (appData.extra13Claimed) {
+      const parts = (appData.currentMonthKey || '').split('-');
+      const monthNum = parts.length === 2 ? parseInt(parts[1], 10) : 0;
+
+      if (monthNum === 7 && appData.extra13Claimed) {
         activeNetIncome += Number(appData.extra13 || 0);
         activeExtraLabelParts.push('13. Gehalt');
       }
-      if (appData.extra14Claimed) {
+      if (monthNum === 12 && appData.extra14Claimed) {
         activeNetIncome += Number(appData.extra14 || 0);
         activeExtraLabelParts.push('14. Gehalt');
       }
 
       const restgeldVariable = activeNetIncome - fixedSum - savingsRate - dailySpent;
-      const availableBuffer = restgeldVariable;
-      const totalWealth = (appData.plans || []).reduce((acc, p) => acc + Number(p.current || 0), 0);
+
+      // Berechne das Vermögen unter Berücksichtigung von Monaten, die nach dem Live-Monat (2026-11) liegen
+      let totalWealth = (appData.plans || []).reduce((acc, p) => acc + Number(p.current || 0), 0);
+      
+      const currentActiveKey = appData.currentMonthKey || '2026-11';
+      const liveBaseKey = '2026-11';
+      if (currentActiveKey > liveBaseKey) {
+        // Zähle die Monate Differenz ab November 2026 hoch und addiere die mtl. Sparraten
+        const [baseY, baseM] = liveBaseKey.split('-').map(Number);
+        const [actY, actM] = currentActiveKey.split('-').map(Number);
+        const diffMonths = (actY - baseY) * 12 + (actM - baseM);
+        if (diffMonths > 0) {
+          const mtlSavingsSum = (appData.plans || []).reduce((acc, p) => acc + Number(p.monthly || 0), 0);
+          totalWealth += (mtlSavingsSum * diffMonths);
+        }
+      }
 
       return {
         fixedSum,
@@ -766,52 +835,10 @@
         activeNetIncome,
         activeExtraLabelParts,
         restgeldVariable,
-        availableBuffer,
+        availableBuffer: restgeldVariable,
         totalWealth
       };
     }
-
-    function renderCategoriesSelect() {
-      const select = document.getElementById('expenseCategory');
-      if (!select) return;
-      const currentVal = select.value;
-      const cats = appData.categories || ['Lebensmittel', 'Freizeit', 'Sonstiges'];
-      
-      let html = cats.map(c => `<option value="${c}" ${currentVal === c ? 'selected' : ''}>${c}</option>`).join('');
-      html += `<option value="__NEW__" class="text-amber-400 font-semibold">+ Neue Kategorie hinzufügen...</option>`;
-      select.innerHTML = html;
-    }
-
-    window.checkCategoryDropdown = function(select) {
-      if (select.value === '__NEW__') {
-        const modal = document.getElementById('customModal');
-        document.getElementById('modalTitle').textContent = 'Neue Kategorie erstellen';
-        document.getElementById('modalBody').innerHTML = `
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Kategoriename</label>
-            <input type="text" id="modalInstantCatName" placeholder="z. B. Haustiere, Auto" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-          </div>
-        `;
-        document.getElementById('modalSaveBtn').onclick = function() {
-          const name = document.getElementById('modalInstantCatName').value.trim();
-          if (!name) {
-            showNotification("Bitte Namen eingeben.");
-            select.value = appData.categories[0] || 'Sonstiges';
-            closeModal();
-            return;
-          }
-          if (!appData.categories) appData.categories = [];
-          if (!appData.categories.includes(name)) {
-            appData.categories.push(name);
-          }
-          saveState();
-          select.value = name;
-          closeModal();
-          showNotification(`Kategorie "${name}" hinzugefügt!`);
-        };
-        modal.classList.remove('hidden');
-      }
-    };
 
     function renderDashboard() {
       const totals = calculateCurrentTotals();
@@ -850,48 +877,71 @@
       const konsumPct = Math.max(0, Math.min(100 - fixPct - sparPct, Math.round((totals.dailySpent / net) * 100)));
       const bufferPct = Math.max(0, 100 - fixPct - sparPct - konsumPct);
 
-      document.getElementById('distBarFix').style.width = fixPct + '%';
-      document.getElementById('distBarSpar').style.width = sparPct + '%';
-      document.getElementById('distBarKonsum').style.width = konsumPct + '%';
-      document.getElementById('distBarBuffer').style.width = bufferPct + '%';
+      const elBarFix = document.getElementById('distBarFix');
+      if (elBarFix) elBarFix.style.width = fixPct + '%';
+      const elBarSpar = document.getElementById('distBarSpar');
+      if (elBarSpar) elBarSpar.style.width = sparPct + '%';
+      const elBarKonsum = document.getElementById('distBarKonsum');
+      if (elBarKonsum) elBarKonsum.style.width = konsumPct + '%';
+      const elBarBuffer = document.getElementById('distBarBuffer');
+      if (elBarBuffer) elBarBuffer.style.width = bufferPct + '%';
 
-      document.getElementById('distFixPct').textContent = fixPct + '%';
-      document.getElementById('distFixVal').textContent = formatEUR(totals.fixedSum);
-      document.getElementById('distSparPct').textContent = sparPct + '%';
-      document.getElementById('distSparVal').textContent = formatEUR(totals.savingsRate);
-      document.getElementById('distKonsumPct').textContent = konsumPct + '%';
-      document.getElementById('distKonsumVal').textContent = formatEUR(totals.dailySpent);
-      document.getElementById('distBufferPct').textContent = bufferPct + '%';
-      document.getElementById('distBufferVal').textContent = formatEUR(totals.availableBuffer);
+      const elFixPct = document.getElementById('distFixPct');
+      if (elFixPct) elFixPct.textContent = fixPct + '%';
+      const elFixVal = document.getElementById('distFixVal');
+      if (elFixVal) elFixVal.textContent = formatEUR(totals.fixedSum);
+      const elSparPct = document.getElementById('distSparPct');
+      if (elSparPct) elSparPct.textContent = sparPct + '%';
+      const elSparVal = document.getElementById('distSparVal');
+      if (elSparVal) elSparVal.textContent = formatEUR(totals.savingsRate);
+      const elKonsumPct = document.getElementById('distKonsumPct');
+      if (elKonsumPct) elKonsumPct.textContent = konsumPct + '%';
+      const elKonsumVal = document.getElementById('distKonsumVal');
+      if (elKonsumVal) elKonsumVal.textContent = formatEUR(totals.dailySpent);
+      const elBufferPct = document.getElementById('distBufferPct');
+      if (elBufferPct) elBufferPct.textContent = bufferPct + '%';
+      const elBufferVal = document.getElementById('distBufferVal');
+      if (elBufferVal) elBufferVal.textContent = formatEUR(totals.availableBuffer);
 
-      document.getElementById('distNetHeaderLabel').textContent = `Netto: ${formatEUR(totals.activeNetIncome)} ${totals.activeExtraLabelParts.length > 0 ? '(inkl. Sonderzahlung!)' : ''}`;
-      document.getElementById('rule50Text').textContent = `50/30/20-Regel: Fixkosten bei ${fixPct}% (Optimal unter 50%).`;
+      const elNetHeader = document.getElementById('distNetHeaderLabel');
+      if (elNetHeader) elNetHeader.textContent = `Netto: ${formatEUR(totals.activeNetIncome)} ${totals.activeExtraLabelParts.length > 0 ? '(inkl. Sonderzahlung!)' : ''}`;
+      const elRule50 = document.getElementById('rule50Text');
+      if (elRule50) elRule50.textContent = `50/30/20-Regel: Fixkosten bei ${fixPct}% (Optimal unter 50%).`;
 
       const notgroschenPlan = (appData.plans || []).find(p => p.category === 'Notgroschen' || p.name.toLowerCase().includes('notgroschen'));
       const notgroschenVal = notgroschenPlan ? Number(notgroschenPlan.current || 0) : 2200;
       const monthsCovered = totals.fixedSum > 0 ? (notgroschenVal / totals.fixedSum).toFixed(1) : '0';
-      document.getElementById('notgroschenMonthsCount').textContent = `${monthsCovered} Monate`;
+      const elNotgroschenCount = document.getElementById('notgroschenMonthsCount');
+      if (elNotgroschenCount) elNotgroschenCount.textContent = `${monthsCovered} Monate`;
 
       const target = Number(appData.yearEndGoal || 10000);
       const diff = target - totals.totalWealth;
       const pct = Math.min(100, Math.max(0, Math.round((totals.totalWealth / target) * 100)));
-      document.getElementById('yearEndGoalProgressBar').style.width = pct + '%';
-      document.getElementById('yearEndGoalIstLabel').textContent = `Ist: ${formatEUR(totals.totalWealth)} / Ziel: ${formatEUR(target)}`;
-      document.getElementById('yearEndGoalPctLabel').textContent = pct + '%';
+      
+      const elGoalBar = document.getElementById('yearEndGoalProgressBar');
+      if (elGoalBar) elGoalBar.style.width = pct + '%';
+      const elGoalIst = document.getElementById('yearEndGoalIstLabel');
+      if (elGoalIst) elGoalIst.textContent = `Ist: ${formatEUR(totals.totalWealth)} / Ziel: ${formatEUR(target)}`;
+      const elGoalPct = document.getElementById('yearEndGoalPctLabel');
+      if (elGoalPct) elGoalPct.textContent = pct + '%';
 
-      const currentKey = appData.currentMonthKey || '2026-11';
-      const currentMonthNum = parseInt(currentKey.split('-')[1], 10) || 11;
-      const remainingMonths = Math.max(1, 13 - currentMonthNum);
+      const partsKey = (appData.currentMonthKey || '2026-11').split('-');
+      const currentMonthIndex = partsKey.length === 2 ? parseInt(partsKey[1], 10) - 1 : 10;
+      const remainingMonths = Math.max(1, 12 - currentMonthIndex);
+
+      const elGoalSub = document.getElementById('yearEndGoalSubtext');
+      const elGoalMonthsVal = document.getElementById('yearEndGoalMonthsVal');
 
       if (diff > 0) {
-        document.getElementById('yearEndGoalSubtext').textContent = `Dir fehlen noch ${formatEUR(diff)} bis zum Jahresendziel.`;
-        document.getElementById('yearEndGoalMonthsVal').textContent = `${formatEUR(Math.ceil(diff / remainingMonths))} / Monat (${remainingMonths} M.)`;
+        if (elGoalSub) elGoalSub.textContent = `Dir fehlen noch ${formatEUR(diff)} bis zum Jahresendziel.`;
+        if (elGoalMonthsVal) elGoalMonthsVal.textContent = `${formatEUR(Math.ceil(diff / remainingMonths))} / Monat (${remainingMonths} M.)`;
       } else {
-        document.getElementById('yearEndGoalSubtext').textContent = `Glückwunsch! Jahresendziel von ${formatEUR(target)} erreicht!`;
-        document.getElementById('yearEndGoalMonthsVal').textContent = `Ziel erreicht 🎉`;
+        if (elGoalSub) elGoalSub.textContent = `Glückwunsch! Jahresendziel von ${formatEUR(target)} erreicht!`;
+        if (elGoalMonthsVal) elGoalMonthsVal.textContent = `Ziel erreicht 🎉`;
       }
 
-      document.getElementById('currentMonthBadge').textContent = formatYearMonthLabel(appData.currentMonthKey || '2026-11');
+      const elBadge = document.getElementById('currentMonthBadge');
+      if (elBadge) elBadge.textContent = formatYearMonthLabel(appData.currentMonthKey || '2026-11');
 
       renderAssetDistributionChart(totals.totalWealth);
       renderHistoricalAssetChart();
@@ -934,7 +984,7 @@
 
       const closedKeys = Object.keys(appData.closedMonths || {}).sort();
       let labels = closedKeys.map(k => appData.closedMonths[k].dateLabel);
-      labels.push('Aktuell (Live)');
+      labels.push(formatYearMonthLabel(appData.currentMonthKey || '2026-11') + ' (Aktiv)');
 
       let totalWealthSeries = closedKeys.map(k => Number(appData.closedMonths[k].totalWealth || 0));
       const currentTotals = calculateCurrentTotals();
@@ -1033,86 +1083,53 @@
       const key = appData.currentMonthKey || '2026-11';
       const label = formatYearMonthLabel(key);
       const totals = calculateCurrentTotals();
-      const bufferToSave = Math.max(0, totals.availableBuffer);
-      const totalAdded = totals.savingsRate + bufferToSave;
-
-      const plans = appData.plans || [];
-      const optionsHtml = plans.map(p => `<option value="${p.id}">${p.name} (Aktuell: ${formatEUR(p.current)})</option>`).join('');
 
       const modal = document.getElementById('customModal');
       document.getElementById('modalTitle').textContent = `Monat ${label} abschließen`;
+
+      let plansOptions = '';
+      (appData.plans || []).forEach(p => {
+        plansOptions += `<option value="${p.id}">${p.name} (${p.category})</option>`;
+      });
+
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3 text-xs text-slate-300">
-          <p>Möchtest du den Monat <strong class="text-white">${label}</strong> abschließen? Wähle aus, wohin der freie Puffer gebucht werden soll:</p>
-          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-2">
-            <div class="flex justify-between">
-              <span class="text-slate-400">Reguläre Sparraten:</span>
-              <span class="font-bold text-indigo-400">+${formatEUR(totals.savingsRate)}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-400">Freier Puffer:</span>
-              <span class="font-bold text-amber-400">+${formatEUR(bufferToSave)}</span>
-            </div>
-            <div class="pt-2 border-t border-slate-800">
-              <label class="block text-slate-400 mb-1 font-semibold">Puffer buchen auf Sparplan:</label>
-              <select id="modalBufferTargetPlan" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                ${optionsHtml}
-              </select>
-            </div>
+          <p>Du schließt den Monat <strong class="text-white">${label}</strong> ab. Der verbleibende freie Puffer in Höhe von <strong class="text-amber-400">${formatEUR(totals.availableBuffer)}</strong> wird auf dein gewähltes Ziel gebucht:</p>
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Ziel-Sparplan für den Puffer</label>
+            <select id="modalCloseTargetPlan" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-indigo-500">
+              ${plansOptions}
+            </select>
           </div>
-          <p class="text-[11px] text-slate-400">Deine täglichen Ausgaben werden für den neuen Monat auf 0 € zurückgesetzt.</p>
         </div>
       `;
 
-      const saveBtn = document.getElementById('modalSaveBtn');
-      saveBtn.textContent = 'Jetzt abschließen';
-      saveBtn.onclick = function() {
-        const targetPlanId = document.getElementById('modalBufferTargetPlan').value;
+      document.getElementById('modalSaveBtn').onclick = function() {
+        const targetId = document.getElementById('modalCloseTargetPlan').value;
+        const targetPlan = (appData.plans || []).find(p => p.id === targetId);
+
         appData.lastBackupState = JSON.parse(JSON.stringify(appData));
 
-        (appData.plans || []).forEach(p => {
-          p.current = Number(p.current || 0) + Number(p.monthly || 0);
-        });
-
-        if (bufferToSave > 0) {
-          const targetPlan = (appData.plans || []).find(p => p.id === targetPlanId);
-          if (targetPlan) {
-            targetPlan.current = Number(targetPlan.current || 0) + bufferToSave;
-          } else if (appData.plans && appData.plans.length > 0) {
-            appData.plans[0].current = Number(appData.plans[0].current || 0) + bufferToSave;
-          }
-        }
-
-        const newTotalWealth = (appData.plans || []).reduce((acc, p) => acc + Number(p.current || 0), 0);
         if (!appData.closedMonths) appData.closedMonths = {};
         const plansHistory = {};
         (appData.plans || []).forEach(p => {
           plansHistory[p.id] = Number(p.current || 0);
         });
 
+        // Add buffer to target plan current value
+        if (targetPlan && totals.availableBuffer > 0) {
+          targetPlan.current = Number(targetPlan.current || 0) + totals.availableBuffer;
+        }
+
         appData.closedMonths[key] = {
           dateLabel: label,
-          totalWealth: newTotalWealth,
-          savings: totalAdded,
+          totalWealth: totals.totalWealth + Math.max(0, totals.availableBuffer),
+          savings: totals.savingsRate + Math.max(0, totals.availableBuffer),
           plansHistory: plansHistory
         };
 
-        const parts = key.split('-');
-        let y = parseInt(parts[0], 10);
-        let m = parseInt(parts[1], 10) + 1;
-        if (m > 12) {
-          m = 1;
-          y += 1;
-        }
-        appData.currentMonthKey = `${y}-${String(m).padStart(2, '0')}`;
-
-        appData.dailyExpenses = [];
-        appData.extra13Claimed = false;
-        appData.extra14Claimed = false;
-
-        saveBtn.textContent = 'Speichern';
-        saveState();
         closeModal();
+        saveState();
         showNotification(`Monat ${label} erfolgreich abgeschlossen!`);
       };
 
@@ -1124,54 +1141,16 @@
         showNotification("Kein vorheriger Stand zum Wiederherstellen vorhanden.");
         return;
       }
+      const currentMonthKey = appData.currentMonthKey;
+      appData = JSON.parse(JSON.stringify(appData.lastBackupState));
+      appData.lastBackupState = null;
+      appData.currentMonthKey = currentMonthKey;
 
-      const modal = document.getElementById('customModal');
-      document.getElementById('modalTitle').textContent = 'Monatsabschluss rückgängig machen?';
-      document.getElementById('modalBody').innerHTML = `
-        <p class="text-xs text-slate-300">Möchtest du den letzten Monatsabschluss wirklich rückgängig machen? Alle Kontostände, Ausgaben und der aktuelle Monat werden wiederhergestellt.</p>
-      `;
-
-      const saveBtn = document.getElementById('modalSaveBtn');
-      saveBtn.textContent = 'Rückgängig machen';
-      saveBtn.onclick = function() {
-        appData = JSON.parse(JSON.stringify(appData.lastBackupState));
-        appData.lastBackupState = null;
-        saveBtn.textContent = 'Speichern';
-        saveState();
-        closeModal();
-        showNotification("Monatsabschluss erfolgreich rückgängig gemacht.");
-      };
-
-      modal.classList.remove('hidden');
-    }
-
-    window.editClosedMonth = function(k) {
-      if (!appData.closedMonths || !appData.closedMonths[k]) return;
-      const m = appData.closedMonths[k];
-      const modal = document.getElementById('customModal');
-      document.getElementById('modalTitle').textContent = `Historie bearbeiten (${m.dateLabel})`;
-      document.getElementById('modalBody').innerHTML = `
-        <div class="space-y-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Gesamtvermögen (€)</label>
-            <input type="number" id="modalHistWealth" value="${m.totalWealth}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Sparbetrag im Monat (€)</label>
-            <input type="number" id="modalHistSavings" value="${m.savings}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-          </div>
-        </div>
-      `;
-      const saveBtn = document.getElementById('modalSaveBtn');
-      saveBtn.textContent = 'Speichern';
-      saveBtn.onclick = function() {
-        m.totalWealth = Number(document.getElementById('modalHistWealth').value || 0);
-        m.savings = Number(document.getElementById('modalHistSavings').value || 0);
-        saveState();
-        closeModal();
-        showNotification("Eintrag in der Historie aktualisiert!");
-      };
-      modal.classList.remove('hidden');
+      if (appData.closedMonths && appData.closedMonths[currentMonthKey]) {
+        delete appData.closedMonths[currentMonthKey];
+      }
+      saveState();
+      showNotification("Monatsabschluss erfolgreich rückgängig gemacht.");
     }
 
     window.deleteClosedMonth = function(k) {
@@ -1246,11 +1225,12 @@
         `;
       }
 
+      const mData = getActiveMonthData();
       const fixContainer = document.getElementById('fixedExpensesListContainer');
       if (fixContainer) {
         fixContainer.innerHTML = '';
         let totalFix = 0;
-        (appData.fixedExpenses || []).forEach(f => {
+        (mData.fixedExpenses || []).forEach(f => {
           totalFix += Number(f.amount || 0);
           const row = document.createElement('div');
           row.className = 'flex items-center justify-between bg-slate-950/70 border border-slate-800 rounded-xl px-4 py-3';
@@ -1276,7 +1256,7 @@
       const dailyContainer = document.getElementById('dailyExpensesListContainer');
       if (dailyContainer) {
         dailyContainer.innerHTML = '';
-        const list = appData.dailyExpenses || [];
+        const list = mData.dailyExpenses || [];
         document.getElementById('expenseCountLabel').textContent = `${list.length} Ausgaben`;
         if (list.length === 0) {
           dailyContainer.innerHTML = '<p class="text-xs text-slate-500 italic py-1">Noch keine Einkäufe diesen Monat erfasst.</p>';
@@ -1289,10 +1269,10 @@
                 <span class="font-bold text-white block">${e.title}</span>
                 <span class="text-[10px] text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full inline-block mt-0.5">${e.category || 'Sonstiges'}</span>
               </div>
-              <div class="flex items-center gap-2">
-                <span class="font-extrabold text-amber-400 mr-1">${formatEUR(e.amount)}</span>
-                <button onclick="editDailyExpenseModal(${idx})" title="Ausgabe bearbeiten" class="p-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-lg text-[11px] transition">✏️</button>
-                <button onclick="deleteDailyExpense(${idx})" title="Ausgabe löschen" class="p-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-lg text-[11px] transition">✕</button>
+              <div class="flex items-center gap-3">
+                <span class="font-extrabold text-amber-400">${formatEUR(e.amount)}</span>
+                <button onclick="editDailyExpenseModal(${idx})" class="text-slate-400 hover:text-white" title="Bearbeiten">✏️</button>
+                <button onclick="deleteDailyExpense(${idx})" class="text-rose-400 hover:text-rose-300">✕</button>
               </div>
             `;
             dailyContainer.appendChild(item);
@@ -1300,44 +1280,44 @@
         }
       }
 
-      const vbContainer = document.getElementById('variableBudgetsListContainer');
-      const totalVbDisplay = document.getElementById('totalVariableBudgetsDisplay');
-      if (vbContainer && totalVbDisplay) {
-        const vbs = appData.variableBudgets || [];
-        totalVbDisplay.textContent = formatEUR(totals.varBudgetsSum);
-        if (vbs.length === 0) {
-          vbContainer.innerHTML = '<p class="text-xs text-slate-500 italic">Keine variablen Budgets erfasst.</p>';
-        } else {
-          vbContainer.innerHTML = '';
-          vbs.forEach(vb => {
-            const spentInCat = (appData.dailyExpenses || [])
-              .filter(e => (e.category || 'Sonstiges') === vb.category)
-              .reduce((acc, e) => acc + Number(e.amount || 0), 0);
-            const limit = Number(vb.amount || 0);
-            const pct = limit > 0 ? Math.min(100, Math.round((spentInCat / limit) * 100)) : 0;
-            const isOver = spentInCat > limit;
-            const barColor = isOver ? 'bg-rose-500' : (pct > 80 ? 'bg-amber-400' : 'bg-emerald-500');
+      renderVariableBudgetsList();
+    }
 
-            const row = document.createElement('div');
-            row.className = 'bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 space-y-2';
-            row.innerHTML = `
-              <div class="flex items-center justify-between text-xs">
-                <div class="flex items-center gap-2">
-                  <span class="font-bold text-white">${vb.name}</span>
-                  <span class="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full">${vb.category}</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="font-bold ${isOver ? 'text-rose-400' : 'text-slate-300'}">${formatEUR(spentInCat)} / ${formatEUR(limit)}</span>
-                  <button onclick="editVariableBudgetModal('${vb.id}')" class="p-1 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded text-[10px]">Bearbeiten</button>
-                  <button onclick="deleteVariableBudget('${vb.id}')" class="p-1 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded text-[10px]">✕</button>
-                </div>
-              </div>
-              <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden flex">
-                <div class="${barColor} h-full transition-all duration-300" style="width: ${pct}%"></div>
-              </div>
-            `;
-            vbContainer.appendChild(row);
-          });
+    function renderCategoryDropdown() {
+      const select = document.getElementById('expenseCategory');
+      if (!select) return;
+      const currentVal = select.value;
+      select.innerHTML = '';
+
+      (appData.categories || []).forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
+      });
+
+      const addOpt = document.createElement('option');
+      addOpt.value = '__NEW__';
+      addOpt.textContent = '+ Neue Kategorie hinzufügen...';
+      select.appendChild(addOpt);
+
+      if (currentVal && currentVal !== '__NEW__') {
+        select.value = currentVal;
+      }
+    }
+
+    window.checkNewCategorySelect = function(sel) {
+      if (sel.value === '__NEW__') {
+        const newCat = prompt("Name der neuen Kategorie:");
+        if (newCat && newCat.trim()) {
+          const formatted = newCat.trim();
+          if (!appData.categories.includes(formatted)) {
+            appData.categories.push(formatted);
+          }
+          sel.value = formatted;
+          saveState();
+        } else {
+          sel.value = appData.categories[0] || 'Sonstiges';
         }
       }
     }
@@ -1365,8 +1345,9 @@
         return;
       }
 
-      if (!appData.dailyExpenses) appData.dailyExpenses = [];
-      appData.dailyExpenses.push({ title, amount, category });
+      const mData = getActiveMonthData();
+      if (!mData.dailyExpenses) mData.dailyExpenses = [];
+      mData.dailyExpenses.push({ title, amount, category });
       document.getElementById('expenseTitle').value = '';
       document.getElementById('expenseAmount').value = '';
 
@@ -1375,144 +1356,97 @@
     }
 
     window.deleteDailyExpense = function(idx) {
-      if (appData.dailyExpenses && appData.dailyExpenses[idx]) {
-        appData.dailyExpenses.splice(idx, 1);
+      const mData = getActiveMonthData();
+      if (mData.dailyExpenses && mData.dailyExpenses[idx]) {
+        mData.dailyExpenses.splice(idx, 1);
         saveState();
       }
     }
 
     window.editDailyExpenseModal = function(idx) {
-      if (!appData.dailyExpenses || !appData.dailyExpenses[idx]) return;
-      const exp = appData.dailyExpenses[idx];
+      const mData = getActiveMonthData();
+      const e = mData.dailyExpenses[idx];
+      if (!e) return;
+
+      let catOptions = '';
+      (appData.categories || []).forEach(c => {
+        catOptions += `<option value="${c}" ${c === e.category ? 'selected' : ''}>${c}</option>`;
+      });
+
       const modal = document.getElementById('customModal');
       document.getElementById('modalTitle').textContent = 'Ausgabe bearbeiten';
-      const cats = appData.categories || ['Lebensmittel', 'Freizeit', 'Sonstiges'];
-      const optionsHtml = cats.map(c => `<option value="${c}" ${exp.category === c ? 'selected' : ''}>${c}</option>`).join('');
-
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
           <div>
             <label class="block text-xs font-semibold text-slate-400 mb-1">Beschreibung</label>
-            <input type="text" id="modalExpTitle" value="${exp.title}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+            <input type="text" id="modalExpTitle" value="${e.title}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-400 mb-1">Betrag (€)</label>
-            <input type="number" step="0.01" id="modalExpAmount" value="${exp.amount}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+            <input type="number" id="modalExpAmount" value="${e.amount}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-400 mb-1">Kategorie</label>
-            <select id="modalExpCategory" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
-              ${optionsHtml}
+            <select id="modalExpCat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+              ${catOptions}
             </select>
           </div>
         </div>
       `;
-      const saveBtn = document.getElementById('modalSaveBtn');
-      saveBtn.textContent = 'Speichern';
-      saveBtn.onclick = function() {
-        const newTitle = document.getElementById('modalExpTitle').value.trim();
-        const newAmount = Number(document.getElementById('modalExpAmount').value || 0);
-        const newCat = document.getElementById('modalExpCategory').value;
-        if (!newTitle || newAmount <= 0) {
-          showNotification("Bitte gültige Werte eingeben.");
-          return;
-        }
-        exp.title = newTitle;
-        exp.amount = newAmount;
-        exp.category = newCat;
+
+      document.getElementById('modalSaveBtn').onclick = function() {
+        e.title = document.getElementById('modalExpTitle').value.trim();
+        e.amount = Number(document.getElementById('modalExpAmount').value || 0);
+        e.category = document.getElementById('modalExpCat').value;
         saveState();
         closeModal();
         showNotification("Ausgabe aktualisiert!");
       };
+
       modal.classList.remove('hidden');
     }
 
-    window.addVariableBudgetModal = function() {
-      const modal = document.getElementById('customModal');
-      document.getElementById('modalTitle').textContent = 'Variables Budget anlegen';
-      const cats = appData.categories || ['Lebensmittel', 'Freizeit', 'Sonstiges'];
-      const optionsHtml = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+    function renderVariableBudgetsList() {
+      const container = document.getElementById('variableBudgetsListContainer');
+      if (!container) return;
+      container.innerHTML = '';
 
-      document.getElementById('modalBody').innerHTML = `
-        <div class="space-y-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Name des Budgets</label>
-            <input type="text" id="modalVbName" placeholder="z. B. Monatsbudget Supermarkt" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Verknüpfte Kategorie</label>
-            <select id="modalVbCat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-              ${optionsHtml}
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Monatliches Limit (€)</label>
-            <input type="number" id="modalVbAmount" placeholder="300" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
-          </div>
-        </div>
-      `;
-      const saveBtn = document.getElementById('modalSaveBtn');
-      saveBtn.textContent = 'Speichern';
-      saveBtn.onclick = function() {
-        const name = document.getElementById('modalVbName').value.trim();
-        const category = document.getElementById('modalVbCat').value;
-        const amount = Number(document.getElementById('modalVbAmount').value || 0);
-        if (!name || amount <= 0) {
-          showNotification("Bitte Namen und Limit eingeben.");
-          return;
-        }
-        if (!appData.variableBudgets) appData.variableBudgets = [];
-        appData.variableBudgets.push({ id: 'vb_' + Date.now(), name, category, amount });
-        saveState();
-        closeModal();
-        showNotification("Variables Budget angelegt!");
-      };
-      modal.classList.remove('hidden');
-    }
+      const mData = getActiveMonthData();
+      const expenses = mData.dailyExpenses || [];
+      const budgets = appData.variableBudgets || [];
 
-    window.editVariableBudgetModal = function(id) {
-      const vb = (appData.variableBudgets || []).find(x => x.id === id);
-      if (!vb) return;
-      const modal = document.getElementById('customModal');
-      document.getElementById('modalTitle').textContent = 'Variables Budget bearbeiten';
-      const cats = appData.categories || ['Lebensmittel', 'Freizeit', 'Sonstiges'];
-      const optionsHtml = cats.map(c => `<option value="${c}" ${vb.category === c ? 'selected' : ''}>${c}</option>`).join('');
+      if (budgets.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-500 italic">Keine variablen Budgets erfasst.</p>';
+        document.getElementById('totalVariableBudgetsDisplay').textContent = formatEUR(0);
+        renderExpenseCategoryChart();
+        return;
+      }
 
-      document.getElementById('modalBody').innerHTML = `
-        <div class="space-y-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Name des Budgets</label>
-            <input type="text" id="modalVbName" value="${vb.name}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Verknüpfte Kategorie</label>
-            <select id="modalVbCat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-              ${optionsHtml}
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Monatliches Limit (€)</label>
-            <input type="number" id="modalVbAmount" value="${vb.amount}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
-          </div>
-        </div>
-      `;
-      const saveBtn = document.getElementById('modalSaveBtn');
-      saveBtn.textContent = 'Speichern';
-      saveBtn.onclick = function() {
-        vb.name = document.getElementById('modalVbName').value.trim();
-        vb.category = document.getElementById('modalVbCat').value;
-        vb.amount = Number(document.getElementById('modalVbAmount').value || 0);
-        saveState();
-        closeModal();
-        showNotification("Budget aktualisiert!");
-      };
-      modal.classList.remove('hidden');
-    }
+      let totalLimit = 0;
+      budgets.forEach(b => {
+        totalLimit += Number(b.amount || 0);
+        const spent = expenses.filter(e => e.category === b.category).reduce((acc, e) => acc + Number(e.amount || 0), 0);
+        const pct = b.amount > 0 ? Math.min(100, Math.round((spent / b.amount) * 100)) : 0;
+        let color = 'bg-emerald-500';
+        if (pct >= 80) color = 'bg-amber-500';
+        if (pct >= 100) color = 'bg-rose-500';
 
-    window.deleteVariableBudget = function(id) {
-      appData.variableBudgets = (appData.variableBudgets || []).filter(x => x.id !== id);
-      saveState();
-      showNotification("Budget gelöscht.");
+        const row = document.createElement('div');
+        row.className = 'bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 space-y-2';
+        row.innerHTML = `
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-white">${b.category}</span>
+            <span class="text-slate-300">${formatEUR(spent)} / <strong class="text-white">${formatEUR(b.amount)}</strong> (${pct}%)</span>
+          </div>
+          <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden flex">
+            <div class="${color} h-full transition-all duration-300" style="width: ${pct}%"></div>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+
+      document.getElementById('totalVariableBudgetsDisplay').textContent = formatEUR(totalLimit);
+      renderExpenseCategoryChart();
     }
 
     function renderExpenseCategoryChart() {
@@ -1521,7 +1455,8 @@
       const emptyState = document.getElementById('expenseChartEmptyState');
       if (!ctx || !chartWrapper || !emptyState) return;
 
-      const expenses = appData.dailyExpenses || [];
+      const mData = getActiveMonthData();
+      const expenses = mData.dailyExpenses || [];
       if (expenses.length === 0) {
         chartWrapper.classList.add('hidden');
         emptyState.classList.remove('hidden');
@@ -1737,13 +1672,7 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-400 mb-1">Kategorie</label>
-            <select id="modalPlanCat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-              <option value="ETF">ETF</option>
-              <option value="Notgroschen">Notgroschen</option>
-              <option value="Edelmetall">Edelmetall</option>
-              <option value="Freizeit">Freizeit</option>
-              <option value="Sonstiges">Sonstiges</option>
-            </select>
+            <input type="text" id="modalPlanCat" placeholder="z. B. ETF, Notgroschen" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-400 mb-1">Aktueller Stand (€)</label>
@@ -1757,7 +1686,7 @@
       `;
       document.getElementById('modalSaveBtn').onclick = function() {
         const name = document.getElementById('modalPlanName').value.trim();
-        const category = document.getElementById('modalPlanCat').value;
+        const category = document.getElementById('modalPlanCat').value.trim() || 'ETF';
         const current = Number(document.getElementById('modalPlanCur').value || 0);
         const monthly = Number(document.getElementById('modalPlanMtl').value || 0);
 
@@ -1815,7 +1744,7 @@
 
     window.addFixedExpense = function() {
       const modal = document.getElementById('customModal');
-      document.getElementById('modalTitle').textContent = 'Fixkosten hinzufügen';
+      document.getElementById('modalTitle').textContent = `Fixkosten hinzufügen (${formatYearMonthLabel(appData.currentMonthKey)})`;
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
           <div>
@@ -1835,20 +1764,22 @@
           showNotification("Bitte Bezeichnung eingeben.");
           return;
         }
-        if (!appData.fixedExpenses) appData.fixedExpenses = [];
-        appData.fixedExpenses.push({ id: 'f_' + Date.now(), name, amount });
+        const mData = getActiveMonthData();
+        if (!mData.fixedExpenses) mData.fixedExpenses = [];
+        mData.fixedExpenses.push({ id: 'f_' + Date.now(), name, amount });
         saveState();
         closeModal();
-        showNotification("Fixkosten hinzugefügt!");
+        showNotification("Fixkosten für diesen Monat hinzugefügt!");
       };
       modal.classList.remove('hidden');
     }
 
     window.editFixedExpenseModal = function(id) {
-      const f = (appData.fixedExpenses || []).find(x => x.id === id);
+      const mData = getActiveMonthData();
+      const f = (mData.fixedExpenses || []).find(x => x.id === id);
       if (!f) return;
       const modal = document.getElementById('customModal');
-      document.getElementById('modalTitle').textContent = 'Fixkosten bearbeiten';
+      document.getElementById('modalTitle').textContent = 'Fixkosten bearbeiten (nur dieser Monat)';
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
           <div>
@@ -1872,9 +1803,51 @@
     }
 
     window.deleteFixedExpense = function(id) {
-      appData.fixedExpenses = (appData.fixedExpenses || []).filter(x => x.id !== id);
+      const mData = getActiveMonthData();
+      mData.fixedExpenses = (mData.fixedExpenses || []).filter(x => x.id !== id);
       saveState();
-      showNotification("Fixkosten entfernt.");
+      showNotification("Fixkosten für diesen Monat entfernt.");
+    }
+
+    window.addVariableBudgetModal = function() {
+      let catOptions = '';
+      (appData.categories || []).forEach(c => {
+        catOptions += `<option value="${c}">${c}</option>`;
+      });
+
+      const modal = document.getElementById('customModal');
+      document.getElementById('modalTitle').textContent = 'Variables Budget anlegen';
+      document.getElementById('modalBody').innerHTML = `
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Kategorie</label>
+            <select id="modalBudgetCat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+              ${catOptions}
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Monatliches Limit (€)</label>
+            <input type="number" id="modalBudgetAmount" value="200" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+      `;
+      document.getElementById('modalSaveBtn').onclick = function() {
+        const category = document.getElementById('modalBudgetCat').value;
+        const amount = Number(document.getElementById('modalBudgetAmount').value || 0);
+
+        if (!appData.variableBudgets) appData.variableBudgets = [];
+        const existing = appData.variableBudgets.find(b => b.category === category);
+        if (existing) {
+          existing.amount = amount;
+        } else {
+          appData.variableBudgets.push({ id: 'b_' + Date.now(), category, amount });
+        }
+
+        saveState();
+        closeModal();
+        showNotification("Variables Budget gespeichert!");
+      };
+      modal.classList.remove('hidden');
     }
 
     window.exportDataJSON = function() {
@@ -1894,20 +1867,22 @@
       reader.onload = function(e) {
         try {
           const parsed = JSON.parse(e.target.result);
-          if (parsed && typeof parsed === 'object') {
-            appData = { ...appData, ...parsed };
+          if (parsed && parsed.plans) {
+            appData = parsed;
+            if (!appData.monthOverrides) appData.monthOverrides = {};
             saveState();
-            showNotification("Backup erfolgreich importiert!");
+            showNotification("Daten erfolgreich importiert!");
           } else {
-            showNotification("Ungültige JSON-Datei.");
+            showNotification("Ungültiges Backup-Format.");
           }
         } catch (err) {
-          showNotification("Fehler beim Einlesen der Datei.");
+          showNotification("Fehler beim Lesen der Datei.");
         }
       };
       reader.readAsText(file);
     }
 
+    // Drag & Drop Logic for Dashboard Cards
     function initDashboardDragAndDrop() {
       const container = document.getElementById('sortableDashboardGrid');
       if (!container) return;
@@ -1918,10 +1893,6 @@
         card.setAttribute('draggable', 'true');
 
         card.addEventListener('dragstart', (e) => {
-          if (e.target.closest('button, input, select, a')) {
-            e.preventDefault();
-            return;
-          }
           draggedCard = card;
           e.dataTransfer.effectAllowed = 'move';
           setTimeout(() => card.classList.add('opacity-40', 'scale-[0.99]'), 0);
