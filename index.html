@@ -113,9 +113,10 @@
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
           Monat abschließen
         </button>
-        <button onclick="undoLastMonthClose()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shrink-0" title="Letzten Abschluss rückgängig machen">
+        <button onclick="undoLastAction()" id="topUndoBtn" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shrink-0" title="Letzte Aktion oder Löschung rückgängig machen">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-          Rückgängig
+          <span>Rückgängig</span>
+          <span id="undoBadgeCount" class="hidden px-1.5 py-0.2 bg-indigo-500/30 text-indigo-300 rounded-full text-[10px] font-extrabold">0</span>
         </button>
       </div>
     </div>
@@ -344,11 +345,31 @@
             </h3>
             <p class="text-xs text-slate-400 mt-1">Neue Sparpläne und Änderungen an Sparraten oder Beständen werden automatisch in alle Folgemonate übernommen und monatlich aufaddiert.</p>
           </div>
-          <button onclick="addNewPlanModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/20 transition flex items-center gap-2 shrink-0">
-            + Sparplan anlegen
-          </button>
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="undoLastAction()" id="planTabUndoBtn" class="hidden px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 font-bold text-xs rounded-xl transition flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+              Letzte Änderung rückgängig
+            </button>
+            <button onclick="addNewPlanModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/20 transition flex items-center gap-2">
+              + Sparplan anlegen
+            </button>
+          </div>
         </div>
         <div id="plansListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+        <!-- Wiederherstellungs-Sektion für gelöschte oder in diesem Monat fehlende Sparpläne -->
+        <div id="deletedPlansRecoverySection" class="hidden mt-8 pt-6 border-t border-slate-800/80 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h4 class="font-bold text-sm text-amber-400 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Gelöschte oder ausgeblendete Sparpläne in diesem Monat
+              </h4>
+              <p class="text-xs text-slate-400 mt-0.5">Diese Sparpläne wurden in diesem Monat gelöscht oder existieren in anderen Monaten. Du kannst sie jederzeit wiederherstellen.</p>
+            </div>
+          </div>
+          <div id="deletedPlansListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
       </div>
     </div>
 
@@ -642,7 +663,7 @@
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
       <h3 id="modalTitle" class="font-bold text-base text-white mb-4">Eintrag bearbeiten</h3>
       <div id="modalBody" class="space-y-4"></div>
-      <div class="mt-6 flex justify-end space-x-3">
+      <div id="modalFooter" class="mt-6 flex justify-end space-x-3">
         <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">Abbrechen</button>
         <button id="modalSaveBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-indigo-600/20 transition">Speichern</button>
       </div>
@@ -650,7 +671,7 @@
   </div>
 
   <!-- Notification Toast -->
-  <div id="customNotificationBox" class="fixed bottom-5 right-5 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-2xl z-50 text-xs font-semibold transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+  <div id="customNotificationBox" class="fixed bottom-5 right-5 bg-slate-900 border border-emerald-500/50 text-white px-4 py-3 rounded-xl shadow-2xl z-50 text-xs font-semibold transition-all duration-300 opacity-0 pointer-events-none flex items-center gap-3"></div>
 
   <!-- App Logic -->
   <script>
@@ -661,6 +682,9 @@
       }
     });
 
+    let undoStack = [];
+    let notificationTimeout = null;
+
     let appData = {
       netIncome: 2704.14,
       extra13: 3137,
@@ -670,6 +694,7 @@
       yearEndGoal: 10000,
       currentMonthKey: '2026-11',
       lastBackupState: null,
+      deletedPlansArchive: [],
       categories: ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport / Auto', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'],
       defaultFixedExpenses: [
         { id: 'f1', name: 'Miete', amount: 820 },
@@ -728,14 +753,83 @@
       if (!appData.defaultFixedExpenses) appData.defaultFixedExpenses = appData.fixedExpenses || [];
       if (!appData.basePlans) appData.basePlans = appData.plans || [];
       if (!appData.monthOverrides) appData.monthOverrides = {};
+      if (!appData.deletedPlansArchive) appData.deletedPlansArchive = [];
 
       buildMonthSelectorOptions();
       ensureMonthExists(appData.currentMonthKey);
       renderAll();
     }
 
+    function pushUndoSnapshot(actionLabel = 'Letzte Änderung') {
+      const snapshot = JSON.parse(JSON.stringify(appData));
+      undoStack.push({
+        label: actionLabel,
+        state: snapshot
+      });
+      if (undoStack.length > 12) {
+        undoStack.shift();
+      }
+      appData.lastBackupState = snapshot;
+      updateUndoUI();
+    }
+
+    function updateUndoUI() {
+      const badge = document.getElementById('undoBadgeCount');
+      const planUndoBtn = document.getElementById('planTabUndoBtn');
+      const count = undoStack.length;
+      if (badge) {
+        if (count > 0) {
+          badge.textContent = count;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+      if (planUndoBtn) {
+        if (count > 0) {
+          planUndoBtn.classList.remove('hidden');
+          const lastLabel = undoStack[undoStack.length - 1].label;
+          planUndoBtn.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+            Rückgängig: ${lastLabel}
+          `;
+        } else {
+          planUndoBtn.classList.add('hidden');
+        }
+      }
+    }
+
+    window.undoLastAction = function() {
+      if (undoStack.length > 0) {
+        const lastItem = undoStack.pop();
+        const activeMonthBeforeUndo = appData.currentMonthKey;
+        appData = JSON.parse(JSON.stringify(lastItem.state));
+        appData.currentMonthKey = activeMonthBeforeUndo;
+        const sel = document.getElementById('globalMonthSelector');
+        if (sel) sel.value = appData.currentMonthKey;
+        saveState();
+        updateUndoUI();
+        showNotification(`Rückgängig gemacht: ${lastItem.label}`, false);
+        return;
+      }
+      if (appData.lastBackupState) {
+        const currentMonthKey = appData.currentMonthKey;
+        appData = JSON.parse(JSON.stringify(appData.lastBackupState));
+        appData.lastBackupState = null;
+        appData.currentMonthKey = currentMonthKey;
+        saveState();
+        updateUndoUI();
+        showNotification("Letzte Aktion erfolgreich rückgängig gemacht.", false);
+      } else {
+        showNotification("Keine Aktion zum Rückgängigmachen vorhanden.", false);
+      }
+    }
+
+    window.undoLastMonthClose = window.undoLastAction;
+
     function saveState() {
       localStorage.setItem('finanzplaner_pro_v6', JSON.stringify(appData));
+      updateUndoUI();
       renderAll();
     }
 
@@ -808,6 +902,8 @@
           const updatedPlans = [];
 
           (prevData.plans || []).forEach(prevPlan => {
+            if (options.deletedFromCurrentOnwardsId && prevPlan.id === options.deletedFromCurrentOnwardsId) return;
+
             const existingCurrPlan = (currData.plans || []).find(p => p.id === prevPlan.id);
             const nextCurrentVal = Number(prevPlan.current || 0) + Number(prevPlan.monthly || 0);
 
@@ -819,7 +915,7 @@
                 current: nextCurrentVal,
                 monthly: options.propagateMonthlyPlanId === prevPlan.id ? prevPlan.monthly : existingCurrPlan.monthly
               });
-            } else {
+            } else if (!options.onlyDeletedSingleMonthId || options.onlyDeletedSingleMonthId !== prevPlan.id) {
               updatedPlans.push({
                 ...prevPlan,
                 current: nextCurrentVal
@@ -829,6 +925,7 @@
 
           (currData.plans || []).forEach(currPlan => {
             if (options.deletedPlanId && currPlan.id === options.deletedPlanId) return;
+            if (options.deletedFromCurrentOnwardsId && currPlan.id === options.deletedFromCurrentOnwardsId) return;
             if (!updatedPlans.find(p => p.id === currPlan.id)) {
               updatedPlans.push(currPlan);
             }
@@ -1218,7 +1315,7 @@
         const targetId = document.getElementById('modalCloseTargetPlan').value;
         const targetPlan = (mData.plans || []).find(p => p.id === targetId);
 
-        appData.lastBackupState = JSON.parse(JSON.stringify(appData));
+        pushUndoSnapshot(`Monatsabschluss ${label}`);
 
         if (!appData.closedMonths) appData.closedMonths = {};
         if (targetPlan && totals.availableBuffer > 0) {
@@ -1242,34 +1339,18 @@
 
         closeModal();
         saveState();
-        showNotification(`Monat ${label} abgeschlossen & Folgemonate aktualisiert!`);
+        showNotification(`Monat ${label} abgeschlossen & Folgemonate aktualisiert!`, true);
       };
 
       modal.classList.remove('hidden');
     }
 
-    window.undoLastMonthClose = function() {
-      if (!appData.lastBackupState) {
-        showNotification("Kein vorheriger Stand zum Wiederherstellen vorhanden.");
-        return;
-      }
-      const currentMonthKey = appData.currentMonthKey;
-      appData = JSON.parse(JSON.stringify(appData.lastBackupState));
-      appData.lastBackupState = null;
-      appData.currentMonthKey = currentMonthKey;
-
-      if (appData.closedMonths && appData.closedMonths[currentMonthKey]) {
-        delete appData.closedMonths[currentMonthKey];
-      }
-      saveState();
-      showNotification("Monatsabschluss erfolgreich rückgängig gemacht.");
-    }
-
     window.deleteClosedMonth = function(k) {
       if (appData.closedMonths && appData.closedMonths[k]) {
+        pushUndoSnapshot(`Historie ${appData.closedMonths[k].dateLabel} gelöscht`);
         delete appData.closedMonths[k];
         saveState();
-        showNotification("Monat aus Historie gelöscht.");
+        showNotification("Monat aus Historie gelöscht.", true);
       }
     }
 
@@ -1278,6 +1359,7 @@
       if (!container) return;
       container.innerHTML = '';
       const mData = getActiveMonthData();
+      const activeIds = new Set((mData.plans || []).map(p => p.id));
 
       (mData.plans || []).forEach(p => {
         const nextMonthStand = Number(p.current || 0) + Number(p.monthly || 0);
@@ -1306,13 +1388,170 @@
           </div>
           <div class="flex items-center gap-2 pt-2">
             <button onclick="editPlanModal('${p.id}')" class="flex-1 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold text-xs rounded-xl transition">Bearbeiten / Einzahlen</button>
-            <button onclick="deletePlan('${p.id}')" class="p-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-xl transition" title="Sparplan ab diesem Monat löschen">
+            <button onclick="deletePlanModal('${p.id}')" class="p-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-xl transition" title="Sparplan pausieren oder löschen">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </button>
           </div>
         `;
         container.appendChild(card);
       });
+
+      renderDeletedOrMissingPlans(activeIds);
+    }
+
+    // Sucht nach Sparplänen, die im aktuellen Monat gelöscht wurden oder in anderen Monaten/Archiv existieren
+    function renderDeletedOrMissingPlans(activeIds) {
+      const section = document.getElementById('deletedPlansRecoverySection');
+      const listContainer = document.getElementById('deletedPlansListContainer');
+      if (!section || !listContainer) return;
+
+      const missingMap = new Map();
+
+      // 1. Aus basePlans prüfen
+      (appData.basePlans || []).forEach(bp => {
+        if (!activeIds.has(bp.id)) {
+          missingMap.set(bp.id, { ...bp, source: 'Stammdaten' });
+        }
+      });
+
+      // 2. Aus Vormonaten prüfen (mit dem aktuellsten bekannten Stand)
+      const currentIdx = ALL_MONTH_KEYS.indexOf(appData.currentMonthKey);
+      for (let i = 0; i < ALL_MONTH_KEYS.length; i++) {
+        const k = ALL_MONTH_KEYS[i];
+        const m = appData.monthOverrides[k];
+        if (!m || !m.plans) continue;
+        m.plans.forEach(p => {
+          if (!activeIds.has(p.id)) {
+            const calcStand = i < currentIdx ? Number(p.current || 0) + Number(p.monthly || 0) : Number(p.current || 0);
+            missingMap.set(p.id, {
+              ...p,
+              current: calcStand,
+              lastSeenMonth: formatYearMonthLabel(k)
+            });
+          }
+        });
+      }
+
+      // 3. Aus dem Lösch-Archiv prüfen
+      (appData.deletedPlansArchive || []).forEach(dp => {
+        if (!activeIds.has(dp.id) && !missingMap.has(dp.id)) {
+          missingMap.set(dp.id, { ...dp, lastSeenMonth: dp.deletedAtMonth || 'Archiv' });
+        }
+      });
+
+      const missingPlans = Array.from(missingMap.values());
+      if (missingPlans.length === 0) {
+        section.classList.add('hidden');
+        listContainer.innerHTML = '';
+        return;
+      }
+
+      section.classList.remove('hidden');
+      listContainer.innerHTML = '';
+
+      missingPlans.forEach(mp => {
+        const card = document.createElement('div');
+        card.className = 'bg-slate-950/50 border border-dashed border-amber-500/40 rounded-2xl p-4 flex flex-col justify-between gap-3';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-slate-200">${mp.name}</span>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">${mp.category || 'Sparplan'}</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 mt-2.5 pt-2 border-t border-slate-900 text-xs">
+              <div>
+                <span class="text-slate-500 block">Letzter Stand</span>
+                <span class="font-bold text-slate-300">${formatEUR(mp.current)}</span>
+              </div>
+              <div>
+                <span class="text-slate-500 block">Sparrate</span>
+                <span class="font-bold text-slate-300">${formatEUR(mp.monthly)}/M.</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 pt-1">
+            <button onclick="restoreDeletedPlan('${mp.id}')" class="flex-1 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              Ab diesem Monat wiederherstellen
+            </button>
+            <button onclick="permanentlyPurgeArchivedPlan('${mp.id}')" class="p-2 bg-slate-900 hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 rounded-xl transition" title="Aus Vorschlägen entfernen">
+              ✕
+            </button>
+          </div>
+        `;
+        listContainer.appendChild(card);
+      });
+    }
+
+    window.restoreDeletedPlan = function(id) {
+      pushUndoSnapshot('Sparplan wiederhergestellt');
+      const mData = getActiveMonthData();
+      const currentIdx = ALL_MONTH_KEYS.indexOf(appData.currentMonthKey);
+
+      let planToRestore = null;
+
+      // Prüfe zuerst im unmittelbaren Vormonat für nahtlose Bestandsfortschreibung
+      if (currentIdx > 0) {
+        const prevKey = ALL_MONTH_KEYS[currentIdx - 1];
+        const prevData = appData.monthOverrides[prevKey];
+        if (prevData && prevData.plans) {
+          const prevPlan = prevData.plans.find(p => p.id === id);
+          if (prevPlan) {
+            planToRestore = {
+              ...prevPlan,
+              current: Number(prevPlan.current || 0) + Number(prevPlan.monthly || 0)
+            };
+          }
+        }
+      }
+
+      // Falls nicht im direkten Vormonat, suche in Archiv oder basePlans
+      if (!planToRestore) {
+        const fromArchive = (appData.deletedPlansArchive || []).find(p => p.id === id);
+        const fromBase = (appData.basePlans || []).find(p => p.id === id);
+        planToRestore = fromArchive ? { ...fromArchive } : (fromBase ? { ...fromBase } : null);
+      }
+
+      // Falls in irgendeinem anderen Monat vorhanden
+      if (!planToRestore) {
+        for (const k of ALL_MONTH_KEYS) {
+          const m = appData.monthOverrides[k];
+          const found = m && m.plans ? m.plans.find(p => p.id === id) : null;
+          if (found) {
+            planToRestore = { ...found };
+            break;
+          }
+        }
+      }
+
+      if (!planToRestore) return;
+      delete planToRestore.deletedAtMonth;
+      delete planToRestore.source;
+      delete planToRestore.lastSeenMonth;
+
+      if (!mData.plans) mData.plans = [];
+      if (!mData.plans.find(p => p.id === id)) {
+        mData.plans.push(planToRestore);
+      }
+
+      // Auch in Folgemonate logisch weitergeben
+      recalculateFutureMonths(appData.currentMonthKey, { propagateMonthlyPlanId: id });
+
+      saveState();
+      showNotification(`Sparplan "${planToRestore.name}" ab ${formatYearMonthLabel(appData.currentMonthKey)} wiederhergestellt!`, true);
+    }
+
+    window.permanentlyPurgeArchivedPlan = function(id) {
+      pushUndoSnapshot('Archiv-Sparplan endgültig entfernt');
+      appData.deletedPlansArchive = (appData.deletedPlansArchive || []).filter(p => p.id !== id);
+      appData.basePlans = (appData.basePlans || []).filter(p => p.id !== id);
+      ALL_MONTH_KEYS.forEach(k => {
+        if (appData.monthOverrides[k] && appData.monthOverrides[k].plans) {
+          appData.monthOverrides[k].plans = appData.monthOverrides[k].plans.filter(p => p.id !== id);
+        }
+      });
+      saveState();
+      showNotification("Sparplan komplett aus allen Monaten entfernt.", true);
     }
 
     function renderIncomeAndFixed() {
@@ -1840,18 +2079,31 @@
 
     window.closeModal = function() {
       document.getElementById('customModal').classList.add('hidden');
+      const footer = document.getElementById('modalFooter');
+      if (footer) footer.classList.remove('hidden');
     }
 
-    window.showNotification = function(msg) {
+    window.showNotification = function(msg, showUndo = false) {
       const box = document.getElementById('customNotificationBox');
       if (!box) return;
-      box.textContent = msg;
+      if (notificationTimeout) clearTimeout(notificationTimeout);
+
+      box.innerHTML = `
+        <span class="text-emerald-400 font-bold">✓</span>
+        <span>${msg}</span>
+        ${showUndo && undoStack.length > 0 ? `
+          <button onclick="undoLastAction()" class="ml-2 px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-lg text-[11px] transition shadow">
+            Rückgängig
+          </button>
+        ` : ''}
+      `;
+
       box.classList.remove('opacity-0', 'pointer-events-none');
       box.classList.add('opacity-100');
-      setTimeout(() => {
+      notificationTimeout = setTimeout(() => {
         box.classList.remove('opacity-100');
         box.classList.add('opacity-0', 'pointer-events-none');
-      }, 3000);
+      }, showUndo ? 6000 : 3200);
     }
 
     window.editYearEndGoalModal = function() {
@@ -1906,6 +2158,8 @@
           return;
         }
 
+        pushUndoSnapshot(`Sparplan "${name}" angelegt`);
+
         const newPlan = { id: 'p_' + Date.now(), name, category, current, monthly };
         const mData = getActiveMonthData();
         if (!mData.plans) mData.plans = [];
@@ -1918,7 +2172,7 @@
 
         saveState();
         closeModal();
-        showNotification("Sparplan angelegt & für alle Folgemonate fortgeschrieben!");
+        showNotification("Sparplan angelegt & für alle Folgemonate fortgeschrieben!", true);
       };
       modal.classList.remove('hidden');
     }
@@ -1928,6 +2182,9 @@
       const p = (mData.plans || []).find(x => x.id === id);
       if (!p) return;
       const modal = document.getElementById('customModal');
+      const footer = document.getElementById('modalFooter');
+      if (footer) footer.classList.remove('hidden');
+
       document.getElementById('modalTitle').textContent = `Sparplan bearbeiten (${formatYearMonthLabel(appData.currentMonthKey)})`;
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
@@ -1954,6 +2211,8 @@
         </div>
       `;
       document.getElementById('modalSaveBtn').onclick = function() {
+        pushUndoSnapshot(`Sparplan "${p.name}" bearbeitet`);
+
         p.name = document.getElementById('modalPlanName').value.trim();
         const baseCur = Number(document.getElementById('modalPlanCur').value || 0);
         const oneTime = Number(document.getElementById('modalPlanOneTime').value || 0);
@@ -1968,20 +2227,115 @@
 
         saveState();
         closeModal();
-        showNotification("Sparplan & Folgemonate aktualisiert!");
+        showNotification("Sparplan & Folgemonate aktualisiert!", true);
       };
       modal.classList.remove('hidden');
     }
 
-    window.deletePlan = function(id) {
+    // Intelligenter Lösch-Dialog mit 3 klaren Optionen + Sofort-Rückgängig-Schutz
+    window.deletePlanModal = function(id) {
       const mData = getActiveMonthData();
-      if (mData.plans) {
-        mData.plans = mData.plans.filter(x => x.id !== id);
-        recalculateFutureMonths(appData.currentMonthKey, { deletedPlanId: id });
+      const p = (mData.plans || []).find(x => x.id === id);
+      if (!p) return;
+
+      const monthLabel = formatYearMonthLabel(appData.currentMonthKey);
+      const modal = document.getElementById('customModal');
+      const footer = document.getElementById('modalFooter');
+      if (footer) footer.classList.add('hidden');
+
+      document.getElementById('modalTitle').textContent = `Sparplan "${p.name}" entfernen oder pausieren?`;
+      document.getElementById('modalBody').innerHTML = `
+        <div class="space-y-3 text-xs">
+          <p class="text-slate-300 leading-relaxed">
+            Wie möchtest du mit <strong class="text-white">${p.name}</strong> (Stand: <strong class="text-emerald-400">${formatEUR(p.current)}</strong>) im Monat <strong class="text-indigo-400">${monthLabel}</strong> verfahren?
+            <span class="block text-[11px] text-slate-400 mt-1">Hinweis: Du kannst jede Auswahl sofort wieder rückgängig machen.</span>
+          </p>
+
+          <button onclick="executePlanDeletion('${p.id}', 'pause_month')" class="w-full text-left p-3.5 rounded-xl bg-slate-950 hover:bg-slate-800/90 border border-indigo-500/30 transition group">
+            <div class="font-bold text-indigo-400 group-hover:text-indigo-300 flex items-center justify-between">
+              <span>1. Nur in diesem Monat pausieren (0 € Sparrate)</span>
+              <span>→</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">Der Sparplan und sein Bestand bleiben erhalten, aber im ${monthLabel} wird nichts eingezahlt. Folgemonate werden automatisch angepasst.</p>
+          </button>
+
+          <button onclick="executePlanDeletion('${p.id}', 'only_this_month')" class="w-full text-left p-3.5 rounded-xl bg-slate-950 hover:bg-slate-800/90 border border-amber-500/30 transition group">
+            <div class="font-bold text-amber-400 group-hover:text-amber-300 flex items-center justify-between">
+              <span>2. Nur in diesem Monat ausblenden</span>
+              <span>→</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">Wird nur im ${monthLabel} entfernt, bleibt in anderen Monaten bestehen und kann unten jederzeit wieder eingeblendet werden.</p>
+          </button>
+
+          <button onclick="executePlanDeletion('${p.id}', 'from_here_onwards')" class="w-full text-left p-3.5 rounded-xl bg-slate-950 hover:bg-slate-800/90 border border-rose-500/30 transition group">
+            <div class="font-bold text-rose-400 group-hover:text-rose-300 flex items-center justify-between">
+              <span>3. Ab ${monthLabel} (inkl. Folgemonate) löschen</span>
+              <span>→</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">Entfernt den Sparplan ab diesem Monat und in allen zukünftigen Monaten. Vergangene Monate bleiben unberührt.</p>
+          </button>
+
+          <button onclick="executePlanDeletion('${p.id}', 'all_months')" class="w-full text-left p-3 rounded-xl bg-rose-950/20 hover:bg-rose-950/40 border border-rose-500/20 transition group">
+            <div class="font-bold text-rose-300 flex items-center justify-between">
+              <span>4. Komplett aus allen Monaten löschen</span>
+              <span>→</span>
+            </div>
+          </button>
+
+          <div class="pt-2 flex justify-end">
+            <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">Abbrechen</button>
+          </div>
+        </div>
+      `;
+      modal.classList.remove('hidden');
+    }
+
+    window.executePlanDeletion = function(id, mode) {
+      const mData = getActiveMonthData();
+      const p = (mData.plans || []).find(x => x.id === id);
+      if (!p) {
+        closeModal();
+        return;
+      }
+
+      const planBackupCopy = { ...p, deletedAtMonth: formatYearMonthLabel(appData.currentMonthKey) };
+      pushUndoSnapshot(`Sparplan "${p.name}" (${mode === 'pause_month' ? 'pausiert' : 'gelöscht'})`);
+
+      if (!appData.deletedPlansArchive) appData.deletedPlansArchive = [];
+      appData.deletedPlansArchive = appData.deletedPlansArchive.filter(item => item.id !== id);
+      appData.deletedPlansArchive.push(planBackupCopy);
+
+      if (mode === 'pause_month') {
+        p.monthly = 0;
+        recalculateFutureMonths(appData.currentMonthKey);
+        closeModal();
         saveState();
-        showNotification("Sparplan ab diesem Monat entfernt.");
+        showNotification(`Sparrate für "${p.name}" in diesem Monat auf 0 € gesetzt.`, true);
+      } else if (mode === 'only_this_month') {
+        mData.plans = (mData.plans || []).filter(x => x.id !== id);
+        closeModal();
+        saveState();
+        showNotification(`"${p.name}" für diesen Monat ausgeblendet.`, true);
+      } else if (mode === 'from_here_onwards') {
+        mData.plans = (mData.plans || []).filter(x => x.id !== id);
+        recalculateFutureMonths(appData.currentMonthKey, { deletedFromCurrentOnwardsId: id });
+        closeModal();
+        saveState();
+        showNotification(`"${p.name}" ab diesem Monat gelöscht.`, true);
+      } else if (mode === 'all_months') {
+        appData.basePlans = (appData.basePlans || []).filter(x => x.id !== id);
+        ALL_MONTH_KEYS.forEach(k => {
+          if (appData.monthOverrides[k] && appData.monthOverrides[k].plans) {
+            appData.monthOverrides[k].plans = appData.monthOverrides[k].plans.filter(x => x.id !== id);
+          }
+        });
+        closeModal();
+        saveState();
+        showNotification(`"${p.name}" aus allen Monaten entfernt.`, true);
       }
     }
+
+    window.deletePlan = window.deletePlanModal;
 
     window.addFixedExpense = function() {
       const modal = document.getElementById('customModal');
