@@ -749,7 +749,6 @@
       const targetIdx = ALL_MONTH_KEYS.indexOf(targetKey);
       if (targetIdx === -1) return;
 
-      // Finde den letzten bereits initialisierten Monat vor targetKey
       let startIdx = targetIdx;
       while (startIdx > 0 && !appData.monthOverrides[ALL_MONTH_KEYS[startIdx]]) {
         startIdx--;
@@ -808,7 +807,6 @@
           const currData = appData.monthOverrides[currKey];
           const updatedPlans = [];
 
-          // Alle Pläne vom Vormonat an den aktuellen Monat weiterreichen & aufaddieren
           (prevData.plans || []).forEach(prevPlan => {
             const existingCurrPlan = (currData.plans || []).find(p => p.id === prevPlan.id);
             const nextCurrentVal = Number(prevPlan.current || 0) + Number(prevPlan.monthly || 0);
@@ -829,7 +827,6 @@
             }
           });
 
-          // Falls in einem späteren Monat ein eigener Plan existiert, der nicht gelöscht wurde, beibehalten
           (currData.plans || []).forEach(currPlan => {
             if (options.deletedPlanId && currPlan.id === options.deletedPlanId) return;
             if (!updatedPlans.find(p => p.id === currPlan.id)) {
