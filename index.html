@@ -41,7 +41,7 @@
             Finanz- & Vermögensplaner 
             <span class="text-[10px] bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Pro</span>
           </h1>
-          <p class="text-xs text-slate-400" id="headerSubtitle">Cloud-Synchronisation aktiv</p>
+          <p class="text-xs text-slate-400" id="headerSubtitle">Firebase Cloud Live Sync aktiv</p>
         </div>
       </div>
       <div class="flex items-center gap-2 sm:hidden">
@@ -113,10 +113,9 @@
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
           Monat abschließen
         </button>
-        <button onclick="undoLastAction()" id="topUndoBtn" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shrink-0" title="Letzte Aktion oder Löschung rückgängig machen">
+        <button onclick="undoLastMonthClose()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shrink-0" title="Letzten Abschluss rückgängig machen">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-          <span>Rückgängig</span>
-          <span id="undoBadgeCount" class="hidden px-1.5 py-0.2 bg-indigo-500/30 text-indigo-300 rounded-full text-[10px] font-extrabold">0</span>
+          Rückgängig
         </button>
       </div>
     </div>
@@ -336,40 +335,21 @@
 
     <!-- ==================== SPARPLÄNE TAB ==================== -->
     <div id="tab-sparplaene" class="space-y-6 tab-content hidden">
-      <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h3 class="font-bold text-base text-white flex items-center gap-2">
               <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
               Deine Sparpläne & Anlagen (<span id="activeMonthPlanTitle">November 2026</span>)
             </h3>
-            <p class="text-xs text-slate-400 mt-1">Neue Sparpläne und Änderungen an Sparraten oder Beständen werden automatisch in alle Folgemonate übernommen und monatlich aufaddiert.</p>
+            <p class="text-xs text-slate-400 mt-1">Verwalte deine ETFs, Notgroschen und individuellen Sparpläne für diesen Monat.</p>
           </div>
-          <div class="flex items-center gap-2 shrink-0">
-            <button onclick="undoLastAction()" id="planTabUndoBtn" class="hidden px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 font-bold text-xs rounded-xl transition flex items-center gap-1.5">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-              Letzte Änderung rückgängig
-            </button>
-            <button onclick="addNewPlanModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/20 transition flex items-center gap-2">
-              + Sparplan anlegen
-            </button>
-          </div>
+          <button onclick="addNewPlanModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/20 transition flex items-center gap-2 shrink-0">
+            + Sparplan anlegen
+          </button>
         </div>
         <div id="plansListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-
-        <!-- Wiederherstellungs-Sektion für gelöschte oder in diesem Monat fehlende Sparpläne -->
-        <div id="deletedPlansRecoverySection" class="hidden mt-8 pt-6 border-t border-slate-800/80 space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <h4 class="font-bold text-sm text-amber-400 flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                Gelöschte oder ausgeblendete Sparpläne in diesem Monat
-              </h4>
-              <p class="text-xs text-slate-400 mt-0.5">Diese Sparpläne wurden in diesem Monat gelöscht oder existieren in anderen Monaten. Du kannst sie jederzeit wiederherstellen.</p>
-            </div>
-          </div>
-          <div id="deletedPlansListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-        </div>
+        <div id="deletedPlansContainer" class="pt-4 border-t border-slate-800/80 hidden"></div>
       </div>
     </div>
 
@@ -663,7 +643,7 @@
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
       <h3 id="modalTitle" class="font-bold text-base text-white mb-4">Eintrag bearbeiten</h3>
       <div id="modalBody" class="space-y-4"></div>
-      <div id="modalFooter" class="mt-6 flex justify-end space-x-3">
+      <div class="mt-6 flex justify-end space-x-3">
         <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">Abbrechen</button>
         <button id="modalSaveBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-indigo-600/20 transition">Speichern</button>
       </div>
@@ -671,13 +651,29 @@
   </div>
 
   <!-- Notification Toast -->
-  <div id="customNotificationBox" class="fixed bottom-5 right-5 bg-slate-900 border border-emerald-500/50 text-white px-4 py-3 rounded-xl shadow-2xl z-50 text-xs font-semibold transition-all duration-300 opacity-0 pointer-events-none flex items-center gap-3"></div>
+  <div id="customNotificationBox" class="fixed bottom-5 right-5 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-2xl z-50 text-xs font-semibold transition-opacity duration-300 opacity-0 pointer-events-none flex items-center gap-3">
+    <span id="notificationText"></span>
+    <button id="notificationUndoBtn" onclick="triggerUndoAction()" class="underline text-emerald-200 hover:text-white hidden text-[11px]">Rückgängig</button>
+  </div>
 
   <!-- Firebase & App Logic -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDAa-LXGXwhMDEhyTZcvGaqLuI1HeK4UjI",
+      authDomain: "finanzapp-dd2bc.firebaseapp.com",
+      projectId: "finanzapp-dd2bc",
+      storageBucket: "finanzapp-dd2bc.firebasestorage.app",
+      messagingSenderId: "511955094335",
+      appId: "1:511955094335:web:33b52762b4146230b4e18a",
+      measurementId: "G-Q9HFPW7CYD"
+    };
+
+    const firebaseApp = initializeApp(firebaseConfig);
+    const db = getFirestore(firebaseApp);
+    const docRef = doc(db, "finanzdata", "user_main");
 
     const ALL_MONTH_KEYS = [];
     [2026, 2027].forEach(y => {
@@ -686,14 +682,7 @@
       }
     });
 
-    window.undoStack = [];
-    let notificationTimeout = null;
-    let db = null;
-    let auth = null;
-    let userId = null;
-    let isSyncingFromCloud = false;
-
-    window.appData = {
+    let appData = {
       netIncome: 2704.14,
       extra13: 3137,
       extra14: 3100,
@@ -702,7 +691,6 @@
       yearEndGoal: 10000,
       currentMonthKey: '2026-11',
       lastBackupState: null,
-      deletedPlansArchive: [],
       categories: ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport / Auto', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'],
       defaultFixedExpenses: [
         { id: 'f1', name: 'Miete', amount: 820 },
@@ -730,6 +718,7 @@
       }
     };
 
+    let undoStack = [];
     let assetDonutInstance = null;
     let historicalChartInstance = null;
     let forecastChartInstance = null;
@@ -747,163 +736,59 @@
       return `${months[parseInt(m, 10)]} ${y}`;
     }
 
-    async function initFirebase() {
+    async function loadFirebaseData() {
       try {
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-
-        const app = initializeApp(firebaseConfig);
-        auth = getAuth(app);
-        db = getFirestore(app);
-
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
-
-        userId = auth.currentUser?.uid || crypto.randomUUID();
-        if (!userId) return;
-
-        // Real-time Firestore sync listener
-        const docRef = doc(db, 'artifacts', appId, 'users', userId, 'finanz_data', 'state');
-        onSnapshot(docRef, (docSnap) => {
-          if (docSnap.exists()) {
-            const cloudData = docSnap.data();
-            if (cloudData && cloudData.payload) {
-              isSyncingFromCloud = true;
-              try {
-                const parsed = JSON.parse(cloudData.payload);
-                if (parsed) {
-                  window.appData = { ...window.appData, ...parsed };
-                  if (!window.appData.monthOverrides) window.appData.monthOverrides = {};
-                  if (!window.appData.deletedPlansArchive) window.appData.deletedPlansArchive = [];
-                  renderAll();
-                }
-              } catch (e) {
-                console.error("Cloud parse error:", e);
-              }
-              isSyncingFromCloud = false;
-            }
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+          const cloudData = snap.data();
+          if (cloudData && cloudData.payload) {
+            appData = { ...appData, ...JSON.parse(cloudData.payload) };
           }
-        }, (error) => {
-          console.error("Firestore sync error:", error);
-        });
-
+        }
       } catch (err) {
-        console.warn("Firebase init fallback to local:", err);
-      }
-    }
-
-    async function saveStateToCloud() {
-      if (isSyncingFromCloud || !db || !auth || !auth.currentUser) return;
-      try {
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const currentUserId = auth.currentUser.uid;
-        const docRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'finanz_data', 'state');
-        await setDoc(docRef, {
-          payload: JSON.stringify(window.appData),
-          updatedAt: new Date().toISOString()
-        });
-      } catch (err) {
-        console.error("Cloud save error:", err);
-      }
-    }
-
-    function initApp() {
-      const localSaved = localStorage.getItem('finanzplaner_pro_v7');
-      if (localSaved) {
-        try {
-          window.appData = { ...window.appData, ...JSON.parse(localSaved) };
-        } catch (e) {
-          console.warn("Local storage read error:", e);
+        console.warn("Firebase Ladefehler, nutze lokales Backup:", err);
+        const localSaved = localStorage.getItem('finanzplaner_pro_v6');
+        if (localSaved) {
+          try { appData = { ...appData, ...JSON.parse(localSaved) }; } catch (e) {}
         }
       }
-      if (!window.appData.currentMonthKey) window.appData.currentMonthKey = '2026-11';
-      if (!window.appData.categories) window.appData.categories = ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport / Auto', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'];
-      if (!window.appData.defaultFixedExpenses) window.appData.defaultFixedExpenses = window.appData.fixedExpenses || [];
-      if (!window.appData.basePlans) window.appData.basePlans = window.appData.plans || [];
-      if (!window.appData.monthOverrides) window.appData.monthOverrides = {};
-      if (!window.appData.deletedPlansArchive) window.appData.deletedPlansArchive = [];
+
+      if (!appData.currentMonthKey) appData.currentMonthKey = '2026-11';
+      if (!appData.categories) appData.categories = ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport / Auto', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'];
+      if (!appData.monthOverrides) appData.monthOverrides = {};
 
       buildMonthSelectorOptions();
-      ensureMonthExists(window.appData.currentMonthKey);
+      ensureMonthExists(appData.currentMonthKey);
       renderAll();
-      initFirebase();
     }
 
-    window.pushUndoSnapshot = function(actionLabel = 'Letzte Änderung') {
-      const snapshot = JSON.parse(JSON.stringify(window.appData));
-      window.undoStack.push({
-        label: actionLabel,
-        state: snapshot
+    async function saveState() {
+      localStorage.setItem('finanzplaner_pro_v6', JSON.stringify(appData));
+      renderAll();
+      try {
+        await setDoc(docRef, { payload: JSON.stringify(appData), updatedAt: new Date().toISOString() });
+      } catch (err) {
+        console.warn("Firebase Speicherfehler:", err);
+      }
+    }
+
+    function pushUndoState(actionDescription) {
+      undoStack.push({
+        state: JSON.parse(JSON.stringify(appData)),
+        desc: actionDescription
       });
-      if (window.undoStack.length > 15) {
-        window.undoStack.shift();
-      }
-      window.appData.lastBackupState = snapshot;
-      updateUndoUI();
+      if (undoStack.length > 15) undoStack.shift();
     }
 
-    function updateUndoUI() {
-      const badge = document.getElementById('undoBadgeCount');
-      const planUndoBtn = document.getElementById('planTabUndoBtn');
-      const count = window.undoStack.length;
-      if (badge) {
-        if (count > 0) {
-          badge.textContent = count;
-          badge.classList.remove('hidden');
-        } else {
-          badge.classList.add('hidden');
-        }
-      }
-      if (planUndoBtn) {
-        if (count > 0) {
-          planUndoBtn.classList.remove('hidden');
-          const lastLabel = window.undoStack[window.undoStack.length - 1].label;
-          planUndoBtn.innerHTML = `
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-            Rückgängig: ${lastLabel}
-          `;
-        } else {
-          planUndoBtn.classList.add('hidden');
-        }
-      }
-    }
-
-    window.undoLastAction = function() {
-      if (window.undoStack.length > 0) {
-        const lastItem = window.undoStack.pop();
-        const activeMonthBeforeUndo = window.appData.currentMonthKey;
-        window.appData = JSON.parse(JSON.stringify(lastItem.state));
-        window.appData.currentMonthKey = activeMonthBeforeUndo;
-        const sel = document.getElementById('globalMonthSelector');
-        if (sel) sel.value = window.appData.currentMonthKey;
-        saveState();
-        updateUndoUI();
-        showNotification(`Rückgängig gemacht: ${lastItem.label}`, false);
+    window.triggerUndoAction = function() {
+      if (undoStack.length === 0) {
+        showNotification("Keine Aktion zum Rückgängigmachen vorhanden.");
         return;
       }
-      if (window.appData.lastBackupState) {
-        const currentMonthKey = window.appData.currentMonthKey;
-        window.appData = JSON.parse(JSON.stringify(window.appData.lastBackupState));
-        window.appData.lastBackupState = null;
-        window.appData.currentMonthKey = currentMonthKey;
-        saveState();
-        updateUndoUI();
-        showNotification("Letzte Aktion erfolgreich rückgängig gemacht.", false);
-      } else {
-        showNotification("Keine Aktion zum Rückgängigmachen vorhanden.", false);
-      }
-    }
-
-    window.undoLastMonthClose = window.undoLastAction;
-
-    function saveState() {
-      localStorage.setItem('finanzplaner_pro_v7', JSON.stringify(window.appData));
-      updateUndoUI();
-      renderAll();
-      saveStateToCloud();
+      const last = undoStack.pop();
+      appData = last.state;
+      saveState();
+      showNotification(`Rückgängig: „${last.desc}“`);
     }
 
     function ensureMonthExists(targetKey) {
@@ -911,34 +796,38 @@
       if (targetIdx === -1) return;
 
       let startIdx = targetIdx;
-      while (startIdx > 0 && !window.appData.monthOverrides[ALL_MONTH_KEYS[startIdx]]) {
+      while (startIdx > 0 && !appData.monthOverrides[ALL_MONTH_KEYS[startIdx]]) {
         startIdx--;
       }
 
       for (let i = startIdx; i <= targetIdx; i++) {
         const key = ALL_MONTH_KEYS[i];
-        if (!window.appData.monthOverrides[key]) {
+        if (!appData.monthOverrides[key]) {
           const prevKey = i > 0 ? ALL_MONTH_KEYS[i - 1] : null;
           let basePlans = [];
           let baseFixed = [];
 
-          if (prevKey && window.appData.monthOverrides[prevKey]) {
-            basePlans = (window.appData.monthOverrides[prevKey].plans || []).map(p => ({
+          if (prevKey && appData.monthOverrides[prevKey]) {
+            basePlans = (appData.monthOverrides[prevKey].plans || []).map(p => ({
               ...p,
               current: Number(p.current || 0) + Number(p.monthly || 0)
             }));
-            baseFixed = JSON.parse(JSON.stringify(window.appData.monthOverrides[prevKey].fixedExpenses || []));
+            baseFixed = JSON.parse(JSON.stringify(appData.monthOverrides[prevKey].fixedExpenses || []));
           } else {
-            basePlans = JSON.parse(JSON.stringify(window.appData.basePlans || []));
-            baseFixed = JSON.parse(JSON.stringify(window.appData.defaultFixedExpenses || []));
+            basePlans = JSON.parse(JSON.stringify(appData.basePlans || []));
+            baseFixed = JSON.parse(JSON.stringify(appData.defaultFixedExpenses || []));
           }
 
-          window.appData.monthOverrides[key] = {
+          appData.monthOverrides[key] = {
             fixedExpenses: baseFixed,
             dailyExpenses: [],
             extraIncomes: [],
-            plans: basePlans
+            plans: basePlans,
+            deletedPlans: []
           };
+        }
+        if (!appData.monthOverrides[key].deletedPlans) {
+          appData.monthOverrides[key].deletedPlans = [];
         }
       }
     }
@@ -950,25 +839,27 @@
       for (let i = startIdx + 1; i < ALL_MONTH_KEYS.length; i++) {
         const prevKey = ALL_MONTH_KEYS[i - 1];
         const currKey = ALL_MONTH_KEYS[i];
-        const prevData = window.appData.monthOverrides[prevKey];
+        const prevData = appData.monthOverrides[prevKey];
         if (!prevData) continue;
 
-        if (!window.appData.monthOverrides[currKey]) {
-          window.appData.monthOverrides[currKey] = {
+        if (!appData.monthOverrides[currKey]) {
+          appData.monthOverrides[currKey] = {
             fixedExpenses: JSON.parse(JSON.stringify(prevData.fixedExpenses || [])),
             dailyExpenses: [],
             extraIncomes: [],
             plans: (prevData.plans || []).map(p => ({
               ...p,
               current: Number(p.current || 0) + Number(p.monthly || 0)
-            }))
+            })),
+            deletedPlans: []
           };
         } else {
-          const currData = window.appData.monthOverrides[currKey];
+          const currData = appData.monthOverrides[currKey];
+          if (!currData.deletedPlans) currData.deletedPlans = [];
           const updatedPlans = [];
 
           (prevData.plans || []).forEach(prevPlan => {
-            if (options.deletedFromCurrentOnwardsId && prevPlan.id === options.deletedFromCurrentOnwardsId) return;
+            if (currData.deletedPlans.some(dp => dp.id === prevPlan.id)) return;
 
             const existingCurrPlan = (currData.plans || []).find(p => p.id === prevPlan.id);
             const nextCurrentVal = Number(prevPlan.current || 0) + Number(prevPlan.monthly || 0);
@@ -981,7 +872,7 @@
                 current: nextCurrentVal,
                 monthly: options.propagateMonthlyPlanId === prevPlan.id ? prevPlan.monthly : existingCurrPlan.monthly
               });
-            } else if (!options.onlyDeletedSingleMonthId || options.onlyDeletedSingleMonthId !== prevPlan.id) {
+            } else {
               updatedPlans.push({
                 ...prevPlan,
                 current: nextCurrentVal
@@ -991,7 +882,7 @@
 
           (currData.plans || []).forEach(currPlan => {
             if (options.deletedPlanId && currPlan.id === options.deletedPlanId) return;
-            if (options.deletedFromCurrentOnwardsId && currPlan.id === options.deletedFromCurrentOnwardsId) return;
+            if (currData.deletedPlans.some(dp => dp.id === currPlan.id)) return;
             if (!updatedPlans.find(p => p.id === currPlan.id)) {
               updatedPlans.push(currPlan);
             }
@@ -1003,16 +894,19 @@
     }
 
     function getActiveMonthData() {
-      const key = window.appData.currentMonthKey || '2026-11';
+      const key = appData.currentMonthKey || '2026-11';
       ensureMonthExists(key);
-      if (!window.appData.monthOverrides[key].extraIncomes) {
-        window.appData.monthOverrides[key].extraIncomes = [];
+      if (!appData.monthOverrides[key].extraIncomes) {
+        appData.monthOverrides[key].extraIncomes = [];
       }
-      return window.appData.monthOverrides[key];
+      if (!appData.monthOverrides[key].deletedPlans) {
+        appData.monthOverrides[key].deletedPlans = [];
+      }
+      return appData.monthOverrides[key];
     }
 
     function renderAll() {
-      const label = formatYearMonthLabel(window.appData.currentMonthKey || '2026-11');
+      const label = formatYearMonthLabel(appData.currentMonthKey || '2026-11');
       const hdr = document.getElementById('activeMonthTitleHeader');
       if (hdr) hdr.textContent = label;
       const fixT = document.getElementById('activeMonthFixTitle');
@@ -1041,7 +935,7 @@
         const opt = document.createElement('option');
         opt.value = key;
         opt.textContent = formatYearMonthLabel(key);
-        if (key === (window.appData.currentMonthKey || '2026-11')) {
+        if (key === (appData.currentMonthKey || '2026-11')) {
           opt.selected = true;
         }
         sel.appendChild(opt);
@@ -1049,7 +943,7 @@
     }
 
     window.changeActiveMonth = function(val) {
-      window.appData.currentMonthKey = val;
+      appData.currentMonthKey = val;
       ensureMonthExists(val);
       saveState();
     }
@@ -1060,7 +954,7 @@
       const m = now.getMonth() + 1;
       let key = `${y}-${m < 10 ? '0' + m : m}`;
       if (!ALL_MONTH_KEYS.includes(key)) key = '2026-11';
-      window.appData.currentMonthKey = key;
+      appData.currentMonthKey = key;
       ensureMonthExists(key);
       const sel = document.getElementById('globalMonthSelector');
       if (sel) sel.value = key;
@@ -1094,17 +988,17 @@
       const dailySpent = (mData.dailyExpenses || []).reduce((acc, e) => acc + Number(e.amount || 0), 0);
       const extraIncomesSum = (mData.extraIncomes || []).reduce((acc, i) => acc + Number(i.amount || 0), 0);
 
-      let activeNetIncome = Number(window.appData.netIncome || 0);
+      let activeNetIncome = Number(appData.netIncome || 0);
       let activeExtraLabelParts = [];
-      const parts = (window.appData.currentMonthKey || '').split('-');
+      const parts = (appData.currentMonthKey || '').split('-');
       const monthNum = parts.length === 2 ? parseInt(parts[1], 10) : 0;
 
-      if (monthNum === 7 && window.appData.extra13Claimed) {
-        activeNetIncome += Number(window.appData.extra13 || 0);
+      if (monthNum === 7 && appData.extra13Claimed) {
+        activeNetIncome += Number(appData.extra13 || 0);
         activeExtraLabelParts.push('13. Gehalt');
       }
-      if (monthNum === 12 && window.appData.extra14Claimed) {
-        activeNetIncome += Number(window.appData.extra14 || 0);
+      if (monthNum === 12 && appData.extra14Claimed) {
+        activeNetIncome += Number(appData.extra14 || 0);
         activeExtraLabelParts.push('14. Gehalt');
       }
 
@@ -1188,18 +1082,18 @@
       const elNotgroschenCount = document.getElementById('notgroschenMonthsCount');
       if (elNotgroschenCount) elNotgroschenCount.textContent = `${monthsCovered} Monate`;
 
-      const target = Number(window.appData.yearEndGoal || 10000);
+      const target = Number(appData.yearEndGoal || 10000);
       const diff = target - totals.totalWealth;
       const pct = Math.min(100, Math.max(0, Math.round((totals.totalWealth / target) * 100)));
       
       const elGoalBar = document.getElementById('yearEndGoalProgressBar');
       if (elGoalBar) elGoalBar.style.width = pct + '%';
       const elGoalIst = document.getElementById('yearEndGoalIstLabel');
-      if (elGoalIst) elGoalIst.textContent = `Ist: ${formatEUR(totals.totalWealth)} / Ziel: ${formatEUR(target)}`;
+      if (elGoalIst) elGoalIst.textContent = `Ist: ${formatEUR(totals.totalWealth)} / Ziel:${formatEUR(target)}`;
       const elGoalPct = document.getElementById('yearEndGoalPctLabel');
       if (elGoalPct) elGoalPct.textContent = pct + '%';
 
-      const partsKey = (window.appData.currentMonthKey || '2026-11').split('-');
+      const partsKey = (appData.currentMonthKey || '2026-11').split('-');
       const currentMonthIndex = partsKey.length === 2 ? parseInt(partsKey[1], 10) - 1 : 10;
       const remainingMonths = Math.max(1, 12 - currentMonthIndex);
 
@@ -1254,11 +1148,11 @@
       const ctx = document.getElementById('historicalAssetChart');
       if (!ctx) return;
 
-      const closedKeys = Object.keys(window.appData.closedMonths || {}).sort();
-      let labels = closedKeys.map(k => window.appData.closedMonths[k].dateLabel);
-      labels.push(formatYearMonthLabel(window.appData.currentMonthKey || '2026-11') + ' (Aktiv)');
+      const closedKeys = Object.keys(appData.closedMonths || {}).sort();
+      let labels = closedKeys.map(k => appData.closedMonths[k].dateLabel);
+      labels.push(formatYearMonthLabel(appData.currentMonthKey || '2026-11') + ' (Aktiv)');
 
-      let totalWealthSeries = closedKeys.map(k => Number(window.appData.closedMonths[k].totalWealth || 0));
+      let totalWealthSeries = closedKeys.map(k => Number(appData.closedMonths[k].totalWealth || 0));
       const currentTotals = calculateCurrentTotals();
       totalWealthSeries.push(currentTotals.totalWealth);
 
@@ -1267,7 +1161,7 @@
         const palette = ['#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#10b981', '#06b6d4'];
         const color = palette[idx % palette.length];
         const series = closedKeys.map(k => {
-          const hist = window.appData.closedMonths[k].plansHistory || {};
+          const hist = appData.closedMonths[k].plansHistory || {};
           return Number(hist[p.id] !== undefined ? hist[p.id] : 0);
         });
         series.push(Number(p.current || 0));
@@ -1319,14 +1213,14 @@
       if (!container) return;
       container.innerHTML = '';
 
-      const keys = Object.keys(window.appData.closedMonths || {}).sort().reverse();
+      const keys = Object.keys(appData.closedMonths || {}).sort().reverse();
       if (keys.length === 0) {
         container.innerHTML = '<p class="text-xs text-slate-500 italic">Noch keine Monate abgeschlossen.</p>';
         return;
       }
 
       keys.forEach(k => {
-        const m = window.appData.closedMonths[k];
+        const m = appData.closedMonths[k];
         const card = document.createElement('div');
         card.className = 'bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-3';
         card.innerHTML = `
@@ -1352,7 +1246,7 @@
     }
 
     window.openCloseMonthModal = function() {
-      const key = window.appData.currentMonthKey || '2026-11';
+      const key = appData.currentMonthKey || '2026-11';
       const label = formatYearMonthLabel(key);
       const totals = calculateCurrentTotals();
       const mData = getActiveMonthData();
@@ -1367,7 +1261,7 @@
 
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3 text-xs text-slate-300">
-          <p>Du schließt den Monat <strong class="text-white">${label}</strong> ab. Der verbleibende freie Puffer in Höhe von <strong class="text-amber-400">${formatEUR(totals.availableBuffer)}</strong> wird auf dein gewähltes Ziel gebucht und in alle Folgemonate übernommen:</p>
+          <p>Du schließt den Monat <strong class="text-white">${label}</strong> ab. Der verbleibende freie Puffer in Höhe von <strong class="text-amber-400">${formatEUR(totals.availableBuffer)}</strong> wird auf dein gewähltes Ziel gebucht:</p>
           <div>
             <label class="block text-slate-400 mb-1 font-semibold">Ziel-Sparplan für den Puffer</label>
             <select id="modalCloseTargetPlan" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-indigo-500">
@@ -1381,9 +1275,10 @@
         const targetId = document.getElementById('modalCloseTargetPlan').value;
         const targetPlan = (mData.plans || []).find(p => p.id === targetId);
 
-        pushUndoSnapshot(`Monatsabschluss ${label}`);
+        pushUndoState(`Monat ${label} abschließen`);
+        appData.lastBackupState = JSON.parse(JSON.stringify(appData));
 
-        if (!window.appData.closedMonths) window.appData.closedMonths = {};
+        if (!appData.closedMonths) appData.closedMonths = {};
         if (targetPlan && totals.availableBuffer > 0) {
           targetPlan.current = Number(targetPlan.current || 0) + totals.availableBuffer;
         }
@@ -1393,7 +1288,7 @@
           plansHistory[p.id] = Number(p.current || 0);
         });
 
-        window.appData.closedMonths[key] = {
+        appData.closedMonths[key] = {
           dateLabel: label,
           totalWealth: totals.totalWealth + Math.max(0, totals.availableBuffer),
           savings: totals.savingsRate + Math.max(0, totals.availableBuffer),
@@ -1404,27 +1299,45 @@
 
         closeModal();
         saveState();
-        showNotification(`Monat ${label} abgeschlossen & Folgemonate aktualisiert!`, true);
+        showNotification(`Monat ${label} abgeschlossen!`);
       };
 
       modal.classList.remove('hidden');
     }
 
+    window.undoLastMonthClose = function() {
+      if (!appData.lastBackupState) {
+        showNotification("Kein vorheriger Stand zum Wiederherstellen vorhanden.");
+        return;
+      }
+      const currentMonthKey = appData.currentMonthKey;
+      appData = JSON.parse(JSON.stringify(appData.lastBackupState));
+      appData.lastBackupState = null;
+      appData.currentMonthKey = currentMonthKey;
+
+      if (appData.closedMonths && appData.closedMonths[currentMonthKey]) {
+        delete appData.closedMonths[currentMonthKey];
+      }
+      saveState();
+      showNotification("Monatsabschluss erfolgreich rückgängig gemacht.");
+    }
+
     window.deleteClosedMonth = function(k) {
-      if (window.appData.closedMonths && window.appData.closedMonths[k]) {
-        pushUndoSnapshot(`Historie ${window.appData.closedMonths[k].dateLabel} gelöscht`);
-        delete window.appData.closedMonths[k];
+      if (appData.closedMonths && appData.closedMonths[k]) {
+        pushUndoState("Monat aus Historie löschen");
+        delete appData.closedMonths[k];
         saveState();
-        showNotification("Monat aus Historie gelöscht.", true);
+        showNotification("Monat aus Historie gelöscht.");
       }
     }
 
     function renderPlansList() {
       const container = document.getElementById('plansListContainer');
+      const delContainer = document.getElementById('deletedPlansContainer');
       if (!container) return;
+
       container.innerHTML = '';
       const mData = getActiveMonthData();
-      const activeIds = new Set((mData.plans || []).map(p => p.id));
 
       (mData.plans || []).forEach(p => {
         const nextMonthStand = Number(p.current || 0) + Number(p.monthly || 0);
@@ -1452,8 +1365,8 @@
             </div>
           </div>
           <div class="flex items-center gap-2 pt-2">
-            <button onclick="editPlanModal('${p.id}')" class="flex-1 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold text-xs rounded-xl transition">Bearbeiten / Einzahlen</button>
-            <button onclick="deletePlanModal('${p.id}')" class="p-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-xl transition" title="Sparplan pausieren oder löschen">
+            <button onclick="editPlanModal('${p.id}')" class="flex-1 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold text-xs rounded-xl transition">Bearbeiten</button>
+            <button onclick="deletePlanModal('${p.id}')" class="p-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-xl transition" title="Sparplan löschen / pausieren">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </button>
           </div>
@@ -1461,171 +1374,131 @@
         container.appendChild(card);
       });
 
-      renderDeletedOrMissingPlans(activeIds);
+      if (delContainer) {
+        if (mData.deletedPlans && mData.deletedPlans.length > 0) {
+          delContainer.classList.remove('hidden');
+          delContainer.innerHTML = `
+            <h4 class="font-bold text-xs text-slate-400 mb-3">Gelöschte oder ausgeblendete Sparpläne in diesem Monat:</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              ${mData.deletedPlans.map((dp, idx) => `
+                <div class="bg-slate-950/50 border border-slate-800/80 rounded-xl p-3 flex items-center justify-between text-xs">
+                  <div>
+                    <span class="font-bold text-slate-300 block">${dp.name}</span>
+                    <span class="text-[10px] text-slate-500">Stand: ${formatEUR(dp.current)}</span>
+                  </div>
+                  <button onclick="restorePlan('${dp.id}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition">Wiederherstellen</button>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else {
+          delContainer.classList.add('hidden');
+          delContainer.innerHTML = '';
+        }
+      }
     }
 
-    function renderDeletedOrMissingPlans(activeIds) {
-      const section = document.getElementById('deletedPlansRecoverySection');
-      const listContainer = document.getElementById('deletedPlansListContainer');
-      if (!section || !listContainer) return;
-
-      const missingMap = new Map();
-
-      (window.appData.basePlans || []).forEach(bp => {
-        if (!activeIds.has(bp.id)) {
-          missingMap.set(bp.id, { ...bp, source: 'Stammdaten' });
-        }
-      });
-
-      const currentIdx = ALL_MONTH_KEYS.indexOf(window.appData.currentMonthKey);
-      for (let i = 0; i < ALL_MONTH_KEYS.length; i++) {
-        const k = ALL_MONTH_KEYS[i];
-        const m = window.appData.monthOverrides[k];
-        if (!m || !m.plans) continue;
-        m.plans.forEach(p => {
-          if (!activeIds.has(p.id)) {
-            const calcStand = i < currentIdx ? Number(p.current || 0) + Number(p.monthly || 0) : Number(p.current || 0);
-            missingMap.set(p.id, {
-              ...p,
-              current: calcStand,
-              lastSeenMonth: formatYearMonthLabel(k)
-            });
-          }
-        });
-      }
-
-      (window.appData.deletedPlansArchive || []).forEach(dp => {
-        if (!activeIds.has(dp.id) && !missingMap.has(dp.id)) {
-          missingMap.set(dp.id, { ...dp, lastSeenMonth: dp.deletedAtMonth || 'Archiv' });
-        }
-      });
-
-      const missingPlans = Array.from(missingMap.values());
-      if (missingPlans.length === 0) {
-        section.classList.add('hidden');
-        listContainer.innerHTML = '';
-        return;
-      }
-
-      section.classList.remove('hidden');
-      listContainer.innerHTML = '';
-
-      missingPlans.forEach(mp => {
-        const card = document.createElement('div');
-        card.className = 'bg-slate-950/50 border border-dashed border-amber-500/40 rounded-2xl p-4 flex flex-col justify-between gap-3';
-        card.innerHTML = `
-          <div>
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-sm text-slate-200">${mp.name}</span>
-              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">${mp.category || 'Sparplan'}</span>
-            </div>
-            <div class="grid grid-cols-2 gap-2 mt-2.5 pt-2 border-t border-slate-900 text-xs">
-              <div>
-                <span class="text-slate-500 block">Letzter Stand</span>
-                <span class="font-bold text-slate-300">${formatEUR(mp.current)}</span>
-              </div>
-              <div>
-                <span class="text-slate-500 block">Sparrate</span>
-                <span class="font-bold text-slate-300">${formatEUR(mp.monthly)}/M.</span>
-              </div>
-            </div>
-          </div>
-          <div class="flex items-center gap-2 pt-1">
-            <button onclick="restoreDeletedPlan('${mp.id}')" class="flex-1 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-              Ab diesem Monat wiederherstellen
-            </button>
-            <button onclick="permanentlyPurgeArchivedPlan('${mp.id}')" class="p-2 bg-slate-900 hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 rounded-xl transition" title="Aus Vorschlägen entfernen">
-              ✕
-            </button>
-          </div>
-        `;
-        listContainer.appendChild(card);
-      });
-    }
-
-    window.restoreDeletedPlan = function(id) {
-      pushUndoSnapshot('Sparplan wiederhergestellt');
+    window.deletePlanModal = function(id) {
       const mData = getActiveMonthData();
-      const currentIdx = ALL_MONTH_KEYS.indexOf(window.appData.currentMonthKey);
+      const p = (mData.plans || []).find(x => x.id === id);
+      if (!p) return;
 
-      let planToRestore = null;
+      const modal = document.getElementById('customModal');
+      document.getElementById('modalTitle').textContent = `Sparplan löschen / bearbeiten: ${p.name}`;
+      document.getElementById('modalBody').innerHTML = `
+        <div class="space-y-3 text-xs text-slate-300">
+          <p>Wie möchtest du mit dem Sparplan <strong class="text-white">${p.name}</strong> im Monat <strong class="text-white">${formatYearMonthLabel(appData.currentMonthKey)}</strong> verfahren?</p>
+          <div class="space-y-2 pt-1">
+            <label class="flex items-center gap-2.5 p-2.5 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-indigo-500">
+              <input type="radio" name="delOption" value="pause" checked class="text-indigo-600">
+              <div>
+                <strong class="text-white block">Nur in diesem Monat pausieren (0 € Sparrate)</strong>
+                <span class="text-[11px] text-slate-400">Bestand bleibt erhalten, Einzahlung setzt diesen Monat aus.</span>
+              </div>
+            </label>
+            <label class="flex items-center gap-2.5 p-2.5 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-indigo-500">
+              <input type="radio" name="delOption" value="from_here" class="text-indigo-600">
+              <div>
+                <strong class="text-white block">Ab diesem Monat (inkl. Folgemonate) löschen</strong>
+                <span class="text-[11px] text-slate-400">Vergangene Monate behalten ihn, ab hier ist er weg (kann wiederhergestellt werden).</span>
+              </div>
+            </label>
+            <label class="flex items-center gap-2.5 p-2.5 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-indigo-500">
+              <input type="radio" name="delOption" value="completely" class="text-indigo-600">
+              <div>
+                <strong class="text-white block">Komplett aus allen Monaten entfernen</strong>
+                <span class="text-[11px] text-slate-400">Löscht den Plan komplett aus der Datenbasis.</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      `;
 
-      if (currentIdx > 0) {
-        const prevKey = ALL_MONTH_KEYS[currentIdx - 1];
-        const prevData = window.appData.monthOverrides[prevKey];
-        if (prevData && prevData.plans) {
-          const prevPlan = prevData.plans.find(p => p.id === id);
-          if (prevPlan) {
-            planToRestore = {
-              ...prevPlan,
-              current: Number(prevPlan.current || 0) + Number(prevPlan.monthly || 0)
-            };
+      document.getElementById('modalSaveBtn').onclick = function() {
+        const option = document.querySelector('input[name="delOption"]:checked').value;
+        pushUndoState(`Sparplan ${p.name} löschen/pausieren`);
+
+        if (option === 'pause') {
+          p.monthly = 0;
+          showNotification(`Sparplan ${p.name} für diesen Monat pausiert.`);
+        } else if (option === 'from_here') {
+          mData.plans = mData.plans.filter(x => x.id !== id);
+          if (!mData.deletedPlans) mData.deletedPlans = [];
+          mData.deletedPlans.push({ ...p });
+          recalculateFutureMonths(appData.currentMonthKey, { deletedPlanId: id });
+          showNotification(`Sparplan ${p.name} ab diesem Monat entfernt.`);
+        } else if (option === 'completely') {
+          ALL_MONTH_KEYS.forEach(k => {
+            if (appData.monthOverrides[k]) {
+              if (appData.monthOverrides[k].plans) {
+                appData.monthOverrides[k].plans = appData.monthOverrides[k].plans.filter(x => x.id !== id);
+              }
+              if (appData.monthOverrides[k].deletedPlans) {
+                appData.monthOverrides[k].deletedPlans = appData.monthOverrides[k].deletedPlans.filter(x => x.id !== id);
+              }
+            }
+          });
+          if (appData.basePlans) {
+            appData.basePlans = appData.basePlans.filter(x => x.id !== id);
           }
+          showNotification(`Sparplan ${p.name} komplett gelöscht.`);
         }
-      }
 
-      if (!planToRestore) {
-        const fromArchive = (window.appData.deletedPlansArchive || []).find(p => p.id === id);
-        const fromBase = (window.appData.basePlans || []).find(p => p.id === id);
-        planToRestore = fromArchive ? { ...fromArchive } : (fromBase ? { ...fromBase } : null);
-      }
-
-      if (!planToRestore) {
-        for (const k of ALL_MONTH_KEYS) {
-          const m = window.appData.monthOverrides[k];
-          const found = m && m.plans ? m.plans.find(p => p.id === id) : null;
-          if (found) {
-            planToRestore = { ...found };
-            break;
-          }
-        }
-      }
-
-      if (!planToRestore) return;
-      delete planToRestore.deletedAtMonth;
-      delete planToRestore.source;
-      delete planToRestore.lastSeenMonth;
-
-      if (!mData.plans) mData.plans = [];
-      if (!mData.plans.find(p => p.id === id)) {
-        mData.plans.push(planToRestore);
-      }
-
-      recalculateFutureMonths(window.appData.currentMonthKey, { propagateMonthlyPlanId: id });
-
-      saveState();
-      showNotification(`Sparplan "${planToRestore.name}" ab ${formatYearMonthLabel(window.appData.currentMonthKey)} wiederhergestellt!`, true);
+        saveState();
+        closeModal();
+      };
+      modal.classList.remove('hidden');
     }
 
-    window.permanentlyPurgeArchivedPlan = function(id) {
-      pushUndoSnapshot('Archiv-Sparplan endgültig entfernt');
-      window.appData.deletedPlansArchive = (window.appData.deletedPlansArchive || []).filter(p => p.id !== id);
-      window.appData.basePlans = (window.appData.basePlans || []).filter(p => p.id !== id);
-      ALL_MONTH_KEYS.forEach(k => {
-        if (window.appData.monthOverrides[k] && window.appData.monthOverrides[k].plans) {
-          window.appData.monthOverrides[k].plans = window.appData.monthOverrides[k].plans.filter(p => p.id !== id);
-        }
-      });
-      saveState();
-      showNotification("Sparplan komplett aus allen Monaten entfernt.", true);
+    window.restorePlan = function(id) {
+      const mData = getActiveMonthData();
+      const idx = (mData.deletedPlans || []).findIndex(x => x.id === id);
+      if (idx !== -1) {
+        pushUndoState("Sparplan wiederherstellen");
+        const restored = mData.deletedPlans.splice(idx, 1)[0];
+        if (!mData.plans) mData.plans = [];
+        mData.plans.push(restored);
+        recalculateFutureMonths(appData.currentMonthKey);
+        saveState();
+        showNotification(`Sparplan ${restored.name} erfolgreich wiederhergestellt!`);
+      }
     }
 
     function renderIncomeAndFixed() {
       const netInput = document.getElementById('inputNetIncome');
-      if (netInput) netInput.value = window.appData.netIncome || 0;
+      if (netInput) netInput.value = appData.netIncome || 0;
 
       const extra13Input = document.getElementById('inputExtra13');
-      if (extra13Input) extra13Input.value = window.appData.extra13 || 0;
+      if (extra13Input) extra13Input.value = appData.extra13 || 0;
 
       const extra14Input = document.getElementById('inputExtra14');
-      if (extra14Input) extra14Input.value = window.appData.extra14 || 0;
+      if (extra14Input) extra14Input.value = appData.extra14 || 0;
 
       const t13 = document.getElementById('einnahmenExtra13Toggle');
       if (t13) {
         t13.innerHTML = `
-          <button onclick="toggleExtraSalary(13)" class="px-3 py-1 rounded-lg text-xs font-bold transition ${window.appData.extra13Claimed ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'}">
-            ${window.appData.extra13Claimed ? 'Aktiviert (+ ' + formatEUR(window.appData.extra13) + ')' : 'Inaktiv'}
+          <button onclick="toggleExtraSalary(13)" class="px-3 py-1 rounded-lg text-xs font-bold transition ${appData.extra13Claimed ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'}">
+            ${appData.extra13Claimed ? 'Aktiviert (+ ' + formatEUR(appData.extra13) + ')' : 'Inaktiv'}
           </button>
         `;
       }
@@ -1633,8 +1506,8 @@
       const t14 = document.getElementById('einnahmenExtra14Toggle');
       if (t14) {
         t14.innerHTML = `
-          <button onclick="toggleExtraSalary(14)" class="px-3 py-1 rounded-lg text-xs font-bold transition ${window.appData.extra14Claimed ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'}">
-            ${window.appData.extra14Claimed ? 'Aktiviert (+ ' + formatEUR(window.appData.extra14) + ')' : 'Inaktiv'}
+          <button onclick="toggleExtraSalary(14)" class="px-3 py-1 rounded-lg text-xs font-bold transition ${appData.extra14Claimed ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'}">
+            ${appData.extra14Claimed ? 'Aktiviert (+ ' + formatEUR(appData.extra14) + ')' : 'Inaktiv'}
           </button>
         `;
       }
@@ -1730,7 +1603,7 @@
       const currentVal = select.value;
       select.innerHTML = '';
 
-      (window.appData.categories || []).forEach(cat => {
+      (appData.categories || []).forEach(cat => {
         const opt = document.createElement('option');
         opt.value = cat;
         opt.textContent = cat;
@@ -1752,27 +1625,29 @@
         const newCat = prompt("Name der neuen Kategorie:");
         if (newCat && newCat.trim()) {
           const formatted = newCat.trim();
-          if (!window.appData.categories.includes(formatted)) {
-            window.appData.categories.push(formatted);
+          if (!appData.categories.includes(formatted)) {
+            appData.categories.push(formatted);
           }
           sel.value = formatted;
           saveState();
         } else {
-          sel.value = window.appData.categories[0] || 'Sonstiges';
+          sel.value = appData.categories[0] || 'Sonstiges';
         }
       }
     }
 
     window.updateIncomeValues = function() {
-      window.appData.netIncome = Number(document.getElementById('inputNetIncome').value || 0);
-      window.appData.extra13 = Number(document.getElementById('inputExtra13').value || 0);
-      window.appData.extra14 = Number(document.getElementById('inputExtra14').value || 0);
+      pushUndoState("Gehalt aktualisieren");
+      appData.netIncome = Number(document.getElementById('inputNetIncome').value || 0);
+      appData.extra13 = Number(document.getElementById('inputExtra13').value || 0);
+      appData.extra14 = Number(document.getElementById('inputExtra14').value || 0);
       saveState();
     }
 
     window.toggleExtraSalary = function(num) {
-      if (num === 13) window.appData.extra13Claimed = !window.appData.extra13Claimed;
-      if (num === 14) window.appData.extra14Claimed = !window.appData.extra14Claimed;
+      pushUndoState("Sondergehalt umschalten");
+      if (num === 13) appData.extra13Claimed = !appData.extra13Claimed;
+      if (num === 14) appData.extra14Claimed = !appData.extra14Claimed;
       saveState();
     }
 
@@ -1786,6 +1661,7 @@
         return;
       }
 
+      pushUndoState("Zusatzeinnahme hinzufügen");
       const mData = getActiveMonthData();
       if (!mData.extraIncomes) mData.extraIncomes = [];
       mData.extraIncomes.push({ title, amount, category });
@@ -1796,6 +1672,7 @@
     }
 
     window.deleteExtraIncome = function(idx) {
+      pushUndoState("Zusatzeinnahme löschen");
       const mData = getActiveMonthData();
       if (mData.extraIncomes) {
         mData.extraIncomes.splice(idx, 1);
@@ -1833,6 +1710,7 @@
         </div>
       `;
       document.getElementById('modalSaveBtn').onclick = function() {
+        pushUndoState("Zusatzeinnahme bearbeiten");
         inc.title = document.getElementById('modalIncTitle').value.trim();
         inc.amount = Number(document.getElementById('modalIncAmount').value || 0);
         inc.category = document.getElementById('modalIncCat').value;
@@ -1853,6 +1731,7 @@
         return;
       }
 
+      pushUndoState("Ausgabe hinzufügen");
       const mData = getActiveMonthData();
       if (!mData.dailyExpenses) mData.dailyExpenses = [];
       mData.dailyExpenses.push({ title, amount, category });
@@ -1863,6 +1742,7 @@
     }
 
     window.deleteDailyExpense = function(idx) {
+      pushUndoState("Ausgabe löschen");
       const mData = getActiveMonthData();
       if (mData.dailyExpenses) {
         mData.dailyExpenses.splice(idx, 1);
@@ -1877,7 +1757,7 @@
       if (!e) return;
 
       let catOptions = '';
-      (window.appData.categories || []).forEach(c => {
+      (appData.categories || []).forEach(c => {
         catOptions += `<option value="${c}" ${c === e.category ? 'selected' : ''}>${c}</option>`;
       });
 
@@ -1902,6 +1782,7 @@
         </div>
       `;
       document.getElementById('modalSaveBtn').onclick = function() {
+        pushUndoState("Ausgabe bearbeiten");
         e.title = document.getElementById('modalExpTitle').value.trim();
         e.amount = Number(document.getElementById('modalExpAmount').value || 0);
         e.category = document.getElementById('modalExpCat').value;
@@ -1919,7 +1800,7 @@
 
       const mData = getActiveMonthData();
       const expenses = mData.dailyExpenses || [];
-      const budgets = window.appData.variableBudgets || [];
+      const budgets = appData.variableBudgets || [];
 
       if (budgets.length === 0) {
         container.innerHTML = '<p class="text-xs text-slate-500 italic">Keine variablen Budgets erfasst.</p>';
@@ -2058,12 +1939,12 @@
           totalContributed += mtlInv + mtlCash;
 
           if (includeSpecial && (m === 7)) {
-            curInv += Number(window.appData.extra13 || 3137);
-            totalContributed += Number(window.appData.extra13 || 3137);
+            curInv += Number(appData.extra13 || 3137);
+            totalContributed += Number(appData.extra13 || 3137);
           }
           if (includeSpecial && (m === 12)) {
-            curInv += Number(window.appData.extra14 || 3100);
-            totalContributed += Number(window.appData.extra14 || 3100);
+            curInv += Number(appData.extra14 || 3100);
+            totalContributed += Number(appData.extra14 || 3100);
           }
         }
         labels.push(`Jahr ${y}`);
@@ -2136,31 +2017,27 @@
 
     window.closeModal = function() {
       document.getElementById('customModal').classList.add('hidden');
-      const footer = document.getElementById('modalFooter');
-      if (footer) footer.classList.remove('hidden');
     }
 
-    window.showNotification = function(msg, showUndo = false) {
+    window.showNotification = function(msg) {
       const box = document.getElementById('customNotificationBox');
-      if (!box) return;
-      if (notificationTimeout) clearTimeout(notificationTimeout);
+      const textEl = document.getElementById('notificationText');
+      const undoBtn = document.getElementById('notificationUndoBtn');
+      if (!box || !textEl) return;
 
-      box.innerHTML = `
-        <span class="text-emerald-400 font-bold">✓</span>
-        <span>${msg}</span>
-        ${showUndo && window.undoStack.length > 0 ? `
-          <button onclick="undoLastAction()" class="ml-2 px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-lg text-[11px] transition shadow">
-            Rückgängig
-          </button>
-        ` : ''}
-      `;
+      textEl.textContent = msg;
+      if (undoStack.length > 0) {
+        undoBtn.classList.remove('hidden');
+      } else {
+        undoBtn.classList.add('hidden');
+      }
 
       box.classList.remove('opacity-0', 'pointer-events-none');
       box.classList.add('opacity-100');
-      notificationTimeout = setTimeout(() => {
+      setTimeout(() => {
         box.classList.remove('opacity-100');
         box.classList.add('opacity-0', 'pointer-events-none');
-      }, showUndo ? 6000 : 3200);
+      }, 4000);
     }
 
     window.editYearEndGoalModal = function() {
@@ -2169,11 +2046,12 @@
       document.getElementById('modalBody').innerHTML = `
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1">Neues Ziel (€)</label>
-          <input type="number" id="modalGoalInput" value="${window.appData.yearEndGoal || 10000}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          <input type="number" id="modalGoalInput" value="${appData.yearEndGoal || 10000}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
         </div>
       `;
       document.getElementById('modalSaveBtn').onclick = function() {
-        window.appData.yearEndGoal = Number(document.getElementById('modalGoalInput').value || 10000);
+        pushUndoState("Ziel anpassen");
+        appData.yearEndGoal = Number(document.getElementById('modalGoalInput').value || 10000);
         saveState();
         closeModal();
         showNotification("Ziel erfolgreich aktualisiert!");
@@ -2183,7 +2061,7 @@
 
     window.addNewPlanModal = function() {
       const modal = document.getElementById('customModal');
-      document.getElementById('modalTitle').textContent = `Neuen Sparplan anlegen (ab ${formatYearMonthLabel(window.appData.currentMonthKey)})`;
+      document.getElementById('modalTitle').textContent = `Neuen Sparplan anlegen (ab ${formatYearMonthLabel(appData.currentMonthKey)})`;
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
           <div>
@@ -2215,20 +2093,19 @@
           return;
         }
 
-        pushUndoSnapshot(`Sparplan "${name}" angelegt`);
-
+        pushUndoState(`Sparplan ${name} anlegen`);
         const newPlan = { id: 'p_' + Date.now(), name, category, current, monthly };
         const mData = getActiveMonthData();
         if (!mData.plans) mData.plans = [];
         mData.plans.push(newPlan);
 
-        if (!window.appData.basePlans) window.appData.basePlans = [];
-        window.appData.basePlans.push({ ...newPlan });
-        recalculateFutureMonths(window.appData.currentMonthKey, { propagateMonthlyPlanId: newPlan.id });
+        if (!appData.basePlans) appData.basePlans = [];
+        appData.basePlans.push({ ...newPlan });
+        recalculateFutureMonths(appData.currentMonthKey, { propagateMonthlyPlanId: newPlan.id });
 
         saveState();
         closeModal();
-        showNotification("Sparplan angelegt & für alle Folgemonate fortgeschrieben!", true);
+        showNotification("Sparplan angelegt & für alle Folgemonate fortgeschrieben!");
       };
       modal.classList.remove('hidden');
     }
@@ -2238,10 +2115,7 @@
       const p = (mData.plans || []).find(x => x.id === id);
       if (!p) return;
       const modal = document.getElementById('customModal');
-      const footer = document.getElementById('modalFooter');
-      if (footer) footer.classList.remove('hidden');
-
-      document.getElementById('modalTitle').textContent = `Sparplan bearbeiten (${formatYearMonthLabel(window.appData.currentMonthKey)})`;
+      document.getElementById('modalTitle').textContent = `Sparplan bearbeiten (${formatYearMonthLabel(appData.currentMonthKey)})`;
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
           <div>
@@ -2267,8 +2141,7 @@
         </div>
       `;
       document.getElementById('modalSaveBtn').onclick = function() {
-        pushUndoSnapshot(`Sparplan "${p.name}" bearbeitet`);
-
+        pushUndoState(`Sparplan ${p.name} bearbeiten`);
         p.name = document.getElementById('modalPlanName').value.trim();
         const baseCur = Number(document.getElementById('modalPlanCur').value || 0);
         const oneTime = Number(document.getElementById('modalPlanOneTime').value || 0);
@@ -2276,124 +2149,20 @@
         p.monthly = Number(document.getElementById('modalPlanMtl').value || 0);
         const propagateMtl = document.getElementById('modalPropagateMtl').checked;
 
-        recalculateFutureMonths(window.appData.currentMonthKey, {
+        recalculateFutureMonths(appData.currentMonthKey, {
           propagateMonthlyPlanId: propagateMtl ? p.id : null
         });
 
         saveState();
         closeModal();
-        showNotification("Sparplan & Folgemonate aktualisiert!", true);
+        showNotification("Sparplan & Folgemonate aktualisiert!");
       };
       modal.classList.remove('hidden');
     }
 
-    window.deletePlanModal = function(id) {
-      const mData = getActiveMonthData();
-      const p = (mData.plans || []).find(x => x.id === id);
-      if (!p) return;
-
-      const monthLabel = formatYearMonthLabel(window.appData.currentMonthKey);
-      const modal = document.getElementById('customModal');
-      const footer = document.getElementById('modalFooter');
-      if (footer) footer.classList.add('hidden');
-
-      document.getElementById('modalTitle').textContent = `Sparplan "${p.name}" entfernen oder pausieren?`;
-      document.getElementById('modalBody').innerHTML = `
-        <div class="space-y-3 text-xs">
-          <p class="text-slate-300 leading-relaxed">
-            Wie möchtest du mit <strong class="text-white">${p.name}</strong> (Stand: <strong class="text-emerald-400">${formatEUR(p.current)}</strong>) im Monat <strong class="text-indigo-400">${monthLabel}</strong> verfahren?
-            <span class="block text-[11px] text-slate-400 mt-1">Hinweis: Du kannst jede Auswahl sofort wieder rückgängig machen.</span>
-          </p>
-
-          <button onclick="executePlanDeletion('${p.id}', 'pause_month')" class="w-full text-left p-3.5 rounded-xl bg-slate-950 hover:bg-slate-800/90 border border-indigo-500/30 transition group">
-            <div class="font-bold text-indigo-400 group-hover:text-indigo-300 flex items-center justify-between">
-              <span>1. Nur in diesem Monat pausieren (0 € Sparrate)</span>
-              <span>→</span>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-1">Der Sparplan und sein Bestand bleiben erhalten, aber im ${monthLabel} wird nichts eingezahlt. Folgemonate werden automatisch angepasst.</p>
-          </button>
-
-          <button onclick="executePlanDeletion('${p.id}', 'only_this_month')" class="w-full text-left p-3.5 rounded-xl bg-slate-950 hover:bg-slate-800/90 border border-amber-500/30 transition group">
-            <div class="font-bold text-amber-400 group-hover:text-amber-300 flex items-center justify-between">
-              <span>2. Nur in diesem Monat ausblenden</span>
-              <span>→</span>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-1">Wird nur im ${monthLabel} entfernt, bleibt in anderen Monaten bestehen und kann unten jederzeit wieder eingeblendet werden.</p>
-          </button>
-
-          <button onclick="executePlanDeletion('${p.id}', 'from_here_onwards')" class="w-full text-left p-3.5 rounded-xl bg-slate-950 hover:bg-slate-800/90 border border-rose-500/30 transition group">
-            <div class="font-bold text-rose-400 group-hover:text-rose-300 flex items-center justify-between">
-              <span>3. Ab ${monthLabel} (inkl. Folgemonate) löschen</span>
-              <span>→</span>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-1">Entfernt den Sparplan ab diesem Monat und in allen zukünftigen Monaten. Vergangene Monate bleiben unberührt.</p>
-          </button>
-
-          <button onclick="executePlanDeletion('${p.id}', 'all_months')" class="w-full text-left p-3 rounded-xl bg-rose-950/20 hover:bg-rose-950/40 border border-rose-500/20 transition group">
-            <div class="font-bold text-rose-300 flex items-center justify-between">
-              <span>4. Komplett aus allen Monaten löschen</span>
-              <span>→</span>
-            </div>
-          </button>
-
-          <div class="pt-2 flex justify-end">
-            <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">Abbrechen</button>
-          </div>
-        </div>
-      `;
-      modal.classList.remove('hidden');
-    }
-
-    window.executePlanDeletion = function(id, mode) {
-      const mData = getActiveMonthData();
-      const p = (mData.plans || []).find(x => x.id === id);
-      if (!p) {
-        closeModal();
-        return;
-      }
-
-      const planBackupCopy = { ...p, deletedAtMonth: formatYearMonthLabel(window.appData.currentMonthKey) };
-      pushUndoSnapshot(`Sparplan "${p.name}" (${mode === 'pause_month' ? 'pausiert' : 'gelöscht'})`);
-
-      if (!window.appData.deletedPlansArchive) window.appData.deletedPlansArchive = [];
-      window.appData.deletedPlansArchive = window.appData.deletedPlansArchive.filter(item => item.id !== id);
-      window.appData.deletedPlansArchive.push(planBackupCopy);
-
-      if (mode === 'pause_month') {
-        p.monthly = 0;
-        recalculateFutureMonths(window.appData.currentMonthKey);
-        closeModal();
-        saveState();
-        showNotification(`Sparrate für "${p.name}" in diesem Monat auf 0 € gesetzt.`, true);
-      } else if (mode === 'only_this_month') {
-        mData.plans = (mData.plans || []).filter(x => x.id !== id);
-        closeModal();
-        saveState();
-        showNotification(`"${p.name}" für diesen Monat ausgeblendet.`, true);
-      } else if (mode === 'from_here_onwards') {
-        mData.plans = (mData.plans || []).filter(x => x.id !== id);
-        recalculateFutureMonths(window.appData.currentMonthKey, { deletedFromCurrentOnwardsId: id });
-        closeModal();
-        saveState();
-        showNotification(`"${p.name}" ab diesem Monat gelöscht.`, true);
-      } else if (mode === 'all_months') {
-        window.appData.basePlans = (window.appData.basePlans || []).filter(x => x.id !== id);
-        ALL_MONTH_KEYS.forEach(k => {
-          if (window.appData.monthOverrides[k] && window.appData.monthOverrides[k].plans) {
-            window.appData.monthOverrides[k].plans = window.appData.monthOverrides[k].plans.filter(x => x.id !== id);
-          }
-        });
-        closeModal();
-        saveState();
-        showNotification(`"${p.name}" aus allen Monaten entfernt.`, true);
-      }
-    }
-
-    window.deletePlan = window.deletePlanModal;
-
     window.addFixedExpense = function() {
       const modal = document.getElementById('customModal');
-      document.getElementById('modalTitle').textContent = `Fixkosten hinzufügen (${formatYearMonthLabel(window.appData.currentMonthKey)})`;
+      document.getElementById('modalTitle').textContent = `Fixkosten hinzufügen (${formatYearMonthLabel(appData.currentMonthKey)})`;
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
           <div>
@@ -2413,6 +2182,7 @@
           showNotification("Bitte Bezeichnung eingeben.");
           return;
         }
+        pushUndoState("Fixkosten hinzufügen");
         const mData = getActiveMonthData();
         if (!mData.fixedExpenses) mData.fixedExpenses = [];
         mData.fixedExpenses.push({ id: 'f_' + Date.now(), name, amount });
@@ -2437,267 +2207,4 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-400 mb-1">Monatlicher Betrag (€)</label>
-            <input type="number" id="modalFixAmount" value="${f.amount}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-          </div>
-        </div>
-      `;
-      document.getElementById('modalSaveBtn').onclick = function() {
-        f.name = document.getElementById('modalFixName').value.trim();
-        f.amount = Number(document.getElementById('modalFixAmount').value || 0);
-        saveState();
-        closeModal();
-        showNotification("Fixkosten aktualisiert!");
-      };
-      modal.classList.remove('hidden');
-    }
-
-    window.deleteFixedExpense = function(id) {
-      const mData = getActiveMonthData();
-      mData.fixedExpenses = (mData.fixedExpenses || []).filter(x => x.id !== id);
-      saveState();
-      showNotification("Fixkosten für diesen Monat entfernt.");
-    }
-
-    window.addVariableBudgetModal = function() {
-      let catOptions = '';
-      (window.appData.categories || []).forEach(c => {
-        catOptions += `<option value="${c}">${c}</option>`;
-      });
-
-      const modal = document.getElementById('customModal');
-      document.getElementById('modalTitle').textContent = 'Variables Budget anlegen';
-      document.getElementById('modalBody').innerHTML = `
-        <div class="space-y-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Kategorie</label>
-            <select id="modalBudgetCat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-              ${catOptions}
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Monatliches Limit (€)</label>
-            <input type="number" id="modalBudgetAmount" value="200" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-          </div>
-        </div>
-      `;
-      document.getElementById('modalSaveBtn').onclick = function() {
-        const category = document.getElementById('modalBudgetCat').value;
-        const amount = Number(document.getElementById('modalBudgetAmount').value || 0);
-
-        if (!window.appData.variableBudgets) window.appData.variableBudgets = [];
-        const existing = window.appData.variableBudgets.find(b => b.category === category);
-        if (existing) {
-          existing.amount = amount;
-        } else {
-          window.appData.variableBudgets.push({ id: 'b_' + Date.now(), category, amount });
-        }
-
-        saveState();
-        closeModal();
-        showNotification("Variables Budget gespeichert!");
-      };
-      modal.classList.remove('hidden');
-    }
-
-    window.exportDataJSON = function() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.appData, null, 2));
-      const dlAnchor = document.createElement('a');
-      dlAnchor.setAttribute("href", dataStr);
-      dlAnchor.setAttribute("download", "finanz_backup.json");
-      document.body.appendChild(dlAnchor);
-      dlAnchor.click();
-      dlAnchor.remove();
-    }
-
-    window.importDataJSON = function(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const parsed = JSON.parse(e.target.result);
-          if (parsed && (parsed.basePlans || parsed.monthOverrides || parsed.plans)) {
-            window.appData = parsed;
-            if (!window.appData.monthOverrides) window.appData.monthOverrides = {};
-            saveState();
-            showNotification("Daten erfolgreich importiert!");
-          } else {
-            showNotification("Ungültiges Backup-Format.");
-          }
-        } catch (err) {
-          showNotification("Fehler beim Lesen der Datei.");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function initDashboardDragAndDrop() {
-      const container = document.getElementById('sortableDashboardGrid');
-      if (!container) return;
-
-      let draggedCard = null;
-
-      container.querySelectorAll('.dash-draggable-card').forEach(card => {
-        card.setAttribute('draggable', 'true');
-
-        card.addEventListener('dragstart', (e) => {
-          draggedCard = card;
-          e.dataTransfer.effectAllowed = 'move';
-          setTimeout(() => card.classList.add('opacity-40', 'scale-[0.99]'), 0);
-        });
-
-        card.addEventListener('dragend', () => {
-          draggedCard = null;
-          container.querySelectorAll('.dash-draggable-card').forEach(c => {
-            c.classList.remove('opacity-40', 'scale-[0.99]', 'border-indigo-500');
-          });
-          saveDashboardOrder();
-        });
-
-        card.addEventListener('dragover', (e) => {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = 'move';
-        });
-
-        card.addEventListener('dragenter', (e) => {
-          e.preventDefault();
-          if (card !== draggedCard) {
-            card.classList.add('border-indigo-500');
-          }
-        });
-
-        card.addEventListener('dragleave', () => {
-          card.classList.remove('border-indigo-500');
-        });
-
-        card.addEventListener('drop', (e) => {
-          e.preventDefault();
-          card.classList.remove('border-indigo-500');
-          if (draggedCard && draggedCard !== card) {
-            const allCards = Array.from(container.querySelectorAll('.dash-draggable-card'));
-            const draggedIdx = allCards.indexOf(draggedCard);
-            const targetIdx = allCards.indexOf(card);
-
-            if (draggedIdx < targetIdx) {
-              container.insertBefore(draggedCard, card.nextSibling);
-            } else {
-              container.insertBefore(draggedCard, card);
-            }
-          }
-        });
-      });
-    }
-
-    function saveDashboardOrder() {
-      const container = document.getElementById('sortableDashboardGrid');
-      if (!container) return;
-      const order = Array.from(container.querySelectorAll('.dash-draggable-card')).map(c => c.getAttribute('data-id'));
-      window.appData.dashboardOrder = order;
-      saveState();
-    }
-
-    function restoreDashboardOrder() {
-      const container = document.getElementById('sortableDashboardGrid');
-      if (!container || !window.appData.dashboardOrder) return;
-      const cardsMap = {};
-      container.querySelectorAll('.dash-draggable-card').forEach(c => {
-        cardsMap[c.getAttribute('data-id')] = c;
-      });
-      window.appData.dashboardOrder.forEach(id => {
-        if (cardsMap[id]) {
-          container.appendChild(cardsMap[id]);
-        }
-      });
-    }
-
-    function initEinnahmenDragAndDrop() {
-      const container = document.getElementById('sortableEinnahmenGrid');
-      if (!container) return;
-
-      let draggedCard = null;
-
-      container.querySelectorAll('.einnahmen-draggable-card').forEach(card => {
-        card.setAttribute('draggable', 'true');
-
-        card.addEventListener('dragstart', (e) => {
-          draggedCard = card;
-          e.dataTransfer.effectAllowed = 'move';
-          setTimeout(() => card.classList.add('opacity-40', 'scale-[0.99]'), 0);
-        });
-
-        card.addEventListener('dragend', () => {
-          draggedCard = null;
-          container.querySelectorAll('.einnahmen-draggable-card').forEach(c => {
-            c.classList.remove('opacity-40', 'scale-[0.99]', 'border-indigo-500');
-          });
-          saveEinnahmenOrder();
-        });
-
-        card.addEventListener('dragover', (e) => {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = 'move';
-        });
-
-        card.addEventListener('dragenter', (e) => {
-          e.preventDefault();
-          if (card !== draggedCard) {
-            card.classList.add('border-indigo-500');
-          }
-        });
-
-        card.addEventListener('dragleave', () => {
-          card.classList.remove('border-indigo-500');
-        });
-
-        card.addEventListener('drop', (e) => {
-          e.preventDefault();
-          card.classList.remove('border-indigo-500');
-          if (draggedCard && draggedCard !== card) {
-            const allCards = Array.from(container.querySelectorAll('.einnahmen-draggable-card'));
-            const draggedIdx = allCards.indexOf(draggedCard);
-            const targetIdx = allCards.indexOf(card);
-
-            if (draggedIdx < targetIdx) {
-              container.insertBefore(draggedCard, card.nextSibling);
-            } else {
-              container.insertBefore(draggedCard, card);
-            }
-          }
-        });
-      });
-    }
-
-    function saveEinnahmenOrder() {
-      const container = document.getElementById('sortableEinnahmenGrid');
-      if (!container) return;
-      const order = Array.from(container.querySelectorAll('.einnahmen-draggable-card')).map(c => c.getAttribute('data-id'));
-      window.appData.einnahmenOrder = order;
-      saveState();
-    }
-
-    function restoreEinnahmenOrder() {
-      const container = document.getElementById('sortableEinnahmenGrid');
-      if (!container || !window.appData.einnahmenOrder) return;
-      const cardsMap = {};
-      container.querySelectorAll('.einnahmen-draggable-card').forEach(c => {
-        cardsMap[c.getAttribute('data-id')] = c;
-      });
-      window.appData.einnahmenOrder.forEach(id => {
-        if (cardsMap[id]) {
-          container.appendChild(cardsMap[id]);
-        }
-      });
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      initApp();
-      setTimeout(() => {
-        restoreDashboardOrder();
-        initDashboardDragAndDrop();
-        restoreEinnahmenOrder();
-        initEinnahmenDragAndDrop();
-      }, 300);
-    });
-  </script>
-</body>
-</html>
+            <input type="number" id="modalFixAmount" value="${f.amount}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus
