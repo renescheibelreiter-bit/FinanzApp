@@ -29,47 +29,44 @@
 </head>
 <body class="bg-[#070b14] text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
 
-  <!-- Top Navigation Bar (Responsive für Mobile & Desktop) -->
-  <header class="border-b border-slate-800/80 bg-[#0b101d]/90 backdrop-blur-md sticky top-0 z-40 px-4 lg:px-8 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-    <div class="flex items-center justify-between w-full md:w-auto">
+  <!-- Top Navigation Bar -->
+  <header class="border-b border-slate-800/80 bg-[#0b101d]/90 backdrop-blur-md sticky top-0 z-40 px-4 lg:px-8 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-start">
       <div class="flex items-center space-x-3">
-        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
           <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
         <div>
-          <h1 class="font-bold text-sm sm:text-base lg:text-lg tracking-tight text-white flex items-center gap-2">
+          <h1 class="font-bold text-base lg:text-lg tracking-tight text-white flex items-center gap-2">
             Finanz- & Vermögensplaner 
             <span class="text-[10px] bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Pro</span>
           </h1>
-          <p class="text-[11px] sm:text-xs text-slate-400" id="headerSubtitle">Lokaler Modus aktiv</p>
+          <p class="text-xs text-slate-400" id="headerSubtitle">Lokaler Modus aktiv</p>
         </div>
       </div>
-
-      <!-- Export Button auf Mobile direkt oben rechts -->
-      <button onclick="exportDataJSON()" title="Daten exportieren" class="md:hidden p-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-300 transition shrink-0">
+      <button onclick="exportDataJSON()" title="Daten exportieren" class="sm:hidden p-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-300 transition">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
       </button>
     </div>
     
-    <!-- Registerkarten: Auf Mobile als 4er-Grid oder sauber scrollbar ohne Abschneiden -->
-    <div class="grid grid-cols-4 sm:flex items-center gap-1.5 sm:space-x-2 w-full md:w-auto overflow-x-auto no-scrollbar">
-      <button onclick="openTab('dashboard')" id="nav-dashboard" class="tab-btn px-2 sm:px-3.5 py-2 rounded-xl text-[11px] sm:text-xs font-semibold transition-all flex items-center justify-center gap-1.5 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 whitespace-nowrap">
-        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-        <span>Dashboard</span>
+    <div class="flex items-center space-x-1 sm:space-x-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0 no-scrollbar">
+      <button onclick="openTab('dashboard')" id="nav-dashboard" class="tab-btn px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 shrink-0">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        Dashboard
       </button>
-      <button onclick="openTab('sparplaene')" id="nav-sparplaene" class="tab-btn px-2 sm:px-3.5 py-2 rounded-xl text-[11px] sm:text-xs font-semibold transition-all flex items-center justify-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 whitespace-nowrap">
-        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-        <span>Sparpläne</span>
+      <button onclick="openTab('sparplaene')" id="nav-sparplaene" class="tab-btn px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 shrink-0">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        Sparpläne
       </button>
-      <button onclick="openTab('einnahmen')" id="nav-einnahmen" class="tab-btn px-2 sm:px-3.5 py-2 rounded-xl text-[11px] sm:text-xs font-semibold transition-all flex items-center justify-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 whitespace-nowrap">
-        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-        <span>Einnahmen</span>
+      <button onclick="openTab('einnahmen')" id="nav-einnahmen" class="tab-btn px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 shrink-0">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        Einnahmen & Fix
       </button>
-      <button onclick="openTab('prognose')" id="nav-prognose" class="tab-btn px-2 sm:px-3.5 py-2 rounded-xl text-[11px] sm:text-xs font-semibold transition-all flex items-center justify-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 whitespace-nowrap">
-        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-        <span>Prognose</span>
+      <button onclick="openTab('prognose')" id="nav-prognose" class="tab-btn px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 shrink-0">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Prognose
       </button>
-      <button onclick="exportDataJSON()" title="Daten exportieren" class="hidden md:flex p-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-300 transition shrink-0">
+      <button onclick="exportDataJSON()" title="Daten exportieren" class="hidden sm:flex p-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-300 transition shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
       </button>
     </div>
@@ -261,16 +258,16 @@
                 <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30" id="currentMonthBadge">November 2026</span>
               </div>
               <p class="text-xs text-slate-400 leading-relaxed max-w-2xl">
-                Schließe den aktuellen Monat ab, um die Performance in der Historie zu sichern. Ein verbleibender Puffer fließt automatisch in den Notgroschen.
+                Schließe den aktuellen Monat ab, um die Performance in der Historie zu sichern. Wähle dabei flexibel aus, welcher Sparplan den freien Puffer erhalten soll.
               </p>
             </div>
             <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <button id="btnCloseMonth" type="button" onclick="window.confirmCloseCurrentMonth()" class="px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition flex items-center justify-center gap-2 cursor-pointer relative z-10">
-                <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <button onclick="openCloseMonthModal()" class="px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                 Aktuellen Monat abschließen
               </button>
-              <button id="btnUndoMonth" type="button" onclick="window.undoLastMonthClose()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-pointer relative z-10">
-                <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+              <button onclick="undoLastMonthClose()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
                 Rückgängig
               </button>
             </div>
@@ -438,7 +435,7 @@
           </div>
         </div>
 
-        <!-- Quick Add Expense Form mit erweiterten Kategorien -->
+        <!-- Quick Add Expense Form mit Enter-Support -->
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
           <input type="text" id="expenseTitle" onkeydown="if(event.key==='Enter') addDailyExpense()" placeholder="z. B. Supermarkt, Tankstelle" class="sm:col-span-5 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
           <input type="number" id="expenseAmount" onkeydown="if(event.key==='Enter') addDailyExpense()" placeholder="Betrag (€)" class="sm:col-span-3 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
@@ -469,7 +466,7 @@
             </div>
           </div>
 
-          <!-- Ausgaben Diagramm nach Kategorien (wird dynamisch eingeblendet) -->
+          <!-- Ausgaben Diagramm nach Kategorien -->
           <div id="expenseChartWrapper" class="bg-slate-950/70 border border-slate-800 rounded-2xl p-5 flex flex-col hidden">
             <h4 class="font-bold text-xs text-white mb-2 flex items-center gap-2">
               <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/></svg>
@@ -599,7 +596,7 @@
   <!-- Notification Toast -->
   <div id="customNotificationBox" class="fixed bottom-5 right-5 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-2xl z-50 text-xs font-semibold transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
-  <!-- App Logic Script (Reiner lokaler Modus ohne Datenbank) -->
+  <!-- Application Script -->
   <script>
     let appData = {
       lastUpdated: 0,
@@ -623,7 +620,10 @@
         { id: 'f9', name: 'Partner Anteil', amount: -490 },
         { id: 'f10', name: 'Versicherung', amount: 45 }
       ],
-      variableBudgets: [],
+      variableBudgets: [
+        { id: 'vb1', name: 'Monatslimit Supermarkt', category: 'Lebensmittel', amount: 350 },
+        { id: 'vb2', name: 'Freizeit & Hobby', category: 'Freizeit', amount: 200 }
+      ],
       plans: [
         { id: 'p1', name: 'Notgroschen', category: 'Notgroschen', current: 2200, monthly: 0 },
         { id: 'p2', name: 'MSCI World ETF', category: 'ETF', current: 3600, monthly: 400 },
@@ -827,7 +827,6 @@
       document.getElementById('yearEndGoalIstLabel').textContent = `Ist: ${formatEUR(totals.totalWealth)} / Ziel: ${formatEUR(target)}`;
       document.getElementById('yearEndGoalPctLabel').textContent = pct + '%';
 
-      // Dynamische Berechnung der Restmonate bis Jahresende (inkl. aktuellem Monat)
       const currentKey = appData.currentMonthKey || '2026-11';
       const currentMonthNum = parseInt(currentKey.split('-')[1], 10) || 11;
       const remainingMonths = Math.max(1, 13 - currentMonthNum);
@@ -978,40 +977,46 @@
       });
     }
 
-    window.confirmCloseCurrentMonth = function() {
+    // Flexible Monthly Closing Modal with Savings Plan Selector
+    window.openCloseMonthModal = function() {
       const key = appData.currentMonthKey || '2026-11';
       const label = formatYearMonthLabel(key);
       const totals = calculateCurrentTotals();
       const bufferToSave = Math.max(0, totals.availableBuffer);
       const totalAdded = totals.savingsRate + bufferToSave;
 
+      const plans = appData.plans || [];
+      const optionsHtml = plans.map(p => `<option value="${p.id}">${p.name} (Aktuell: ${formatEUR(p.current)})</option>`).join('');
+
       const modal = document.getElementById('customModal');
-      document.getElementById('modalTitle').textContent = `Monat ${label} abschließen?`;
+      document.getElementById('modalTitle').textContent = `Monat ${label} abschließen`;
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3 text-xs text-slate-300">
-          <p>Möchtest du den Monat <strong class="text-white">${label}</strong> wirklich abschließen?</p>
+          <p>Möchtest du den Monat <strong class="text-white">${label}</strong> abschließen? Wähle aus, wohin der freie Puffer gebucht werden soll:</p>
           <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-2">
             <div class="flex justify-between">
               <span class="text-slate-400">Reguläre Sparraten:</span>
               <span class="font-bold text-indigo-400">+${formatEUR(totals.savingsRate)}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-slate-400">Freier Puffer (in Notgroschen):</span>
+              <span class="text-slate-400">Freier Puffer:</span>
               <span class="font-bold text-amber-400">+${formatEUR(bufferToSave)}</span>
             </div>
-            <div class="flex justify-between border-t border-slate-800 pt-2">
-              <span class="text-white font-semibold">Neues Gesamtvermögen:</span>
-              <span class="font-extrabold text-emerald-400">${formatEUR(totals.totalWealth + totalAdded)}</span>
+            <div class="pt-2 border-t border-slate-800">
+              <label class="block text-slate-400 mb-1 font-semibold">Puffer buchen auf Sparplan:</label>
+              <select id="modalBufferTargetPlan" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                ${optionsHtml}
+              </select>
             </div>
           </div>
-          <p class="text-[11px] text-slate-400">Deine täglichen Ausgaben werden für den neuen Monat auf 0 € zurückgesetzt und der Monat springt weiter.</p>
+          <p class="text-[11px] text-slate-400">Deine täglichen Ausgaben werden für den neuen Monat auf 0 € zurückgesetzt.</p>
         </div>
       `;
 
       const saveBtn = document.getElementById('modalSaveBtn');
       saveBtn.textContent = 'Jetzt abschließen';
       saveBtn.onclick = function() {
-        // Backup für "Rückgängig" speichern
+        const targetPlanId = document.getElementById('modalBufferTargetPlan').value;
         appData.lastBackupState = JSON.parse(JSON.stringify(appData));
 
         // 1. Sparraten zu den jeweiligen Sparplänen addieren
@@ -1019,11 +1024,11 @@
           p.current = Number(p.current || 0) + Number(p.monthly || 0);
         });
 
-        // 2. Freien Puffer in den Notgroschen buchen (falls positiv)
+        // 2. Freien Puffer auf den ausgewählten Ziel-Sparplan buchen
         if (bufferToSave > 0) {
-          let notgroschenPlan = (appData.plans || []).find(p => p.category === 'Notgroschen' || p.name.toLowerCase().includes('notgroschen'));
-          if (notgroschenPlan) {
-            notgroschenPlan.current = Number(notgroschenPlan.current || 0) + bufferToSave;
+          const targetPlan = (appData.plans || []).find(p => p.id === targetPlanId);
+          if (targetPlan) {
+            targetPlan.current = Number(targetPlan.current || 0) + bufferToSave;
           } else if (appData.plans && appData.plans.length > 0) {
             appData.plans[0].current = Number(appData.plans[0].current || 0) + bufferToSave;
           }
@@ -1044,7 +1049,7 @@
           plansHistory: plansHistory
         };
 
-        // 4. Monat um 1 weiterschalten
+        // 4. Monat weiterschalten
         const parts = key.split('-');
         let y = parseInt(parts[0], 10);
         let m = parseInt(parts[1], 10) + 1;
@@ -1054,7 +1059,7 @@
         }
         appData.currentMonthKey = `${y}-${String(m).padStart(2, '0')}`;
 
-        // 5. Variable Ausgaben & Sonderzahlungen für den neuen Monat zurücksetzen
+        // 5. Reset tägliche Ausgaben & Sonderzahlungen
         appData.dailyExpenses = [];
         appData.extra13Claimed = false;
         appData.extra14Claimed = false;
@@ -1077,7 +1082,7 @@
       const modal = document.getElementById('customModal');
       document.getElementById('modalTitle').textContent = 'Monatsabschluss rückgängig machen?';
       document.getElementById('modalBody').innerHTML = `
-        <p class="text-xs text-slate-300">Möchtest du den letzten Monatsabschluss wirklich rückgängig machen? Alle Kontostände, Ausgaben und der aktuelle Monat werden auf den Stand vor dem Abschluss zurückgesetzt.</p>
+        <p class="text-xs text-slate-300">Möchtest du den letzten Monatsabschluss wirklich rückgängig machen? Alle Kontostände, Ausgaben und der aktuelle Monat werden wiederhergestellt.</p>
       `;
 
       const saveBtn = document.getElementById('modalSaveBtn');
@@ -1249,7 +1254,6 @@
         }
       }
 
-      // Variable Budgets inkl. Fortschrittsbalken rendern
       const vbContainer = document.getElementById('variableBudgetsListContainer');
       const totalVbDisplay = document.getElementById('totalVariableBudgetsDisplay');
       if (vbContainer && totalVbDisplay) {
@@ -1848,7 +1852,6 @@
         card.setAttribute('draggable', 'true');
 
         card.addEventListener('dragstart', (e) => {
-          // Verhindert, dass ein Klick auf einen Button als Drag-Versuch gewertet wird
           if (e.target.closest('button, input, select, a')) {
             e.preventDefault();
             return;
@@ -1924,23 +1927,6 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       initApp();
-
-      // Zusätzliche direkte Event-Listener für maximale Zuverlässigkeit auf GitHub
-      const closeBtn = document.getElementById('btnCloseMonth');
-      if (closeBtn) {
-        closeBtn.onclick = (e) => {
-          e.stopPropagation();
-          window.confirmCloseCurrentMonth();
-        };
-      }
-      const undoBtn = document.getElementById('btnUndoMonth');
-      if (undoBtn) {
-        undoBtn.onclick = (e) => {
-          e.stopPropagation();
-          window.undoLastMonthClose();
-        };
-      }
-
       setTimeout(() => {
         restoreDashboardOrder();
         initDashboardDragAndDrop();
