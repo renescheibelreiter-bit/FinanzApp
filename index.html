@@ -41,7 +41,7 @@
             Finanz- & Vermögensplaner 
             <span class="text-[10px] bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Pro</span>
           </h1>
-          <p class="text-xs text-slate-400" id="headerSubtitle">Monats-Vorausplanung aktiv</p>
+          <p class="text-xs text-slate-400" id="headerSubtitle">Jahres-Vorausplanung aktiv</p>
         </div>
       </div>
       <div class="flex items-center gap-2 sm:hidden">
@@ -145,13 +145,13 @@
 
             <div class="bg-slate-950/70 border border-slate-800/90 rounded-xl p-4 shadow-lg relative overflow-hidden">
               <div class="flex items-center justify-between mb-2">
-                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate" id="dashNetIncomeLabel">Reguläres Netto</span>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate" id="dashNetIncomeLabel">Gesamteinnahmen</span>
                 <div class="w-7 h-7 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                 </div>
               </div>
               <div class="text-xl lg:text-2xl font-extrabold text-indigo-400 tracking-tight truncate" id="dashNetIncome">2.704,14 €/M.</div>
-              <div class="text-[11px] text-slate-400 mt-1 truncate" id="dashNetIncomeSub">Ohne 13./14. Gehalt</div>
+              <div class="text-[11px] text-slate-400 mt-1 truncate" id="dashNetIncomeSub">Inkl. Zusatz & Sonder</div>
             </div>
 
             <div class="bg-slate-950/70 border border-slate-800/90 rounded-xl p-4 shadow-lg relative overflow-hidden">
@@ -190,7 +190,7 @@
               <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/></svg>
               Einkommens- & Budget-Verteilung (Netto)
             </h3>
-            <span class="text-xs font-semibold text-slate-300" id="distNetHeaderLabel">Netto: 2.704,14 € (inkl. Sonderzahlung!)</span>
+            <span class="text-xs font-semibold text-slate-300" id="distNetHeaderLabel">Netto: 2.704,14 € (inkl. Zusatz!)</span>
           </div>
 
           <div class="w-full bg-slate-950 rounded-full h-3.5 p-0.5 border border-slate-800/80 relative overflow-hidden flex">
@@ -340,9 +340,9 @@
           <div>
             <h3 class="font-bold text-base text-white flex items-center gap-2">
               <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-              Deine Sparpläne & Anlagen
+              Deine Sparpläne & Anlagen (<span id="activeMonthPlanTitle">November 2026</span>)
             </h3>
-            <p class="text-xs text-slate-400 mt-1">Verwalte deine ETFs, Notgroschen und individuellen Sparpläne.</p>
+            <p class="text-xs text-slate-400 mt-1">Verwalte deine ETFs, Notgroschen und individuellen Sparpläne für diesen Monat.</p>
           </div>
           <button onclick="addNewPlanModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/20 transition flex items-center gap-2">
             + Sparplan anlegen
@@ -352,57 +352,106 @@
       </div>
     </div>
 
-    <!-- ==================== EINNAHMEN & FIX TAB ==================== -->
+    <!-- ==================== EINNAHMEN & FIX TAB (Verschiebbar) ==================== -->
     <div id="tab-einnahmen" class="space-y-6 tab-content hidden">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div id="sortableEinnahmenGrid" class="space-y-6">
         
-        <div class="space-y-6">
-          <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl">
-            <h3 class="font-bold text-base text-white mb-4 flex items-center gap-2">
+        <!-- Kombinierte Einnahmen & Zusatzeinnahmen Card -->
+        <div class="einnahmen-draggable-card bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-6" draggable="true" data-id="card-netto">
+          <div draggable="true" class="einnahmen-drag-handle flex items-center justify-between pb-3 border-b border-slate-800/80 cursor-grab active:cursor-grabbing text-slate-400 hover:text-white text-xs font-bold tracking-wider">
+            <span class="flex items-center gap-2">⠷ Einnahmen & Zusatzeinnahmen</span>
+            <span class="text-[10px] text-slate-500 uppercase tracking-widest bg-slate-800/60 px-2 py-0.5 rounded">Zum Verschieben greifen</span>
+          </div>
+
+          <!-- Sektion 1: Reguläres Netto -->
+          <div class="space-y-3">
+            <h3 class="font-bold text-base text-white flex items-center gap-2">
               <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              Einnahmen
+              Reguläres Netto-Gehalt
             </h3>
-            <div class="space-y-4">
-              <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">Netto-Monatsgehalt (Fix)</label>
-                <input type="number" id="inputNetIncome" onchange="updateIncomeValues()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-              </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Netto-Monatsgehalt (Fix)</label>
+              <input type="number" id="inputNetIncome" onchange="updateIncomeValues()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
             </div>
           </div>
 
-          <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl">
-            <h3 class="font-bold text-base text-white mb-2 flex items-center gap-2">
-              <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              Sonderzahlungen (13. & 14. Gehalt)
-            </h3>
-            <p class="text-xs text-slate-400 mb-4">Lege hier die Höhe fest und schalte das 13. Gehalt (im Juli) bzw. das 14. Gehalt (im Dezember) zu deinen aktuellen Einnahmen dazu.</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl space-y-3">
-                <div>
-                  <label class="block text-xs font-bold text-white mb-1">13. Gehalt (Juli) in €</label>
-                  <input type="number" id="inputExtra13" onchange="updateIncomeValues()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                </div>
-                <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
-                  <span class="text-[11px] text-slate-400">Status (Juli):</span>
-                  <div id="einnahmenExtra13Toggle"></div>
-                </div>
+          <!-- Sektion 2: Zusatzeinnahmen Direkt integriert -->
+          <div class="space-y-3 pt-4 border-t border-slate-800/80">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="font-bold text-sm text-white flex items-center gap-2">
+                  <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  Zusatzeinnahmen (<span id="activeMonthExtraIncomeTitle">November 2026</span>)
+                </h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Nebenjobs, Dividenden etc. für diesen Monat erfassen.</p>
               </div>
+              <span class="text-xs font-semibold text-slate-400" id="extraIncomeCountLabel">0 Einnahmen</span>
+            </div>
 
-              <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl space-y-3">
-                <div>
-                  <label class="block text-xs font-bold text-white mb-1">14. Gehalt (Dezember) in €</label>
-                  <input type="number" id="inputExtra14" onchange="updateIncomeValues()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                </div>
-                <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
-                  <span class="text-[11px] text-slate-400">Status (Dezember):</span>
-                  <div id="einnahmenExtra14Toggle"></div>
-                </div>
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center pt-1">
+              <input type="text" id="extraIncomeTitle" placeholder="z. B. Nebenjob, Verkauf" onkeydown="if(event.key==='Enter') addExtraIncome()" class="sm:col-span-4 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+              <input type="number" id="extraIncomeAmount" placeholder="Betrag (€)" onkeydown="if(event.key==='Enter') addExtraIncome()" class="sm:col-span-3 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+              <div class="sm:col-span-3">
+                <select id="extraIncomeCategory" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                  <option value="Nebenjob">Nebenjob</option>
+                  <option value="Dividenden">Dividenden</option>
+                  <option value="Geschenk">Geschenk</option>
+                  <option value="Sonstiges">Sonstiges</option>
+                </select>
+              </div>
+              <button onclick="addExtraIncome()" class="sm:col-span-2 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1">
+                + Buchen
+              </button>
+            </div>
+
+            <div id="extraIncomeListContainer" class="space-y-2 max-h-[200px] overflow-y-auto pr-1 pt-1">
+              <p class="text-xs text-slate-500 italic py-1">Noch keine Zusatzeinnahmen diesen Monat erfasst.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sonderzahlungen Card -->
+        <div class="einnahmen-draggable-card bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-4" draggable="true" data-id="card-sonder">
+          <div draggable="true" class="einnahmen-drag-handle flex items-center justify-between pb-3 border-b border-slate-800/80 cursor-grab active:cursor-grabbing text-slate-400 hover:text-white text-xs font-bold tracking-wider">
+            <span class="flex items-center gap-2">⠷ Sonderzahlungen</span>
+            <span class="text-[10px] text-slate-500 uppercase tracking-widest bg-slate-800/60 px-2 py-0.5 rounded">Zum Verschieben greifen</span>
+          </div>
+          <h3 class="font-bold text-base text-white flex items-center gap-2">
+            <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Sonderzahlungen (13. & 14. Gehalt)
+          </h3>
+          <p class="text-xs text-slate-400">Lege hier die Höhe fest und schalte das 13. Gehalt (im Juli) bzw. das 14. Gehalt (im Dezember) zu deinen aktuellen Einnahmen dazu.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl space-y-3">
+              <div>
+                <label class="block text-xs font-bold text-white mb-1">13. Gehalt (Juli) in €</label>
+                <input type="number" id="inputExtra13" onchange="updateIncomeValues()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+              </div>
+              <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
+                <span class="text-[11px] text-slate-400">Status (Juli):</span>
+                <div id="einnahmenExtra13Toggle"></div>
+              </div>
+            </div>
+
+            <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl space-y-3">
+              <div>
+                <label class="block text-xs font-bold text-white mb-1">14. Gehalt (Dezember) in €</label>
+                <input type="number" id="inputExtra14" onchange="updateIncomeValues()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+              </div>
+              <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
+                <span class="text-[11px] text-slate-400">Status (Dezember):</span>
+                <div id="einnahmenExtra14Toggle"></div>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+        <!-- Fixkosten Card -->
+        <div class="einnahmen-draggable-card bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 shadow-xl flex flex-col justify-between" draggable="true" data-id="card-fix">
+          <div draggable="true" class="einnahmen-drag-handle flex items-center justify-between pb-3 mb-4 border-b border-slate-800/80 cursor-grab active:cursor-grabbing text-slate-400 hover:text-white text-xs font-bold tracking-wider">
+            <span class="flex items-center gap-2">⠷ Fixkosten</span>
+            <span class="text-[10px] text-slate-500 uppercase tracking-widest bg-slate-800/60 px-2 py-0.5 rounded">Zum Verschieben greifen</span>
+          </div>
           <div>
             <div class="flex items-center justify-between mb-4">
               <h3 class="font-bold text-base text-white flex items-center gap-2">
@@ -448,7 +497,7 @@
           </div>
         </div>
 
-        <!-- Quick Add Expense Form mit dynamischer Kategorie-Erstellung via Dropdown -->
+        <!-- Quick Add Expense Form -->
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
           <input type="text" id="expenseTitle" placeholder="z. B. Supermarkt, Tankstelle" onkeydown="if(event.key==='Enter') addDailyExpense()" class="sm:col-span-4 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
           <input type="number" id="expenseAmount" placeholder="Betrag (€)" onkeydown="if(event.key==='Enter') addDailyExpense()" class="sm:col-span-3 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
@@ -474,7 +523,6 @@
             </div>
           </div>
 
-          <!-- Ausgaben Diagramm nach Kategorien -->
           <div id="expenseChartWrapper" class="bg-slate-950/70 border border-slate-800 rounded-2xl p-5 flex flex-col hidden">
             <h4 class="font-bold text-xs text-white mb-2 flex items-center gap-2">
               <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/></svg>
@@ -510,15 +558,15 @@
           <div>
             <h3 class="font-bold text-base text-white flex items-center gap-2">
               <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-              Deine Sparpläne & Anlagen
+              Deine Sparpläne & Anlagen (<span id="activeMonthPlanTitleTab">November 2026</span>)
             </h3>
-            <p class="text-xs text-slate-400 mt-1">Verwalte deine ETFs, Notgroschen und individuellen Sparpläne.</p>
+            <p class="text-xs text-slate-400 mt-1">Verwalte deine ETFs, Notgroschen und individuellen Sparpläne für diesen Monat.</p>
           </div>
           <button onclick="addNewPlanModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/20 transition flex items-center gap-2">
             + Sparplan anlegen
           </button>
         </div>
-        <div id="plansListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div id="plansListContainerTab" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </div>
     </div>
 
@@ -647,9 +695,9 @@
         { id: 'f9', name: 'Partner Anteil', amount: -490 },
         { id: 'f10', name: 'Versicherung', amount: 45 }
       ],
-      monthOverrides: {}, // { '2026-11': { fixedExpenses: [...], dailyExpenses: [...] } }
+      monthOverrides: {},
       variableBudgets: [],
-      plans: [
+      basePlans: [
         { id: 'p1', name: 'Notgroschen', category: 'Notgroschen', current: 2200, monthly: 0 },
         { id: 'p2', name: 'MSCI World ETF', category: 'ETF', current: 3600, monthly: 400 },
         { id: 'p3', name: 'Edelmetall', category: 'Edelmetall', current: 1600, monthly: 0 },
@@ -679,7 +727,7 @@
     }
 
     function initApp() {
-      const localSaved = localStorage.getItem('finanzplaner_pro_v5');
+      const localSaved = localStorage.getItem('finanzplaner_pro_v6');
       if (localSaved) {
         try {
           appData = { ...appData, ...JSON.parse(localSaved) };
@@ -690,6 +738,7 @@
       if (!appData.currentMonthKey) appData.currentMonthKey = '2026-11';
       if (!appData.categories) appData.categories = ['Lebensmittel', 'Freizeit', 'Wohnen', 'Transport / Auto', 'Kleidung', 'Gesundheit', 'Technik', 'Sonstiges'];
       if (!appData.defaultFixedExpenses) appData.defaultFixedExpenses = appData.fixedExpenses || [];
+      if (!appData.basePlans) appData.basePlans = appData.plans || [];
       if (!appData.monthOverrides) appData.monthOverrides = {};
 
       buildMonthSelectorOptions();
@@ -697,18 +746,48 @@
     }
 
     function saveState() {
-      localStorage.setItem('finanzplaner_pro_v5', JSON.stringify(appData));
+      localStorage.setItem('finanzplaner_pro_v6', JSON.stringify(appData));
       renderAll();
+    }
+
+    function getPreviousMonthKey(ymStr) {
+      const [y, m] = ymStr.split('-').map(Number);
+      let py = y;
+      let pm = m - 1;
+      if (pm < 1) {
+        pm = 12;
+        py -= 1;
+      }
+      return `${py}-${pm < 10 ? '0' + pm : pm}`;
     }
 
     function getActiveMonthData() {
       const key = appData.currentMonthKey || '2026-11';
       if (!appData.monthOverrides[key]) {
-        // Init mit Standard-Fixkosten für diesen neuen Monat, aber 0 tägliche Ausgaben
+        const prevKey = getPreviousMonthKey(key);
+        let basePlans = [];
+        let baseFixed = [];
+
+        if (prevKey && appData.monthOverrides[prevKey]) {
+          basePlans = (appData.monthOverrides[prevKey].plans || []).map(p => ({
+            ...p,
+            current: Number(p.current || 0) + Number(p.monthly || 0)
+          }));
+          baseFixed = JSON.parse(JSON.stringify(appData.monthOverrides[prevKey].fixedExpenses || []));
+        } else {
+          basePlans = JSON.parse(JSON.stringify(appData.basePlans || []));
+          baseFixed = JSON.parse(JSON.stringify(appData.defaultFixedExpenses || []));
+        }
+
         appData.monthOverrides[key] = {
-          fixedExpenses: JSON.parse(JSON.stringify(appData.defaultFixedExpenses || [])),
-          dailyExpenses: []
+          fixedExpenses: baseFixed,
+          dailyExpenses: [],
+          extraIncomes: [],
+          plans: basePlans
         };
+      }
+      if (!appData.monthOverrides[key].extraIncomes) {
+        appData.monthOverrides[key].extraIncomes = [];
       }
       return appData.monthOverrides[key];
     }
@@ -721,6 +800,12 @@
       if (fixT) fixT.textContent = label;
       const expT = document.getElementById('activeMonthExpenseTitle');
       if (expT) expT.textContent = label;
+      const extraIncT = document.getElementById('activeMonthExtraIncomeTitle');
+      if (extraIncT) extraIncT.textContent = label;
+      const planT = document.getElementById('activeMonthPlanTitle');
+      if (planT) planT.textContent = label;
+      const planTTab = document.getElementById('activeMonthPlanTitleTab');
+      if (planTTab) planTTab.textContent = label;
 
       renderDashboard();
       renderPlansList();
@@ -735,7 +820,6 @@
       if (!sel) return;
       sel.innerHTML = '';
 
-      // Generiere z.B. 24 Monate rund um 2026/2027
       const years = [2026, 2027];
       years.forEach(y => {
         for (let m = 1; m <= 12; m++) {
@@ -791,9 +875,9 @@
     function calculateCurrentTotals() {
       const mData = getActiveMonthData();
       const fixedSum = (mData.fixedExpenses || []).reduce((acc, f) => acc + Number(f.amount || 0), 0);
-      const savingsRate = (appData.plans || []).reduce((acc, p) => acc + Number(p.monthly || 0), 0);
+      const savingsRate = (mData.plans || []).reduce((acc, p) => acc + Number(p.monthly || 0), 0);
       const dailySpent = (mData.dailyExpenses || []).reduce((acc, e) => acc + Number(e.amount || 0), 0);
-      const varBudgetsSum = (appData.variableBudgets || []).reduce((acc, b) => acc + Number(b.amount || 0), 0);
+      const extraIncomesSum = (mData.extraIncomes || []).reduce((acc, i) => acc + Number(i.amount || 0), 0);
 
       let activeNetIncome = Number(appData.netIncome || 0);
       let activeExtraLabelParts = [];
@@ -809,30 +893,16 @@
         activeExtraLabelParts.push('14. Gehalt');
       }
 
-      const restgeldVariable = activeNetIncome - fixedSum - savingsRate - dailySpent;
-
-      // Berechne das Vermögen unter Berücksichtigung von Monaten, die nach dem Live-Monat (2026-11) liegen
-      let totalWealth = (appData.plans || []).reduce((acc, p) => acc + Number(p.current || 0), 0);
-      
-      const currentActiveKey = appData.currentMonthKey || '2026-11';
-      const liveBaseKey = '2026-11';
-      if (currentActiveKey > liveBaseKey) {
-        // Zähle die Monate Differenz ab November 2026 hoch und addiere die mtl. Sparraten
-        const [baseY, baseM] = liveBaseKey.split('-').map(Number);
-        const [actY, actM] = currentActiveKey.split('-').map(Number);
-        const diffMonths = (actY - baseY) * 12 + (actM - baseM);
-        if (diffMonths > 0) {
-          const mtlSavingsSum = (appData.plans || []).reduce((acc, p) => acc + Number(p.monthly || 0), 0);
-          totalWealth += (mtlSavingsSum * diffMonths);
-        }
-      }
+      const totalIncomeWithExtra = activeNetIncome + extraIncomesSum;
+      const restgeldVariable = totalIncomeWithExtra - fixedSum - savingsRate - dailySpent;
+      let totalWealth = (mData.plans || []).reduce((acc, p) => acc + Number(p.current || 0), 0);
 
       return {
         fixedSum,
         savingsRate,
         dailySpent,
-        varBudgetsSum,
-        activeNetIncome,
+        extraIncomesSum,
+        activeNetIncome: totalIncomeWithExtra,
         activeExtraLabelParts,
         restgeldVariable,
         availableBuffer: restgeldVariable,
@@ -846,20 +916,8 @@
       const elWealth = document.getElementById('dashTotalWealth');
       if (elWealth) elWealth.textContent = formatEUR(totals.totalWealth);
 
-      const elIncome = document.getElementById('dashNetIncome');
-      if (elIncome) elIncome.textContent = formatEUR(totals.activeNetIncome) + '/M.';
-
-      const elIncomeSub = document.getElementById('dashNetIncomeSub');
-      const elIncomeLabel = document.getElementById('dashNetIncomeLabel');
-      if (elIncomeSub && elIncomeLabel) {
-        if (totals.activeExtraLabelParts.length > 0) {
-          elIncomeLabel.textContent = 'Netto (inkl. Sonderz.)';
-          elIncomeSub.textContent = 'Inkl. ' + totals.activeExtraLabelParts.join(' & ');
-        } else {
-          elIncomeLabel.textContent = 'Reguläres Netto';
-          elIncomeSub.textContent = 'Ohne 13./14. Gehalt';
-        }
-      }
+      const elNet = document.getElementById('dashNetIncome');
+      if (elNet) elNet.textContent = formatEUR(totals.activeNetIncome) + '/M.';
 
       const elFixed = document.getElementById('dashFixedExpenses');
       if (elFixed) elFixed.textContent = formatEUR(totals.fixedSum) + '/M.';
@@ -904,11 +962,12 @@
       if (elBufferVal) elBufferVal.textContent = formatEUR(totals.availableBuffer);
 
       const elNetHeader = document.getElementById('distNetHeaderLabel');
-      if (elNetHeader) elNetHeader.textContent = `Netto: ${formatEUR(totals.activeNetIncome)} ${totals.activeExtraLabelParts.length > 0 ? '(inkl. Sonderzahlung!)' : ''}`;
+      if (elNetHeader) elNetHeader.textContent = `Netto: ${formatEUR(totals.activeNetIncome)} (inkl. Zusatz & Sonder)`;
       const elRule50 = document.getElementById('rule50Text');
       if (elRule50) elRule50.textContent = `50/30/20-Regel: Fixkosten bei ${fixPct}% (Optimal unter 50%).`;
 
-      const notgroschenPlan = (appData.plans || []).find(p => p.category === 'Notgroschen' || p.name.toLowerCase().includes('notgroschen'));
+      const mData = getActiveMonthData();
+      const notgroschenPlan = (mData.plans || []).find(p => p.category === 'Notgroschen' || p.name.toLowerCase().includes('notgroschen'));
       const notgroschenVal = notgroschenPlan ? Number(notgroschenPlan.current || 0) : 2200;
       const monthsCovered = totals.fixedSum > 0 ? (notgroschenVal / totals.fixedSum).toFixed(1) : '0';
       const elNotgroschenCount = document.getElementById('notgroschenMonthsCount');
@@ -940,9 +999,6 @@
         if (elGoalMonthsVal) elGoalMonthsVal.textContent = `Ziel erreicht 🎉`;
       }
 
-      const elBadge = document.getElementById('currentMonthBadge');
-      if (elBadge) elBadge.textContent = formatYearMonthLabel(appData.currentMonthKey || '2026-11');
-
       renderAssetDistributionChart(totals.totalWealth);
       renderHistoricalAssetChart();
       renderDashboardHistory();
@@ -951,8 +1007,9 @@
     function renderAssetDistributionChart(totalWealth) {
       const ctx = document.getElementById('assetDistributionChart');
       if (!ctx) return;
-      const labels = (appData.plans || []).map(p => p.name);
-      const data = (appData.plans || []).map(p => Number(p.current || 0));
+      const mData = getActiveMonthData();
+      const labels = (mData.plans || []).map(p => p.name);
+      const data = (mData.plans || []).map(p => Number(p.current || 0));
       const colors = ['#10b981', '#6366f1', '#f59e0b', '#ec4899', '#3b82f6', '#8b5cf6', '#14b8a6'];
 
       if (assetDonutInstance) assetDonutInstance.destroy();
@@ -990,7 +1047,8 @@
       const currentTotals = calculateCurrentTotals();
       totalWealthSeries.push(currentTotals.totalWealth);
 
-      const planDatasets = (appData.plans || []).map((p, idx) => {
+      const mData = getActiveMonthData();
+      const planDatasets = (mData.plans || []).map((p, idx) => {
         const palette = ['#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#10b981', '#06b6d4'];
         const color = palette[idx % palette.length];
         const series = closedKeys.map(k => {
@@ -1060,7 +1118,6 @@
           <div class="flex items-center justify-between">
             <span class="font-bold text-sm text-white">${m.dateLabel}</span>
             <div class="flex items-center gap-1">
-              <button onclick="editClosedMonth('${k}')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg transition">Bearbeiten</button>
               <button onclick="deleteClosedMonth('${k}')" class="text-[10px] bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-2.5 py-1 rounded-lg transition">Löschen</button>
             </div>
           </div>
@@ -1083,12 +1140,13 @@
       const key = appData.currentMonthKey || '2026-11';
       const label = formatYearMonthLabel(key);
       const totals = calculateCurrentTotals();
+      const mData = getActiveMonthData();
 
       const modal = document.getElementById('customModal');
       document.getElementById('modalTitle').textContent = `Monat ${label} abschließen`;
 
       let plansOptions = '';
-      (appData.plans || []).forEach(p => {
+      (mData.plans || []).forEach(p => {
         plansOptions += `<option value="${p.id}">${p.name} (${p.category})</option>`;
       });
 
@@ -1106,17 +1164,16 @@
 
       document.getElementById('modalSaveBtn').onclick = function() {
         const targetId = document.getElementById('modalCloseTargetPlan').value;
-        const targetPlan = (appData.plans || []).find(p => p.id === targetId);
+        const targetPlan = (mData.plans || []).find(p => p.id === targetId);
 
         appData.lastBackupState = JSON.parse(JSON.stringify(appData));
 
         if (!appData.closedMonths) appData.closedMonths = {};
         const plansHistory = {};
-        (appData.plans || []).forEach(p => {
+        (mData.plans || []).forEach(p => {
           plansHistory[p.id] = Number(p.current || 0);
         });
 
-        // Add buffer to target plan current value
         if (targetPlan && totals.availableBuffer > 0) {
           targetPlan.current = Number(targetPlan.current || 0) + totals.availableBuffer;
         }
@@ -1163,37 +1220,40 @@
 
     function renderPlansList() {
       const container = document.getElementById('plansListContainer');
-      if (!container) return;
-      container.innerHTML = '';
-
-      (appData.plans || []).forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-4 flex flex-col justify-between';
-        card.innerHTML = `
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <h4 class="font-bold text-sm text-white">${p.name}</h4>
-              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">${p.category}</span>
-            </div>
-            <div class="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-900 text-xs">
-              <div>
-                <span class="text-slate-500 block">Aktueller Stand</span>
-                <span class="font-extrabold text-emerald-400 text-sm">${formatEUR(p.current)}</span>
+      const containerTab = document.getElementById('plansListContainerTab');
+      [container, containerTab].forEach(c => {
+        if (!c) return;
+        c.innerHTML = '';
+        const mData = getActiveMonthData();
+        (mData.plans || []).forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-4 flex flex-col justify-between';
+          card.innerHTML = `
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <h4 class="font-bold text-sm text-white">${p.name}</h4>
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">${p.category}</span>
               </div>
-              <div>
-                <span class="text-slate-500 block">Mtl. Sparrate</span>
-                <span class="font-extrabold text-indigo-400 text-sm">${formatEUR(p.monthly)}</span>
+              <div class="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-900 text-xs">
+                <div>
+                  <span class="text-slate-500 block">Aktueller Stand</span>
+                  <span class="font-extrabold text-emerald-400 text-sm">${formatEUR(p.current)}</span>
+                </div>
+                <div>
+                  <span class="text-slate-500 block">Mtl. Sparrate</span>
+                  <span class="font-extrabold text-indigo-400 text-sm">${formatEUR(p.monthly)}</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="flex items-center gap-2 pt-2">
-            <button onclick="editPlanModal('${p.id}')" class="flex-1 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold text-xs rounded-xl transition">Bearbeiten</button>
-            <button onclick="deletePlan('${p.id}')" class="p-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-xl transition">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            </button>
-          </div>
-        `;
-        container.appendChild(card);
+            <div class="flex items-center gap-2 pt-2">
+              <button onclick="editPlanModal('${p.id}')" class="flex-1 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold text-xs rounded-xl transition">Bearbeiten</button>
+              <button onclick="deletePlan('${p.id}')" class="p-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-xl transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          `;
+          c.appendChild(card);
+        });
       });
     }
 
@@ -1247,6 +1307,33 @@
           fixContainer.appendChild(row);
         });
         document.getElementById('totalFixedDisplay').textContent = formatEUR(totalFix);
+      }
+
+      const extraIncContainer = document.getElementById('extraIncomeListContainer');
+      if (extraIncContainer) {
+        extraIncContainer.innerHTML = '';
+        const list = mData.extraIncomes || [];
+        document.getElementById('extraIncomeCountLabel').textContent = `${list.length} Einnahmen`;
+        if (list.length === 0) {
+          extraIncContainer.innerHTML = '<p class="text-xs text-slate-500 italic py-1">Noch keine Zusatzeinnahmen diesen Monat erfasst.</p>';
+        } else {
+          list.forEach((inc, idx) => {
+            const item = document.createElement('div');
+            item.className = 'flex items-center justify-between bg-slate-950/70 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs';
+            item.innerHTML = `
+              <div>
+                <span class="font-bold text-white block">${inc.title}</span>
+                <span class="text-[10px] text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full inline-block mt-0.5">${inc.category || 'Sonstiges'}</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="font-extrabold text-emerald-400">+${formatEUR(inc.amount)}</span>
+                <button onclick="editExtraIncomeModal(${idx})" class="text-slate-400 hover:text-white" title="Bearbeiten">✏️</button>
+                <button onclick="deleteExtraIncome(${idx})" class="text-rose-400 hover:text-rose-300">✕</button>
+              </div>
+            `;
+            extraIncContainer.appendChild(item);
+          });
+        }
       }
 
       const totals = calculateCurrentTotals();
@@ -1335,6 +1422,73 @@
       saveState();
     }
 
+    window.addExtraIncome = function() {
+      const title = document.getElementById('extraIncomeTitle').value.trim();
+      const amount = Number(document.getElementById('extraIncomeAmount').value);
+      const category = document.getElementById('extraIncomeCategory').value;
+
+      if (!title || !amount || amount <= 0) {
+        showNotification("Bitte Titel und gültigen Betrag eingeben.");
+        return;
+      }
+
+      const mData = getActiveMonthData();
+      if (!mData.extraIncomes) mData.extraIncomes = [];
+      mData.extraIncomes.push({ title, amount, category });
+      document.getElementById('extraIncomeTitle').value = '';
+      document.getElementById('extraIncomeAmount').value = '';
+      saveState();
+      showNotification("Zusatzeinnahme gebucht!");
+    }
+
+    window.deleteExtraIncome = function(idx) {
+      const mData = getActiveMonthData();
+      if (mData.extraIncomes) {
+        mData.extraIncomes.splice(idx, 1);
+        saveState();
+        showNotification("Zusatzeinnahme gelöscht.");
+      }
+    }
+
+    window.editExtraIncomeModal = function(idx) {
+      const mData = getActiveMonthData();
+      const inc = mData.extraIncomes[idx];
+      if (!inc) return;
+
+      const modal = document.getElementById('customModal');
+      document.getElementById('modalTitle').textContent = 'Zusatzeinnahme bearbeiten';
+      document.getElementById('modalBody').innerHTML = `
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Titel</label>
+            <input type="text" id="modalIncTitle" value="${inc.title}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Betrag (€)</label>
+            <input type="number" id="modalIncAmount" value="${inc.amount}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Kategorie</label>
+            <select id="modalIncCat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+              <option value="Nebenjob" ${inc.category === 'Nebenjob' ? 'selected' : ''}>Nebenjob</option>
+              <option value="Dividenden" ${inc.category === 'Dividenden' ? 'selected' : ''}>Dividenden</option>
+              <option value="Geschenk" ${inc.category === 'Geschenk' ? 'selected' : ''}>Geschenk</option>
+              <option value="Sonstiges" ${inc.category === 'Sonstiges' ? 'selected' : ''}>Sonstiges</option>
+            </select>
+          </div>
+        </div>
+      `;
+      document.getElementById('modalSaveBtn').onclick = function() {
+        inc.title = document.getElementById('modalIncTitle').value.trim();
+        inc.amount = Number(document.getElementById('modalIncAmount').value || 0);
+        inc.category = document.getElementById('modalIncCat').value;
+        saveState();
+        closeModal();
+        showNotification("Zusatzeinnahme aktualisiert!");
+      };
+      modal.classList.remove('hidden');
+    }
+
     window.addDailyExpense = function() {
       const title = document.getElementById('expenseTitle').value.trim();
       const amount = Number(document.getElementById('expenseAmount').value);
@@ -1350,16 +1504,16 @@
       mData.dailyExpenses.push({ title, amount, category });
       document.getElementById('expenseTitle').value = '';
       document.getElementById('expenseAmount').value = '';
-
       saveState();
-      showNotification("Ausgabe erfolgreich gebucht!");
+      showNotification("Ausgabe gebucht!");
     }
 
     window.deleteDailyExpense = function(idx) {
       const mData = getActiveMonthData();
-      if (mData.dailyExpenses && mData.dailyExpenses[idx]) {
+      if (mData.dailyExpenses) {
         mData.dailyExpenses.splice(idx, 1);
         saveState();
+        showNotification("Ausgabe gelöscht.");
       }
     }
 
@@ -1378,7 +1532,7 @@
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Beschreibung</label>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Titel</label>
             <input type="text" id="modalExpTitle" value="${e.title}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
           </div>
           <div>
@@ -1393,7 +1547,6 @@
           </div>
         </div>
       `;
-
       document.getElementById('modalSaveBtn').onclick = function() {
         e.title = document.getElementById('modalExpTitle').value.trim();
         e.amount = Number(document.getElementById('modalExpAmount').value || 0);
@@ -1402,7 +1555,6 @@
         closeModal();
         showNotification("Ausgabe aktualisiert!");
       };
-
       modal.classList.remove('hidden');
     }
 
@@ -1505,9 +1657,10 @@
     }
 
     function initSimDefaultsFromPlans() {
-      const totalInvest = (appData.plans || []).filter(p => p.category !== 'Notgroschen').reduce((a, b) => a + Number(b.current || 0), 0);
-      const mtlInvest = (appData.plans || []).filter(p => p.category !== 'Notgroschen').reduce((a, b) => a + Number(b.monthly || 0), 0);
-      const notgroschenPlan = (appData.plans || []).find(p => p.category === 'Notgroschen');
+      const mData = getActiveMonthData();
+      const totalInvest = (mData.plans || []).filter(p => p.category !== 'Notgroschen').reduce((a, b) => a + Number(b.current || 0), 0);
+      const mtlInvest = (mData.plans || []).filter(p => p.category !== 'Notgroschen').reduce((a, b) => a + Number(b.monthly || 0), 0);
+      const notgroschenPlan = (mData.plans || []).find(p => p.category === 'Notgroschen');
       const notgroschenVal = notgroschenPlan ? Number(notgroschenPlan.current || 0) : 2200;
 
       document.getElementById('simStartInvest').value = totalInvest || 7000;
@@ -1663,7 +1816,7 @@
 
     window.addNewPlanModal = function() {
       const modal = document.getElementById('customModal');
-      document.getElementById('modalTitle').textContent = 'Neuen Sparplan anlegen';
+      document.getElementById('modalTitle').textContent = `Neuen Sparplan anlegen (${formatYearMonthLabel(appData.currentMonthKey)})`;
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
           <div>
@@ -1695,20 +1848,24 @@
           return;
         }
 
-        if (!appData.plans) appData.plans = [];
-        appData.plans.push({ id: 'p_' + Date.now(), name, category, current, monthly });
+        const newPlan = { id: 'p_' + Date.now(), name, category, current, monthly };
+        const mData = getActiveMonthData();
+        if (!mData.plans) mData.plans = [];
+        mData.plans.push(newPlan);
+
         saveState();
         closeModal();
-        showNotification("Sparplan hinzugefügt!");
+        showNotification("Sparplan für diesen Monat hinzugefügt!");
       };
       modal.classList.remove('hidden');
     }
 
     window.editPlanModal = function(id) {
-      const p = (appData.plans || []).find(x => x.id === id);
+      const mData = getActiveMonthData();
+      const p = (mData.plans || []).find(x => x.id === id);
       if (!p) return;
       const modal = document.getElementById('customModal');
-      document.getElementById('modalTitle').textContent = 'Sparplan bearbeiten';
+      document.getElementById('modalTitle').textContent = 'Sparplan bearbeiten (dieser Monat)';
       document.getElementById('modalBody').innerHTML = `
         <div class="space-y-3">
           <div>
@@ -1737,9 +1894,12 @@
     }
 
     window.deletePlan = function(id) {
-      appData.plans = (appData.plans || []).filter(x => x.id !== id);
-      saveState();
-      showNotification("Sparplan gelöscht.");
+      const mData = getActiveMonthData();
+      if (mData.plans) {
+        mData.plans = mData.plans.filter(x => x.id !== id);
+        saveState();
+        showNotification("Sparplan für diesen Monat entfernt.");
+      }
     }
 
     window.addFixedExpense = function() {
@@ -1867,7 +2027,7 @@
       reader.onload = function(e) {
         try {
           const parsed = JSON.parse(e.target.result);
-          if (parsed && parsed.plans) {
+          if (parsed && (parsed.basePlans || parsed.monthOverrides || parsed.plans)) {
             appData = parsed;
             if (!appData.monthOverrides) appData.monthOverrides = {};
             saveState();
@@ -1882,7 +2042,6 @@
       reader.readAsText(file);
     }
 
-    // Drag & Drop Logic for Dashboard Cards
     function initDashboardDragAndDrop() {
       const container = document.getElementById('sortableDashboardGrid');
       if (!container) return;
@@ -1962,11 +2121,92 @@
       });
     }
 
+    function initEinnahmenDragAndDrop() {
+      const container = document.getElementById('sortableEinnahmenGrid');
+      if (!container) return;
+
+      let draggedCard = null;
+
+      container.querySelectorAll('.einnahmen-draggable-card').forEach(card => {
+        card.setAttribute('draggable', 'true');
+
+        card.addEventListener('dragstart', (e) => {
+          draggedCard = card;
+          e.dataTransfer.effectAllowed = 'move';
+          setTimeout(() => card.classList.add('opacity-40', 'scale-[0.99]'), 0);
+        });
+
+        card.addEventListener('dragend', () => {
+          draggedCard = null;
+          container.querySelectorAll('.einnahmen-draggable-card').forEach(c => {
+            c.classList.remove('opacity-40', 'scale-[0.99]', 'border-indigo-500');
+          });
+          saveEinnahmenOrder();
+        });
+
+        card.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+        });
+
+        card.addEventListener('dragenter', (e) => {
+          e.preventDefault();
+          if (card !== draggedCard) {
+            card.classList.add('border-indigo-500');
+          }
+        });
+
+        card.addEventListener('dragleave', () => {
+          card.classList.remove('border-indigo-500');
+        });
+
+        card.addEventListener('drop', (e) => {
+          e.preventDefault();
+          card.classList.remove('border-indigo-500');
+          if (draggedCard && draggedCard !== card) {
+            const allCards = Array.from(container.querySelectorAll('.einnahmen-draggable-card'));
+            const draggedIdx = allCards.indexOf(draggedCard);
+            const targetIdx = allCards.indexOf(card);
+
+            if (draggedIdx < targetIdx) {
+              container.insertBefore(draggedCard, card.nextSibling);
+            } else {
+              container.insertBefore(draggedCard, card);
+            }
+          }
+        });
+      });
+    }
+
+    function saveEinnahmenOrder() {
+      const container = document.getElementById('sortableEinnahmenGrid');
+      if (!container) return;
+      const order = Array.from(container.querySelectorAll('.einnahmen-draggable-card')).map(c => c.getAttribute('data-id'));
+      appData.einnahmenOrder = order;
+      saveState();
+    }
+
+    function restoreEinnahmenOrder() {
+      const container = document.getElementById('sortableEinnahmenGrid');
+      if (!container || !appData.einnahmenOrder) return;
+      const cardsMap = {};
+      container.querySelectorAll('.einnahmen-draggable-card').forEach(c => {
+        cardsMap[c.getAttribute('data-id')] = c;
+      });
+      appData.einnahmenOrder.forEach(id => {
+        if (cardsMap[id]) {
+          container.appendChild(cardsMap[id]);
+        }
+      });
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       initApp();
       setTimeout(() => {
         restoreDashboardOrder();
         initDashboardDragAndDrop();
+        restoreEinnahmenOrder();
+        initEinnahmenDragAndDrop();
       }, 300);
     });
   </script>
