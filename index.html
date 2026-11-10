@@ -41,7 +41,7 @@
             Finanz- & Vermögensplaner 
             <span class="text-[10px] bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Pro</span>
           </h1>
-          <p class="text-xs text-slate-400" id="headerSubtitle">Firebase Cloud-Sync verbunden</p>
+          <p class="text-xs text-slate-400" id="headerSubtitle">Cloud & Lokaler Sync bereit</p>
         </div>
       </div>
       <div class="flex items-center gap-2 sm:hidden">
@@ -105,7 +105,7 @@
         <select id="globalMonthSelector" onchange="changeActiveMonth(this.value)" class="bg-slate-950 border border-indigo-500/40 rounded-xl px-3.5 py-2 text-xs font-bold text-white focus:outline-none focus:border-indigo-400 shadow-inner">
           <!-- Dynamisch per JS befüllt -->
         </select>
-        <button onclick="jumpToCurrentRealMonth()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition shrink-0" title="Zum echten aktuellen Monat wechseln">
+        <button onclick="jumpToCurrentRealMonth()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition shrink-0" title="Zum aktuellen echten Monat wechseln">
           Heute
         </button>
         <div class="h-5 w-[1px] bg-slate-800 mx-1 hidden sm:block"></div>
@@ -759,7 +759,6 @@
         const app = initializeApp(firebaseConfig);
         db = getFirestore(app);
 
-        // Direktes, gemeinsames Dokument in Firestore ohne Authentifizierungs-Sperre
         const docRef = doc(db, 'finanzplaner_pro_public', 'main_shared_data');
         
         onSnapshot(docRef, (docSnap) => {
@@ -784,7 +783,7 @@
             saveStateToCloud();
           }
         }, (error) => {
-          console.error("Firestore sync error:", error);
+          console.warn("Firestore sync offline fallback:", error);
         });
 
       } catch (err) {
@@ -1105,7 +1104,10 @@
 
       const totalIncomeWithExtra = activeNetIncome + extraIncomesSum;
       const restgeldVariable = totalIncomeWithExtra - fixedSum - savingsRate - dailySpent;
-      let totalWealth = (mData.plans || []).reduce((acc, p) => acc + Number(p.current || 0), 0);
+      
+      // Gesamtvermögen aus Sparplänen (Bestand) + monatliche Sparrate dieses Monats einrechnen
+      let basePlansWealth = (mData.plans || []).reduce((acc, p) => acc + Number(p.current || 0), 0);
+      let totalWealth = basePlansWealth + savingsRate;
 
       return {
         fixedSum,
@@ -1265,7 +1267,8 @@
           const hist = window.appData.closedMonths[k].plansHistory || {};
           return Number(hist[p.id] !== undefined ? hist[p.id] : 0);
         });
-        series.push(Number(p.current || 0));
+        // Für den aktuellen aktiven Monat den Bestandsstand zzgl. der mtl. Sparrate berücksichtigen
+        series.push(Number(p.current || 0) + Number(p.monthly || 0));
         return {
           label: p.name,
           data: series,
@@ -1280,7 +1283,7 @@
 
       const datasets = [
         {
-          label: 'Gesamtvermögen',
+          label: 'Gesamtvermögen (inkl. mtl. Sparrate)',
           data: totalWealthSeries,
           borderColor: '#10b981',
           backgroundColor: 'rgba(16, 185, 129, 0.1)',
